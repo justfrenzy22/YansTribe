@@ -1,4 +1,4 @@
-create table users (
+create table user (
     user_id int identity(1,1) primary key,
     username nvarchar(50) not null unique,
     email nvarchar(100) not null unique,
@@ -10,7 +10,7 @@ create table users (
     created_at datetime not null default getdate()
 );
 
-create table posts (
+create table post (
     post_id int identity(1, 1) primary key,
     user_id int not null,
     title nvarchar(50) not null,
@@ -20,7 +20,7 @@ create table posts (
     constraint fk_posts_users foreign key (user_id) references users(user_id)
 );
 
-create table likes (
+create table like (
     user_id int not null,
     post_id int not null,
     created_at datetime not null default getdate(),
@@ -29,7 +29,7 @@ create table likes (
     constraint fk_likes_pst foreign key (post_id) references posts(post_id)
 );
 
-create table comments (
+create table comment (
     comment_id int identity(1, 1) primary key,
     post_id int not null,
     user_id int not null,
@@ -41,7 +41,7 @@ create table comments (
     constraint fk_comments_prnt foreign key (parent_id) references comments(comment_id)
 );
 
-create table friends (
+create table friend (
     user_id int not null,
     friend_id int not null,
     status nvarchar(50) not null default 'pending', -- Allowed values: 'pending', 'accepted', 'rejected',
@@ -52,7 +52,7 @@ create table friends (
     constraint fk_friends_friend foreign key (friend_id) references users(user_id)
 );
 
-create table chats (
+create table chat (
     chat_id int identity(1, 1) primary key,
     user1_id int not null,
     user2_id int not null,
@@ -61,7 +61,7 @@ create table chats (
     constraint fk_chats_user2 foreign key (user2_id) references users(user_id)
 );
 
-create table messages (
+create table message (
     message_id int identity(1, 1) primary key,
     chat_id int not null,
     sender_id int not null,
@@ -73,7 +73,7 @@ create table messages (
     constraint fk_messages_receiver foreign key (receiver_id) references users(user_id)
 );
 
-create table stories (
+create table story (
     story_id int identity(1, 1) primary key,
     user_id int not null,
     media_url nvarchar(255) not null,
