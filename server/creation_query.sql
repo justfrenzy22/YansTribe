@@ -25,7 +25,7 @@ create table post (
     constraint fk_post_user foreign key (user_id) references [user](user_id)
 );
 
-create table like (
+create table [like] (
     user_id int not null,
     post_id int not null,
     issuer_id int not null,
