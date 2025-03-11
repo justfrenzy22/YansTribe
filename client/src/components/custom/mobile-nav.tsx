@@ -1,0 +1,180 @@
+import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+	Bookmark,
+	Calendar,
+	Clock,
+	Compass,
+	Flag,
+	Heart,
+	Home,
+	MessageCircle,
+	Settings,
+	Store,
+	User,
+	Users,
+} from "lucide-react";
+import { useState } from "react";
+import {
+	DrawerHeader,
+	DrawerTitle,
+	DrawerContent,
+	DrawerFooter,
+} from "../ui/drawer";
+
+type linksType = {
+	label: "home" | "profile" | "messages" | "friends" | "settings";
+	href: "/" | "/profile" | "/messages" | "/friends" | "/settings";
+	icon: React.ReactNode;
+};
+
+export function MobileNav() {
+	const [isSelected, setSelected] = useState<linksType["label"] | null>(null);
+
+	const btns: linksType[] = [
+		{
+			label: "home",
+			href: "/",
+			icon: <Home className="h-5 w-5" />,
+		},
+		{
+			label: "profile",
+			href: "/profile",
+			icon: <User className="h-5 w-5" />,
+		},
+		{
+			label: "messages",
+			href: "/messages",
+			icon: <MessageCircle className="h-5 w-5" />,
+		},
+		{
+			label: "friends",
+			href: "/friends",
+			icon: <Users className="h-5 w-5" />,
+		},
+		{
+			label: "settings",
+			href: "/settings",
+			icon: <Settings className="h-5 w-5" />,
+		},
+	];
+
+	return (
+		<DrawerContent>
+			<div className="flex flex-col h-full  ">
+				<DrawerTitle>
+					<div className="border-b p-4">
+						<Link href="/profile" className="flex items-center gap-3">
+							<Avatar>
+								<AvatarImage
+									src="/placeholder.svg?height=40&width=40"
+									alt="@user"
+								/>
+								<AvatarFallback>U</AvatarFallback>
+							</Avatar>
+							<div>
+								<p className="font-medium">John Doe</p>
+								<p className="text-sm text-muted-foreground">
+									View your profile
+								</p>
+							</div>
+						</Link>
+					</div>
+				</DrawerTitle>
+				<nav className="flex-1 overflow-auto p-4 border-b ">
+					<ul className="grid gap-1">
+						{btns.map((btn) => (
+							<li key={btn.label}>
+								<Link
+									href={btn.href}
+									className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent cursor-pointer"
+								>
+									{btn.icon}
+									<span>{btn.label}</span>
+								</Link>
+							</li>
+						))}
+						{/* <li>
+						<Link
+							href="/"
+							className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent"
+						>
+							<Home className="h-5 w-5" />
+							<span>Home</span>
+						</Link>
+					</li>
+					<li>
+						<Link
+							href="/profile"
+							className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent"
+						>
+							<User className="h-5 w-5" />
+							<span>Profile</span>
+						</Link>
+					</li>
+					<li>
+						<Link
+							href="/messages"
+							className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent"
+						>
+							<MessageCircle className="h-5 w-5" />
+							<span>Messages</span>
+						</Link>
+					</li>
+					<li>
+						<Link
+							href="/friends"
+							className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent"
+						>
+							<Users className="h-5 w-5" />
+							<span>Friends</span>
+						</Link>
+					</li>
+					<li>
+						<Link
+							href="/settings"
+							className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent"
+						>
+							<Bookmark className="h-5 w-5" />
+							<span>settings</span>
+						</Link>
+					</li> */}
+					</ul>
+				</nav>
+				<DrawerFooter>
+					<div className="p-4 text-sm text-muted-foreground">
+						<div className="flex flex-col justify-center items-center gap-2">
+							<div className="flex flex-row gap-4">
+								<Link href="/about" className="hover:underline">
+									About
+								</Link>
+								<Link href="/privacy" className="hover:underline">
+									Privacy
+								</Link>
+							</div>
+							<div className="flex flex-row gap-4">
+								<Link href="/terms" className="hover:underline">
+									Terms
+								</Link>
+								<Link href="/cookies" className="hover:underline">
+									Cookies
+								</Link>
+							</div>
+							<div className="flex flex-row gap-4">
+								<Link href="/careers" className="hover:underline">
+									Careers
+								</Link>
+								<Link href="/help" className="hover:underline">
+									Help Center
+								</Link>
+							</div>
+						</div>
+						<p className="mt-4 text-xs">
+							© 2025 YansTribe. All rights reserved.
+						</p>
+					</div>
+				</DrawerFooter>
+			</div>
+		</DrawerContent>
+	);
+}
