@@ -19,22 +19,22 @@ create table post (
     user_id int not null,
     title nvarchar(50) not null,
     has_img bit not null default 0,
+    media_src nvarchar(255) null,
     content nvarchar(max) not null,
     -- visibility
     created_at datetime not null default getdate(),
     constraint fk_post_user foreign key (user_id) references [user](user_id)
 );
 
-create table [like] (
+create table post_like (
     user_id int not null,
     post_id int not null,
-    issuer_id int not null,
     created_at datetime not null default getdate(),
-    constraint pk_like primary key (user_id, post_id),
-    constraint fk_like_user foreign key (user_id) references [user](user_id),
-    constraint fk_like_post foreign key (post_id) references post(post_id),
-    constraint fk_like_issuer foreign key (issuer_id) references [user](user_id)
+    constraint pk_post_like primary key (user_id, post_id),
+    constraint fk_post_like_user foreign key (user_id) references [user](user_id),
+    constraint fk_post_like_post foreign key (post_id) references post(post_id)
 );
+
 
 create table comment (
     comment_id int identity(1, 1) primary key,
@@ -46,6 +46,15 @@ create table comment (
     constraint fk_comment_post foreign key (post_id) references post(post_id),
     constraint fk_comment_user foreign key (user_id) references [user](user_id),
     constraint fk_comment_parent foreign key (parent_id) references comment(comment_id)
+);
+
+create table comment_like (
+    user_id int not null,
+    comment_id int not null,
+    created_at datetime not null default getdate(),
+    constraint pk_comment_like primary key (user_id, comment_id),
+    constraint fk_comment_like_user foreign key (user_id) references [user](user_id),
+    constraint fk_comment_like_comment foreign key (comment_id) references comment(comment_id)
 );
 
 create table friend (
@@ -71,19 +80,17 @@ create table message (
     message_id int identity(1, 1) primary key,
     chat_id int not null,
     sender_id int not null,
-    receiver_id int not null,
     content nvarchar(max) not null,
     send_at datetime not null default getdate(),
     constraint fk_message_chat foreign key (chat_id) references chat(chat_id),
     constraint fk_message_sender foreign key (sender_id) references [user](user_id),
-    constraint fk_message_receiver foreign key (receiver_id) references [user](user_id)
 );
 
 create table story (
     story_id int identity(1, 1) primary key,
     user_id int not null,
-    media_type nvarchar(20) not null check (media_type in ('image', 'video')),    
-    media_url nvarchar(255) not null,
+    media_type nvarchar(20) not null check (media_type in ('image', 'video')),
+    media_src nvarchar(255) not null,
     caption nvarchar(500) not null,
     created_at datetime not null default getdate(),
     expires_at datetime not null,
