@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using server.Models;
+using server.models;
+using server.views;
 
 namespace server.Controllers;
 
@@ -28,7 +29,8 @@ public class HomeController : Controller
     public IActionResult Register()
     {
 
-        using (var reader = new StreamReader(HttpContext.Request.Body)) {
+        using (var reader = new StreamReader(HttpContext.Request.Body))
+        {
             var postData = reader.ReadToEnd();
         }
 

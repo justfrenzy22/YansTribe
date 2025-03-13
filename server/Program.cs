@@ -1,9 +1,22 @@
+using DotNetEnv;
+using server.managers;
+using server.views;
+
 var builder = WebApplication.CreateBuilder(args);
 
+Env.Load();
+
+Console.WriteLine("DB_CONN: " + Env.GetString("DB_CONN"));
 // Add services to the container.
+
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddSingleton<HomeView>();
+string dbConn = Env.GetString("DB_CONN", "defaultStr");
+builder.Services.AddScoped<UserManager>(provider => new UserManager(dbConn));
+
+// Views
+builder.Services.AddTransient<HomeView>();
+builder.Services.AddTransient<UserView>();
 
 var app = builder.Build();
 
@@ -15,17 +28,27 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
+
+
+app.UseStaticFiles();
+
 app.UseHttpsRedirection();
+
 app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapStaticAssets();
+
+
+// app.MapStaticAssets();
+
+// Map all Controllers automatically
+app.MapControllers();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}/")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 
 app.Run();

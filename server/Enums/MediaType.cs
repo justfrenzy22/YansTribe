@@ -1,4 +1,9 @@
-public enum MediaType {
-    image,
-    video
+namespace server.enums
+{
+    public enum MediaType
+    {
+        image,
+        video
+    }
+
 }
