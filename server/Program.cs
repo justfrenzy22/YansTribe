@@ -6,17 +6,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 Env.Load();
 
-Console.WriteLine("DB_CONN: " + Env.GetString("DB_CONN"));
+// Console.WriteLine("DB_CONN: " + Env.GetString("DB_CONN"));
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
 
-string dbConn = Env.GetString("DB_CONN", "defaultStr");
-builder.Services.AddScoped<UserManager>(provider => new UserManager(dbConn));
+// string dbConn = Env.GetString("DB_CONN", "defaultStr");
+// builder.Services.AddScoped<UserManager>(provider => new UserManager(dbConn));
 
 // Views
-builder.Services.AddTransient<HomeView>();
-builder.Services.AddTransient<UserView>();
+// builder.Services.AddTransient<HomeView>();
+// builder.Services.AddTransient<UserView>();
 
 var app = builder.Build();
 
@@ -49,6 +49,5 @@ app.MapControllers();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 
 app.Run();

@@ -1,6 +1,6 @@
 using System.Data;
 using server.models;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using server.enums;
 
 namespace server.managers
@@ -18,7 +18,6 @@ namespace server.managers
 
         public int create_user(string username, string email, string password_hash, string full_name, string bio, string pfp_src, string location, string website)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
             try
             {
 
@@ -26,8 +25,6 @@ namespace server.managers
                 {
                     throw new Exception("User with the same email or username already exists");
                 }
-
-
 
                 Dictionary<string, object> parameters = new Dictionary<string, object> {
                     {"@username", username},
@@ -38,7 +35,7 @@ namespace server.managers
                     {"@pfp_src", pfp_src},
                     {"@location", location},
                     {"@website", website},
-                 };
+                };
 
                 // Execute the insert query and get the inserted ID
                 var insertResult = scalar(query.add_user(), parameters);
@@ -57,12 +54,10 @@ namespace server.managers
             {
                 throw new Exception($"Unexpected error in create_user: {ex.Message}", ex);
             }
-#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         public int get_last_id()
         {
-#pragma warning disable CS0618 // Type or member is obsolete
             try
             {
                 var lastIDResult = scalar(query.get_last_id());
@@ -83,7 +78,6 @@ namespace server.managers
             {
                 throw new Exception($"Unexpected error in get_last_id: {e.Message}", e);
             }
-#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         public User? get_user_by_id(int user_id)
@@ -128,8 +122,8 @@ namespace server.managers
             {
 
                 Dictionary<string, object> parameters = new Dictionary<string, object> {
-            {"@username", username},
-        };
+                    {"@username", username},
+                };
 
                 DataTable res = reader(query.get_user_by_username(), parameters);
 

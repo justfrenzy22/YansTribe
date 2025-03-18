@@ -1,4 +1,4 @@
-namespace server.models
+namespace server.domains
 {
     public class PostLike
     {
