@@ -13,6 +13,12 @@ namespace server.views
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
+        public ActionResult nig()
+        {
+            var data = new { status = 200, message = "nigga" };
+            return new ObjectResult(data) { StatusCode = 200 };
+        }
+
         public ActionResult create_success()
         {
             var data = new { status = 200, message = "user registered successfully!" };

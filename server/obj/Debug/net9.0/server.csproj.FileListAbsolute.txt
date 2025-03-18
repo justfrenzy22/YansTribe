@@ -2,7 +2,6 @@ c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\appsettings.Develo
 c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\appsettings.json
 c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\server.staticwebassets.runtime.json
 c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\server.staticwebassets.endpoints.json
-c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\server.exe
 c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\server.deps.json
 c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\server.runtimeconfig.json
 c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\server.dll
@@ -79,8 +78,6 @@ c:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\compressed\ekulns1
 c:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\compressed\4lxed453ad-muycvpuwrr.gz
 c:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\compressed\dzmuznifi4-87fc7y1x7t.gz
 c:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\compressed\nwawnbtg9n-mlv21k5csn.gz
-c:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\compressed\dazn4baeoc-coqsi3krv5.gz
-c:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\compressed\jb2oi4e4id-coqsi3krv5.gz
 c:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\staticwebassets.build.json
 c:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\staticwebassets.development.json
 c:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\staticwebassets.build.endpoints.json
@@ -143,3 +140,5 @@ c:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\server.csproj.Up2D
 c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\DotNetEnv.dll
 c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\Sprache.dll
 C:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\test.json
+C:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\compressed\dazn4baeoc-hptnx9va0m.gz
+C:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\compressed\jb2oi4e4id-hptnx9va0m.gz

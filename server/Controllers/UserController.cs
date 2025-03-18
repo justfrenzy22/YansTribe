@@ -24,10 +24,9 @@ namespace server.Controllers
             this.view = view;
             this.userManager = userManager;
         }
-
+        
         [HttpPost]
         [Route("register")]
-        [Obsolete]
         public IActionResult Register()
         {
             try

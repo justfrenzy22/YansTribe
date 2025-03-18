@@ -1,6 +1,6 @@
 using server.enums;
 
-namespace server.models
+namespace server.domains
 {
 
     public class User

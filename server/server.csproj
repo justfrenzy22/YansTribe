@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
+     <UseAppHost>false</UseAppHost>
+     <!--UseAppHost could be removed -->
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
@@ -10,6 +12,10 @@
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- <ProjectReference Include="..\DAL\DAL.csproj" /> -->
   </ItemGroup>
 
 </Project>

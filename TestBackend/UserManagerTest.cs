@@ -36,6 +36,8 @@ namespace TestBackend
         //     Assert.AreEqual("User with the same email or username already exists", ex?.Message);
         // }
 
+        
+
         [TestMethod]
         public void GetUserByUsername()
         {
@@ -72,6 +74,8 @@ namespace TestBackend
 
             Assert.IsNull(user);
         }
+
+        
 
         // [TestMethod]
         // [Obsolete]
