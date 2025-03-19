@@ -1810,11 +1810,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\justf\\source\\repos\\yanstribe\\DAL\\DAL.csproj",
+      "projectUniqueName": "C:\\Users\\justf\\source\\repos\\yanstribe\\DALe\\DAL.csproj",
       "projectName": "DAL",
-      "projectPath": "C:\\Users\\justf\\source\\repos\\yanstribe\\DAL\\DAL.csproj",
+      "projectPath": "C:\\Users\\justf\\source\\repos\\yanstribe\\DALe\\DAL.csproj",
       "packagesPath": "C:\\Users\\justf\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\justf\\source\\repos\\yanstribe\\DAL\\obj\\",
+      "outputPath": "C:\\Users\\justf\\source\\repos\\yanstribe\\DALe\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

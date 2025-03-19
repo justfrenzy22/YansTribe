@@ -1,5 +1,9 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
+// using core.models;
+using core.requests;
+using dal.interfaces;
+using core.entities;
+using core.responses;
 
 namespace server.controllers
 {
@@ -7,25 +11,55 @@ namespace server.controllers
     [Route("admin")]
     public class AdminController : Controller
     {
+
+        private readonly IAdminDal service;
+
+        public AdminController(IAdminDal adminDal)
+        {
+            this.service = adminDal;
+        }
+
+
+        [HttpGet]
         public ActionResult Index()
         {
             return View();
         }
 
         [HttpPost]
-        [Route("admin/login")]
-        public IActionResult Login(string email, string password)
+        public async Task<IActionResult> Login([FromForm] AdminLoginReq model)
         {
-            // Simple email and password check
-            if (email == "admin@admin.com" && password == "admin@admin.com")
+
+            if (!ModelState.IsValid)
             {
-                return RedirectToAction("Home");
+                return BadRequest(ModelState);
             }
+
+            AdminLoginRes res = await this.service.ValidateLogin(model);
+
+            if (res.check)
+            {
+                return View("Home");
+            }
+
             else
             {
-                ViewBag.ErrorMessage = "Invalid credentials. Please try again.";
-                return View();
+                TempData["err"] = "Invalid credentials. Please try again.";
+                return RedirectToAction("Index");
             }
+        }
+
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsers()
+        {
+            List<User>? users = await this.service.GetUsers();
+
+            if (users == null)
+            {
+                return NotFound();
+            }
+            TempData["users"] = users;
+            return View("Users");
         }
     }
 }

@@ -1,7 +1,8 @@
 using System.Data;
-using server.models;
+using core.entities;
+using core.enums;
 using Microsoft.Data.SqlClient;
-using server.enums;
+
 
 namespace server.managers
 {

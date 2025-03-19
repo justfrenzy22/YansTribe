@@ -142,3 +142,6 @@ c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\Sprache.dll
 C:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\test.json
 C:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\compressed\dazn4baeoc-hptnx9va0m.gz
 C:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\compressed\jb2oi4e4id-hptnx9va0m.gz
+c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\DAL.dll
+c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\DAL.pdb

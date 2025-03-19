@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "PtJ6Pt+Bfek=",
+  "dgSpecHash": "LTU0m/L4sMI=",
   "success": true,
-  "projectFilePath": "C:\\Users\\justf\\source\\repos\\yanstribe\\DAL\\DAL.csproj",
+  "projectFilePath": "C:\\Users\\justf\\source\\repos\\yanstribe\\DALe\\DAL.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\justf\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\justf\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

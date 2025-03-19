@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using server.models;
+// using server.domains;
+// using server.models;
+using core.entities;
 
 namespace server.views
 {

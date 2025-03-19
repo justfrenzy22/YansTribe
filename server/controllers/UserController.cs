@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using server.models;
 using System.Data;
 using server.views;
 using server.managers;
+using core.entities;
 using System.Security.Cryptography.X509Certificates;
 
 namespace server.Controllers
