@@ -18,10 +18,10 @@ namespace core.entities
         }
 
 
-        public int message_id { get => this._message_id; }
-        public int chat_id { get => this._chat_id; }
-        public int sender_id { get => this._sender_id; }
-        public string content { get => this._content; }
-        public DateTime send_at { get => this._send_at; }
+        public int message_id => this._message_id;
+        public int chat_id => this._chat_id;
+        public int sender_id => this._sender_id;
+        public string content => this._content;
+        public DateTime send_at => this._send_at;
     }
 }

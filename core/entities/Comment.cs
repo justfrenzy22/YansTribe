@@ -19,12 +19,12 @@ namespace core.entities
             this._created_at = created_at;
         }
 
-        public int comment_id { get => this._comment_id; }
-        public int post_id { get => this._post_id; }
-        public int commenter_id { get => this._commenter_id; }
-        public int parent_id { get => this._parent_id; }
-        public string content { get => this._content; }
-        public DateTime created_at { get => this._created_at; }
+        public int comment_id => this._comment_id;
+        public int post_id => this._post_id;
+        public int commenter_id => this._commenter_id;
+        public int parent_id => this._parent_id;
+        public string content => this._content;
+        public DateTime created_at => this._created_at;
 
     }
 }

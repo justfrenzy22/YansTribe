@@ -19,11 +19,11 @@ namespace core.entities
             this._created_at = created_at;
         }
 
-        public int friendship_id { get => this._friendship_id; }
-        public int user_1_id { get => this._user_1_id; }
-        public int user_2_id { get => this._user_2_id; }
-        public FriendStatus status { get => this._status; }
-        public DateTime created_at { get => this._created_at; }
+        public int friendship_id => this._friendship_id;
+        public int user_1_id => this._user_1_id;
+        public int user_2_id => this._user_2_id;
+        public FriendStatus status => this._status;
+        public DateTime created_at => this._created_at;
     }
 
 

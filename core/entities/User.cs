@@ -33,24 +33,20 @@ namespace core.entities
             this._role = role;
         }
 
+        public int user_id => this._user_id;
+        public string username => this._username;
+        public string email => this._email;
+        public string password_hash => this._password_hash;
+        public string full_name => this._full_name;
+        public string bio => this._bio;
+        public string pfp_src => this._pfp_src;
+        public string location => this._location;
+        public string website => this._website;
+        public bool is_private => this._is_private;
+        public DateTime created_at => this._created_at;
+        public Role role => this._role;
 
-        public int user_id { get => this._user_id; }
-        public string username { get => this._username; }
-        public string email { get => this._email; }
-        public string password_hash { get => this._password_hash; }
-        public string full_name { get => this._full_name; }
-        public string bio { get => this._bio; }
-        public string pfp_src { get => this._pfp_src; }
-        public string location { get => this._location; }
-        public string website { get => this._website; }
-        public bool is_private { get => this._is_private; }
-        public DateTime created_at { get => this._created_at; }
-        public Role role { get => this._role; }
-
-        public Role ParseRole<Role>(string value)
-        {
-            return (Role)Enum.Parse(typeof(Role), value, true);
-        }
+        public Role ParseRole<Role>(string value) => (Role)Enum.Parse(typeof(Role), value, true);
     }
 
 }

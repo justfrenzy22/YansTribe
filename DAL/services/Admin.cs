@@ -9,23 +9,15 @@ namespace dal.admin
     {
 
 
-        private readonly IAdminRepo IAdminRepo;
+        private readonly IAdminRepo repo;
+        
+        public AdminService(IAdminRepo repo) => this.repo = repo;
 
 
-        public AdminService(IAdminRepo IAdminRepo)
-        {
-            this.IAdminRepo = IAdminRepo;
-        }
+        public async Task<AdminLoginRes> ValidateLogin(AdminLoginReq model) => await repo.ValidateLogin(model);
 
-        public async Task<AdminLoginRes> ValidateLogin(AdminLoginReq model)
-        {
-            return await IAdminRepo.ValidateLogin(model);
-        }
+        public async Task<List<User>> GetUsers() => await repo.GetUsers();
 
-        public async Task<List<User>> GetUsers()
-        {
-            return await IAdminRepo.GetUsers();
-        }
     }
 
 }

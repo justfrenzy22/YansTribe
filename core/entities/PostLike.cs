@@ -13,8 +13,8 @@ namespace core.entities
             this._created_at = created_at;
         }
 
-        public int user_id { get => this._user_id; }
-        public int post_id { get => this._post_id; }
-        public DateTime created_at { get => this._created_at; }
+        public int user_id => this._user_id;
+        public int post_id => this._post_id;
+        public DateTime created_at => this._created_at;
     }
 }

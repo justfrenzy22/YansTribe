@@ -14,17 +14,11 @@ namespace server.controllers
 
         private readonly IAdminDal service;
 
-        public AdminController(IAdminDal adminDal)
-        {
-            this.service = adminDal;
-        }
+        public AdminController(IAdminDal adminDal) => this.service = adminDal;
 
 
         [HttpGet]
-        public ActionResult Index()
-        {
-            return View();
-        }
+        public ActionResult Index() => View();
 
         [HttpPost]
         public async Task<IActionResult> Login([FromForm] AdminLoginReq model)

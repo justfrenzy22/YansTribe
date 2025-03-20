@@ -21,12 +21,12 @@ namespace core.entities
             this._created_at = created_at;
         }
 
-        public int post_id { get => this._post_id; }
-        public int user_id { get => this._user_id; }
-        public string title { get => this._title; }
-        public bool has_img { get => this._has_img; }
-        public string? media_src { get => this._media_src; }
-        public string content { get => this._content; }
-        public DateTime created_at { get => this.created_at; }
+        public int post_id => this._post_id;
+        public int user_id => this._user_id;
+        public string title => this._title;
+        public bool has_img => this._has_img;
+        public string? media_src => this._media_src;
+        public string content => this._content;
+        public DateTime created_at => this.created_at;
     }
 }

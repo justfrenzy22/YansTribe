@@ -22,11 +22,11 @@ namespace core.entities
             this._expires_at = expires_at;
         }
 
-        public int story_id { get => _story_id; }
-        public int user_id { get => _user_id; }
-        public MediaType media_type { get => _media_type; }
-        public string media_src { get => _media_src; }
-        public DateTime created_at { get => _created_at; }
-        public DateTime expires_at { get => _expires_at; }
+        public int story_id => this._story_id;
+        public int user_id => this._user_id;
+        public MediaType media_type => this._media_type;
+        public string media_src => this._media_src;
+        public DateTime created_at => this._created_at;
+        public DateTime expires_at => this._expires_at;
     }
 }
