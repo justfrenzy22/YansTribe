@@ -1,9 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
-// using core.models;
-using core.requests;
+using server.requests;
 using dal.interfaces;
+using dal.requests;
 using core.entities;
-using core.responses;
+using server.responses;
+// using server.services;
+using core.enums;
+using core.mapper;
+using server.mapper;
+using System.Net;
 
 namespace server.controllers
 {
@@ -11,17 +16,55 @@ namespace server.controllers
     [Route("admin")]
     public class AdminController : Controller
     {
+        private string controller;
 
-        private readonly IAdminDal service;
+        private readonly IAdminService admin_service;
+        private readonly IUserService user_service;
+        private readonly ILogger<AdminController> _logger;
+        private readonly services.IAuthService auth_service;
 
-        public AdminController(IAdminDal adminDal) => this.service = adminDal;
+        public AdminController(IAdminService admin_service, IUserService user_service, ILogger<AdminController> logger, services.IAuthService auth_service)
+        {
+            this.controller = "Admin";
+            this.admin_service = admin_service;
+            this.user_service = user_service;
+            this._logger = logger;
+            this.auth_service = auth_service;
+        }
 
+        [HttpGet("/")]
+        public IActionResult Index()
+        {
 
-        [HttpGet]
-        public ActionResult Index() => View();
+            try
+            {
+                string token = HttpContext.Request.Cookies["token"] ?? "";
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    return View("Login");
+                }
+
+                var verify = this.auth_service.VerifyTokenAsync(token);
+                if (verify.check)
+                {
+                    TempData["user_id"] = verify.user_id;
+                    return RedirectToAction("Home", "Admin");
+                }
+                else
+                {
+                    return View("Login");
+                }
+            }
+
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 
         [HttpPost]
-        public async Task<IActionResult> Login([FromForm] AdminLoginReq model)
+        public async Task<IActionResult> Login([FromForm] requests.AdminLoginReq model)
         {
 
             if (!ModelState.IsValid)
@@ -29,31 +72,59 @@ namespace server.controllers
                 return BadRequest(ModelState);
             }
 
-            AdminLoginRes res = await this.service.ValidateLogin(model);
+            var resMapper = new AdminLoginResMapper();
+            var reqMapper = new AdminLoginReqMapper();
+            dal.requests.AdminLoginReq req = reqMapper.MapTo(model);
+            var res = await this.admin_service.ValidateLogin(req);
 
-            if (res.check)
+            AdminLoginRes server_res = resMapper.MapTo(res);
+
+            this._logger.LogInformation(res.ToString());
+
+            if (server_res.check)
             {
-                return View("Home");
+
+                string token = this.auth_service.GenerateJwtToken(server_res.user_id.ToString() ?? throw new Exception("User ID is null."));
+
+                HttpContext.Response.Cookies.Append("token", token, new CookieOptions
+                {
+                    Secure = true,
+                    Expires = DateTime.Now.AddDays(1)
+                });
+
+                return RedirectToAction("Home");
             }
 
             else
             {
                 TempData["err"] = "Invalid credentials. Please try again.";
-                return RedirectToAction("Index");
+                return View("Login");
             }
         }
 
-        [HttpGet("users")]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> Home()
         {
-            List<User>? users = await this.service.GetUsers();
-
-            if (users == null)
+            try
             {
-                return NotFound();
+                if (!TempData.ContainsKey("user_id"))
+                {
+                    return View("Login");
+                }
+                int user_id = Convert.ToInt32(TempData["user_id"]);
+                List<User>? users = await this.GetUsers(admin_id: user_id);
+                return View("Home", users);
             }
-            TempData["users"] = users;
-            return View("Users");
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
+
+
+        private async Task<List<User>?> GetUsers(int admin_id)
+        {
+            return await this.admin_service.GetUsersAsync(admin_id);
+        }
+
     }
 }

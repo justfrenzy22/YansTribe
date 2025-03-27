@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace core.requests
+namespace server.requests
 {
     public class AdminLoginReq
     {
@@ -9,7 +9,7 @@ namespace core.requests
         public required string email { get; set; }
 
         [Required]
-        [Display(Name = "email")]
+        [Display(Name = "password")]
         public required string password { get; set; }
     }
 }

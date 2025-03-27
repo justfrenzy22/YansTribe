@@ -1,6 +1,7 @@
 using System.Data;
 using core.entities;
 using core.enums;
+using dal.queries;
 using Microsoft.Data.SqlClient;
 
 

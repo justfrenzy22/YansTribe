@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using core.models;
 using server.views;
 
-namespace server.Controllers;
+namespace server.controllers;
 
 [ApiController]
 [Route("home/")]

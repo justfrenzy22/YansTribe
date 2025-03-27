@@ -145,3 +145,5 @@ C:\Users\justf\source\repos\yanstribe\server\obj\Debug\net9.0\compressed\jb2oi4e
 c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\DAL.dll
 c:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\DAL.pdb
+C:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\core.dll
+C:\Users\justf\source\repos\yanstribe\server\bin\Debug\net9.0\core.pdb

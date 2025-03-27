@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace core.responses
+namespace server.responses
 {
     public class AdminLoginRes
     {
@@ -9,8 +9,8 @@ namespace core.responses
         [Required]
         public required bool check { get; set; } // 'required' is kept
 
-        [Display(Name = "token")]
-        public string? token { get; set; }
+        [Display(Name = "user_id")]
+        public int? user_id { get; set; }
 
     }
 }

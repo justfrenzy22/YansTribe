@@ -1,0 +1,101 @@
+@* using server.models.model; *@
+@model core.models.LoginModel
+
+@{
+    ViewBag.Title = "Login";
+}
+
+<div class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg  shadow-xl p-8 max-w-md w-full">
+        <!-- Title -->
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800 ">Admin Login</h1>
+        </div>
+        <hr>
+        @if (TempData["err"] != null)
+        {
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
+                &#x2022;
+                @TempData["err"]
+            </div>
+        }
+        <form method="post" class="mt-2" action="/admin">
+            <div class="mb-6">
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input type="email" name="email" id="email"
+                    class="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-full shadow-md"
+                    placeholder="your@email.com" required />
+            </div>
+            <!-- Password input -->
+            <div class="mb-6">
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                <input type="password" name="password" id="password"
+                    class="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-full shadow-md"
+                    placeholder="password" required />
+            </div>
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    <input type="checkbox" id="remember"
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 " />
+                    <label for="remember" class="ml-2 block text-sm text-gray-700">Remember me</label>
+                </div>
+
+                <a href="#" class="text-sm text-blue-600 hover:text-blue-800 hover:underline">Forgot password?</a>
+            </div>
+
+            <button type="submit" id="submitButton"
+                class="w-full bg-blue-600 text-white py-2 px-4 rounded-full shadow-2xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                Sign In
+            </button>
+        </form>
+
+        <div class="text-center mt-6 flex flex-row text-sm text-gray-600 gap-2">
+            <p class=" ">
+            <p>Don't have an account?</p>
+            <a href="register.html" class="text-blue-600 hover:text-blue-800  hover:underline font-medium">Register
+                here</a>
+            </p>
+        </div>
+    </div>
+    <!-- <script type="module">
+        import { motion, useAnimation } from 'https://cdn.jsdelivr.net/npm/framer-motion@12.5.0/+esm';
+
+        // Initialize animations for inputs and button
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const submitButton = document.getElementById('submitButton');
+
+        // Add event listeners for hover and focus
+        const animateElement = (element) => {
+            element.addEventListener('mouseenter', () => {
+                motion.animate(element, { scale: 1.05 }, { type: 'spring', stiffness: 300 });
+            });
+            element.addEventListener('mouseleave', () => {
+                motion.animate(element, { scale: 1 }, { type: 'spring', stiffness: 300 });
+            });
+            element.addEventListener('focus', () => {
+                motion.animate(element, { scale: 1.05 }, { type: 'spring', stiffness: 300 });
+            });
+            element.addEventListener('blur', () => {
+                motion.animate(element, { scale: 1 }, { type: 'spring', stiffness: 300 });
+            });
+        };
+
+        animateElement(emailInput);
+        animateElement(passwordInput);
+
+        // Animate the submit button
+        submitButton.addEventListener('mouseenter', () => {
+            motion.animate(submitButton, { scale: 1.05 }, { type: 'spring', stiffness: 300 });
+        });
+        submitButton.addEventListener('mouseleave', () => {
+            motion.animate(submitButton, { scale: 1 }, { type: 'spring', stiffness: 300 });
+        });
+        submitButton.addEventListener('mousedown', () => {
+            motion.animate(submitButton, { scale: 0.95 }, { type: 'spring', stiffness: 300 });
+        });
+        submitButton.addEventListener('mouseup', () => {
+            motion.animate(submitButton, { scale: 1.05 }, { type: 'spring', stiffness: 300 });
+        });
+    </script> -->
+</div>

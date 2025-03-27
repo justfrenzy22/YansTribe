@@ -17,5 +17,10 @@ namespace dal.queries
         public string get_last_id() => "SELECT IDENT_CURRENT('user')";
 
         public string get_users() => "SELECT * FROM [user]";
+
+        public string get_role_by_id() => "SELECT role FROM [user] WHERE user_id = @user_id";
+
+        public string get_standard_users() => "SELECT * FROM [user] WHERE role = 'user'";
+
     }
 }

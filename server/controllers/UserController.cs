@@ -5,16 +5,22 @@ using server.views;
 using server.managers;
 using core.entities;
 using System.Security.Cryptography.X509Certificates;
+using server.controllers;
 
-namespace server.Controllers
+namespace server.controllers
 {
 
     [ApiController]
     [Route("user")]
-    public class UserController : Controller
+    public class UserController : BaseController
     {
         private UserView view;
         private UserManager userManager;
+
+        // public override IActionResult Index()
+        // {
+        //     return View();
+        // }
 
         private readonly ILogger<UserController> _logger;
 
@@ -24,7 +30,7 @@ namespace server.Controllers
             this.view = view;
             this.userManager = userManager;
         }
-        
+
         [HttpPost]
         [Route("register")]
         public IActionResult Register()
@@ -61,6 +67,12 @@ namespace server.Controllers
         {
             // _logger.LogInformation("Test route hit");
             return view.success();
+        }
+
+        public IActionResult GetUserById()
+        {
+            // 
+            return View();
         }
 
         [HttpGet]
