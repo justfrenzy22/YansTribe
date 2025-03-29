@@ -2,7 +2,7 @@
 
 import useIsMobile from "@/hooks/useIsMobile";
 import { DeviceContextValue } from "@/types/DeviceContextValue";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
 
 export const DeviceContext = createContext<DeviceContextValue | null>(null);
 

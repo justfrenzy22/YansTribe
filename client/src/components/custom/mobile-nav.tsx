@@ -28,7 +28,7 @@ type linksType = {
 	icon: React.ReactNode;
 };
 
-export function MobileNav() {
+const MobileNav = () => {
 	const [isSelected, setSelected] = useState<linksType["label"] | null>(null);
 
 	const btns: linksType[] = [
@@ -178,3 +178,5 @@ export function MobileNav() {
 		</DrawerContent>
 	);
 }
+
+export default MobileNav;

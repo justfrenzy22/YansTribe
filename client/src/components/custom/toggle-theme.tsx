@@ -28,7 +28,7 @@ const ToggleTheme = () => {
 		<Button
 			variant={`ghost`}
 			size={`icon`}
-			className="h-9 w-9 rounded-full"
+			className="h-9 w-9 rounded-full cursor-pointer"
 			onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
 		>
 			{theme === "dark" ? (

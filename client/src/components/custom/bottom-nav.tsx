@@ -7,7 +7,7 @@ import { Home, MessageCircle, Search, ShieldUser, User } from "lucide-react";
 
 type btnType = {
 	label: "home" | "search" | "messages" | "admin" | "profile";
-	href: "/" | "/#search" | "/#messages" | "/#admin" | "/#profile";
+	href: "/" | "/search" | "/messages" | "/admin" | "/profile";
 	icon: React.ReactNode;
 };
 
@@ -23,22 +23,22 @@ const BottomNav = ({ selected }: { selected: btnType["label"] }) => {
 		},
 		{
 			label: "search",
-			href: "/#search",
+			href: "/search",
 			icon: <Search className="h-5 w-5" />,
 		},
 		{
 			label: "messages",
-			href: "/#messages",
+			href: "/messages",
 			icon: <MessageCircle className="h-5 w-5" />,
 		},
 		{
 			label: "admin",
-			href: "/#admin",
+			href: "/admin",
 			icon: <ShieldUser className="h-5 w-5" />,
 		},
 		{
 			label: "profile",
-			href: "/#profile",
+			href: "/profile",
 			icon: <User className="h-5 w-5" />,
 		},
 	];
