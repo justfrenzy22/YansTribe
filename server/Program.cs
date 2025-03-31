@@ -44,6 +44,7 @@ Env.Load();
 //
 
 // string connString = "Server=ACER/justf;Database=test;";
+builder.Services.AddTransient<UserView>();
 
 builder.Services.AddControllersWithViews();
 
@@ -65,7 +66,6 @@ builder.Services.AddTransient<IAdminRepo>(provider =>
 builder.Services.AddTransient<IUserRepo>(provider =>
 {
     var dbRepo = provider.GetRequiredService<IDBRepo>();
-    // var adminQuery = provider.GetRequiredService<AdminQuery>();
     var userQuery = provider.GetRequiredService<UserQuery>();
 
     return new UserRepo(dbRepo, userQuery);
@@ -78,7 +78,8 @@ builder.Services.AddTransient<IAuthService, AuthService>();
 // credit to https://auth0.com/blog/how-to-validate-jwt-dotnet/; https://medium.com/@softsusanta/how-to-implement-jwt-token-authentication-in-asp-net-core-api-833385ad60cc
 
 
-string key = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key is not configured in appsettings.");
+string adminKey = builder.Configuration["Jwt:AdminKey"] ?? throw new InvalidOperationException("Admin JWT Key is not configured in appsettings.");
+string userKey = builder.Configuration["Jwt:UserKey"] ?? throw new InvalidOperationException("User JWT Key is not configured in appsettings.");
 string host = builder.Configuration["Jwt:Host"] ?? throw new InvalidOperationException("JWT Host is not configured in appsettings.");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -91,7 +92,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = "yanstribe",
             ValidAudience = host,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+            // IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+            IssuerSigningKeys = new List<SecurityKey> { new SymmetricSecurityKey(Encoding.UTF8.GetBytes(adminKey)), new SymmetricSecurityKey(Encoding.UTF8.GetBytes(userKey)) }
         };
     });
 

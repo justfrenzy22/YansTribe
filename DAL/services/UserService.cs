@@ -15,5 +15,7 @@ namespace dal.user
         public async Task<User?> GetUserById(int user_id) => await repo.GetUserById(user_id);
 
         public async Task<Role?> GetRoleById(int user_id) => await repo.GetRoleById(user_id);
+
+        public async Task<int?> ValidateUser(string email, string password) => await repo.ValidateUser(email, password);
     }
 }

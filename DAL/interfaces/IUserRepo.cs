@@ -7,7 +7,7 @@ namespace dal.interfaces
     {
         Task<int> AddUser(User user);
         Task<Role?> GetRoleById(int user_id);
-        // Task<User> GetByEmail(string email);
+        Task<int?> ValidateUser(string email, string password);
         Task<User?> GetUserById(int user_id);
     }
 }
