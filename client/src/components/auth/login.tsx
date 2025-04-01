@@ -9,8 +9,11 @@ import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
 import Error from "next/error";
 import { ILoginErrors } from "@/types/ILoginErrors";
+import { useRouter } from "next/router";
+import { ApiService } from "@/api/auth/apiService";
 
 const Login = ({ isLogin }: { isLogin: boolean }) => {
+	const service = new ApiService();
 	const [isLoading, setLoading] = useState<boolean>(false);
 	const [formData, setFormData] = useState<ILoginForm>({
 		email: "",
@@ -52,34 +55,31 @@ const Login = ({ isLogin }: { isLogin: boolean }) => {
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
+		// const router = useRouter();
 		e.preventDefault();
 
 		if (!validate()) return;
 
 		setLoading(true);
+		console.log(`email`, formData.email, `password`, formData.password);
 
 		try {
-			const res = await fetch("/api/auth/login", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(formData),
-			})
-				.then((res) => res.json())
-				.catch((err) => console.error(err));
-
+			const res = await service.login(formData.email, formData.password);
 			if (res.status === 200) {
+				console.log(res);
+				// document.cookie = `token=your-token; path=/; Secure; HttpOnly; SameSite=None`;
+				// document.cookie = `token=${res.token}; path=/; Secure; HttpOnly; SameSite=None`;
 				// display the message
 				// wait for a bit (500ms)
-				window.location.href = "/";
+				// router.push("/");
 			} else {
-				setErrors({ form: `Invalid email or password` });
+				// setErrors({ form: `Invalid email or password` });
+				setErrors({ form: res.message });
 			}
 		} catch (err: Error | any) {
 			setErrors({ form: err });
 		} finally {
-			setLoading(false);
+			// setLoading(false);
 		}
 	};
 

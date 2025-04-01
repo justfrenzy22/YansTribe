@@ -2,7 +2,7 @@ import { IRegisterForm } from "@/types/IRegisterForm";
 import { step } from "@/types/stepType";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-import ProgressSteps from "./progress-steps";
+import ProgressSteps from "./progress-steps";	
 import AccountStep from "./account-step";
 import { IRegisterErrors } from "@/types/IRegisterErrors";
 import { Button } from "../ui/button";
