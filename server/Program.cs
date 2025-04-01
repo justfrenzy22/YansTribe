@@ -74,6 +74,13 @@ builder.Services.AddTransient<IUserRepo>(provider =>
 builder.Services.AddTransient<IDBRepo>(prov => new DBRepo(connString));
 builder.Services.AddTransient<IAuthService, AuthService>();
 
+builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll",
+        policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
+    );
+    });
+
 // JWT
 // credit to https://auth0.com/blog/how-to-validate-jwt-dotnet/; https://medium.com/@softsusanta/how-to-implement-jwt-token-authentication-in-asp-net-core-api-833385ad60cc
 
@@ -96,6 +103,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKeys = new List<SecurityKey> { new SymmetricSecurityKey(Encoding.UTF8.GetBytes(adminKey)), new SymmetricSecurityKey(Encoding.UTF8.GetBytes(userKey)) }
         };
     });
+
+
+
+
 
 // builder.Services.AddAuthentication(options =>
 // {
@@ -128,6 +139,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // builder.Services.AddTransient<HomeView>();
 // builder.Services.AddTransient<UserView>();
 
+
+builder.WebHost.UseUrls("http://10.123.105.3:5114", "http://localhost:5114");
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -137,8 +152,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
-
+app.UseCors("AllowAll");
 
 
 app.UseStaticFiles();
@@ -151,6 +165,12 @@ app.UseAuthorization();
 
 app.UseAuthentication();
 
+// CORS
+// app.UseCors(builder =>
+//     builder.WithOrigins("*")
+//         .AllowAnyHeader()
+//         .AllowAnyMethod()
+//         .AllowCredentials());
 
 
 // app.MapStaticAssets();

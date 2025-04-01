@@ -27,9 +27,9 @@ namespace server.views
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
-        public ActionResult login_success()
+        public ActionResult login_success(string token)
         {
-            var data = new { status = 200, message = "user logged in successfully!" };
+            var data = new { status = 200, message = "user logged in successfully!", token = token };
             return new ObjectResult(data) { StatusCode = 200 };
         }
 

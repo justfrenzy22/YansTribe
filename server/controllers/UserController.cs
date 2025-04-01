@@ -91,7 +91,7 @@ namespace server.controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] requests.UserLoginReq model)
+        public async Task<IActionResult> Login([FromBody] server.requests.UserLoginReq model)
         {
             if (!ModelState.IsValid)
             {
@@ -117,8 +117,7 @@ namespace server.controllers
                 Secure = true,
                 Expires = DateTime.Now.AddDays(1)
             });
-
-            return view.login_success();
+            return view.login_success(token);
         }
 
         // [HttpGet]
@@ -145,6 +144,6 @@ namespace server.controllers
         //         return view.error(e.Message.ToString());
         //     }
         // }
-    
+
     }
 }
