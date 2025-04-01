@@ -111,12 +111,13 @@ namespace server.controllers
 #pragma warning disable CS8604 // Possible null reference argument.
             string token = this.auth_service.GenerateJwtToken(user_id.ToString(), isAdmin: isAdmin);
 #pragma warning restore CS8604 // Possible null reference argument.
-
-            HttpContext.Response.Cookies.Append("token", token, new CookieOptions
-            {
-                Secure = true,
-                Expires = DateTime.Now.AddDays(1)
-            });
+            HttpContext.Response.Headers.Append("testaccess", token);
+            // HttpContent content = new StringContent(token);
+            // HttpContext.Response.Cookies.Append("token", token, new CookieOptions
+            // {
+            //     Secure = true,
+            //     Expires = DateTime.Now.AddDays(1)
+            // });
             return view.login_success(token);
         }
 

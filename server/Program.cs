@@ -76,9 +76,14 @@ builder.Services.AddTransient<IAuthService, AuthService>();
 
 builder.Services.AddCors(options =>
     {
-        options.AddPolicy("AllowAll",
-        policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
-    );
+        options.AddPolicy("allow_frontend",
+        policy => policy
+            .WithOrigins("http://192.168.0.101:3002")
+            .AllowCredentials()
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .WithExposedHeaders("testaccess")
+        );
     });
 
 // JWT
@@ -152,7 +157,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-app.UseCors("AllowAll");
+app.UseCors("allow_frontend");
 
 
 app.UseStaticFiles();
