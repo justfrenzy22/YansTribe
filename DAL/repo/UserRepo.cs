@@ -94,19 +94,22 @@ public class UserRepo : BaseUserRepo, IUserRepo
         //     )).ToList();
     }
 
-    // private Role ParseRole(string value)
-    // {
-    //     switch (value)
-    //     {
-    //         case "user":
-    //             return Role.User;
-    //         case "admin":
-    //             return Role.Admin;
-    //         case "superadmin":
-    //             return Role.SuperAdmin;
-    //         default:
-    //             return Role.User;
-    //     }
-    // }
+    public async Task<int?> ValidateUser(string email, string password)
+    {
+        var parameters = new Dictionary<string, object> {
+            { "@email", email },
+            { "@password_hash", password }
+        };
 
+        DataTable? res = await dBRepo.reader(userQuery.get_user_by_email_and_password(), parameters);
+
+        if (res.Rows.Count == 0)
+        {
+            return null;
+        }
+
+        var row = res.Rows[0];
+
+        return Convert.ToInt32(row["user_id"]);
+    }
 }

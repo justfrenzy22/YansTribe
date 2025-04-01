@@ -9,6 +9,7 @@ namespace dal.queries
         public string get_user_by_username() => "select * from [user] where username = @username";
 
         public string get_user_by_email() => "SELECT * FROM [user] WHERE email = @email";
+        public string get_user_by_email_and_password() => "SELECT * FROM [user] WHERE email = @email AND password_hash = @password_hash";
 
         public string get_last_insert_id() => "SELECT SCOPE_IDENTITY()";
 

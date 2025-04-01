@@ -17,6 +17,7 @@ namespace server.controllers
     public class AdminController : Controller
     {
         private string controller;
+        private bool isAdmin;
 
         private readonly IAdminService admin_service;
         private readonly IUserService user_service;
@@ -26,6 +27,7 @@ namespace server.controllers
         public AdminController(IAdminService admin_service, IUserService user_service, ILogger<AdminController> logger, services.IAuthService auth_service)
         {
             this.controller = "Admin";
+            this.isAdmin = true;
             this.admin_service = admin_service;
             this.user_service = user_service;
             this._logger = logger;
@@ -45,7 +47,7 @@ namespace server.controllers
                     return View("Login");
                 }
 
-                var verify = this.auth_service.VerifyTokenAsync(token);
+                var verify = this.auth_service.VerifyTokenAsync(token, isAdmin: isAdmin);
                 if (verify.check)
                 {
                     TempData["user_id"] = verify.user_id;
@@ -84,7 +86,9 @@ namespace server.controllers
             if (server_res.check)
             {
 
-                string token = this.auth_service.GenerateJwtToken(server_res.user_id.ToString() ?? throw new Exception("User ID is null."));
+#pragma warning disable CS8604 // Possible null reference argument.
+                string token = this.auth_service.GenerateJwtToken(server_res.user_id.ToString(), isAdmin: isAdmin);
+#pragma warning restore CS8604 // Possible null reference argument.
 
                 HttpContext.Response.Cookies.Append("token", token, new CookieOptions
                 {

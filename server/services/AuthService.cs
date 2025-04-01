@@ -12,8 +12,14 @@ namespace server.services
 
         public AuthService(IConfiguration config) => this._config = config;
 
-        public VerifyTokenRes VerifyTokenAsync(string token)
+        public VerifyTokenRes VerifyTokenAsync(string token, bool isAdmin)
         {
+
+            string key = "";
+            if (isAdmin)
+            {
+                key = this._config["Jwt:AdminKey"] ?? this._config["Jwt:UserKey"] ?? string.Empty;
+            }
 
             if (string.IsNullOrEmpty(token))
             {
@@ -23,7 +29,6 @@ namespace server.services
             var tokenHandler = new JwtSecurityTokenHandler();
             try
             {
-                var key = this._config["Jwt:Key"] ?? "";
                 var issuer = this._config["Jwt:Issuer"];
                 var audience = this._config["Jwt:Audience"];
 
@@ -53,16 +58,24 @@ namespace server.services
             }
             catch
             {
-                // Token validation failed
                 return new VerifyTokenRes { check = false };
             }
         }
 
 
-        public string GenerateJwtToken(string user_id)
+        public string GenerateJwtToken(string user_id, bool isAdmin)
         {
+            byte[] key;
+            if (isAdmin)
+            {
+                key = Encoding.UTF8.GetBytes(this._config["Jwt:AdminKey"] ?? throw new InvalidOperationException("Admin JWT Secret is not configured in appsettings."));
+            }
+            else
+            {
+                key = Encoding.UTF8.GetBytes(this._config["Jwt:UserKey"] ?? throw new InvalidOperationException("User JWT Secret is not configured in appsettings."));
+            }
+
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(this._config["Jwt:Key"] ?? throw new InvalidOperationException("JWT Secret is not configured in appsettings."));
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
