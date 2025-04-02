@@ -9,6 +9,9 @@ using server.controllers;
 using server.mapper;
 using dal.interfaces;
 using server.services;
+using server.responses;
+using core.enums;
+using Microsoft.AspNetCore.Authorization;
 
 namespace server.controllers
 {
@@ -22,6 +25,7 @@ namespace server.controllers
         // private UserManager userManager;
         private IUserService service;
         private IAuthService auth_service;
+        private UserMapper mapper;
 
         // public override IActionResult Index()
         // {
@@ -30,13 +34,14 @@ namespace server.controllers
 
         private readonly ILogger<UserController> _logger;
 
-        public UserController(ILogger<UserController> logger, IUserService service, IAuthService auth_service, UserView view)
+        public UserController(ILogger<UserController> logger, IUserService service, IAuthService auth_service, UserView view, UserMapper mapper)
         {
             this._logger = logger;
             this.isAdmin = false;
             this.service = service;
             this.auth_service = auth_service;
             this.view = view;
+            this.mapper = mapper;
             // this.userManager = userManager;
         }
 
@@ -84,67 +89,115 @@ namespace server.controllers
             return this.view.success();
         }
 
-        public IActionResult GetUserById()
-        {
-            // 
-            return View();
-        }
-
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] server.requests.UserLoginReq model)
+        [HttpGet("get_user/{user_id}")]
+        public async Task<IActionResult> GetUserById([FromRoute] requests.UserGetUserReq model)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return view.bad_credentials();
             }
 
-            var reqMapper = new UserLoginReqMapper();
-            dal.requests.UserLoginReq req = reqMapper.MapTo(model);
+            dal.requests.UserGetUserReq req = this.mapper.mapGetUserReq(model);
+            var res = await this.service.GetUserById(req);
+            UserGetUserRes server_res = this.mapper.mapGetUserRes(res);
 
-            int? user_id = await this.service.ValidateUser(req.email, req.password);
+            if (server_res.exception != null)
+            {
+                return view.error(server_res.exception);
+            }
 
-            if (user_id == null)
+            if (server_res.user == null)
+            {
+                return view.not_found();
+            }
+            else
+            {
+                return view.get_user(server_res.user);
+            }
+        }
+
+
+        [HttpGet("role/{user_id}")]
+        // [Authorize] ask my teacher
+        public async Task<IActionResult> GetRoleById([FromRoute] requests.UserGetRoleReq model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return view.bad_credentials();
+            }
+
+            dal.requests.UserGetRoleReq req = this.mapper.mapGetRoleReq(model);
+            var res = await this.service.GetRoleById(req);
+            UserGetRoleRes server_res = this.mapper.mapGetRoleRes(res);
+
+            if (server_res.exception != null)
+            {
+                return view.error(server_res.exception);
+            }
+
+            if (Enum.IsDefined(typeof(Role), server_res.role) == false)
+            {
+                return view.not_found();
+            }
+            else
+            {
+                return view.get_role(server_res.role);
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] requests.UserLoginReq model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return view.bad_credentials();
+            }
+
+            dal.requests.UserLoginReq req = this.mapper.mapLoginReq(model);
+            var res = await this.service.ValidateUser(req);
+            UserLoginRes server_res = this.mapper.mapLoginRes(res);
+
+            if (server_res.exception != null)
+            {
+                return view.error(server_res.exception);
+            }
+
+            if (!server_res.check)
             {
                 return view.not_found();
             }
 
-#pragma warning disable CS8604 // Possible null reference argument.
-            string token = this.auth_service.GenerateJwtToken(user_id.ToString(), isAdmin: isAdmin);
-#pragma warning restore CS8604 // Possible null reference argument.
+            string token = this.auth_service.GenerateJwtToken(server_res.user_id.ToString() ?? "", isAdmin: isAdmin);
             HttpContext.Response.Headers.Append("testaccess", token);
-            // HttpContent content = new StringContent(token);
-            // HttpContext.Response.Cookies.Append("token", token, new CookieOptions
-            // {
-            //     Secure = true,
-            //     Expires = DateTime.Now.AddDays(1)
-            // });
             return view.login_success(token);
         }
 
-        // [HttpGet]
-        // [Route("get")]
-        // public IActionResult Get_user_by_id()
-        // {
-        //     try
-        //     {
-        //         User? check = this.userManager.get_user_by_id(1);
+        public async Task<IActionResult> Register([FromBody] requests.UserRegisterReq model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return view.bad_credentials();
+            }
 
-        //         if (check == null)
-        //         {
-        //             return view.not_found();
-        //         }
-        //         else
-        //         {
-        //             // User user = check;
-        //             return view.get_user(check);
-        //         }
+            dal.requests.UserRegisterReq req = this.mapper.mapRegisterReq(model);
+            var res = await this.service.AddUser(req);
+            UserRegisterRes server_res = this.mapper.mapRegisterRes(res);
 
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         return view.error(e.Message.ToString());
-        //     }
-        // }
+            if (server_res.exception != null)
+            {
+                return view.error(server_res.exception);
+            }
 
+            if (server_res.user_id != 0)
+            {
+                return view.register_success();
+            }
+            else
+            {
+                return view.not_found();
+            }
+        }
+
+        // public 
     }
 }

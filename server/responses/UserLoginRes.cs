@@ -3,9 +3,8 @@ using core.responses;
 
 namespace server.responses
 {
-    public class AdminLoginRes : BaseRes
+    public class UserLoginRes : BaseRes
     {
-
         // [Display(Name = "check")]
         // [Required]
         // public required bool check { get; set; } // 'required' is kept

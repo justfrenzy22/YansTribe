@@ -23,8 +23,15 @@ namespace server.controllers
         private readonly IUserService user_service;
         private readonly ILogger<AdminController> _logger;
         private readonly services.IAuthService auth_service;
+        private AdminMapper mapper;
 
-        public AdminController(IAdminService admin_service, IUserService user_service, ILogger<AdminController> logger, services.IAuthService auth_service)
+        public AdminController (
+            IAdminService admin_service,
+            IUserService user_service,
+            ILogger<AdminController> logger,
+            services.IAuthService auth_service,
+            AdminMapper mapper
+        )
         {
             this.controller = "Admin";
             this.isAdmin = true;
@@ -32,6 +39,7 @@ namespace server.controllers
             this.user_service = user_service;
             this._logger = logger;
             this.auth_service = auth_service;
+            this.mapper = mapper;
         }
 
         [HttpGet("/")]
@@ -74,21 +82,18 @@ namespace server.controllers
                 return BadRequest(ModelState);
             }
 
-            var resMapper = new AdminLoginResMapper();
-            var reqMapper = new AdminLoginReqMapper();
-            dal.requests.AdminLoginReq req = reqMapper.MapTo(model);
+            dal.requests.AdminLoginReq req = this.mapper.mapLoginReq(model);
+
             var res = await this.admin_service.ValidateLogin(req);
 
-            AdminLoginRes server_res = resMapper.MapTo(res);
+            AdminLoginRes server_res = this.mapper.mapLoginRes(res);
 
             this._logger.LogInformation(res.ToString());
 
             if (server_res.check)
             {
 
-#pragma warning disable CS8604 // Possible null reference argument.
-                string token = this.auth_service.GenerateJwtToken(server_res.user_id.ToString(), isAdmin: isAdmin);
-#pragma warning restore CS8604 // Possible null reference argument.
+                string token = this.auth_service.GenerateJwtToken(server_res.user_id.ToString() ?? "", isAdmin: isAdmin);
 
                 HttpContext.Response.Cookies.Append("token", token, new CookieOptions
                 {

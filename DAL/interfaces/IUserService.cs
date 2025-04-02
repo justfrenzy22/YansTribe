@@ -1,15 +1,15 @@
-using core.entities;
-using core.enums;
+using dal.requests;
+using dal.responses;
 
 namespace dal.interfaces
 {
     public interface IUserService
     {
-        Task<int> AddUser(User user);
-        Task<Role?> GetRoleById(int user_id);
+        Task<UserRegisterRes> AddUser(UserRegisterReq model);
+        Task<UserGetRoleRes> GetRoleById(UserGetRoleReq model);
         // Task<User> GetByEmail(string email);
-        Task<User?> GetUserById(int user_id);
+        Task<UserGetUserRes> GetUserById(UserGetUserReq model);
 
-        Task<int?> ValidateUser(string email, string password);
+        Task<UserLoginRes> ValidateUser(UserLoginReq model);
     }
 }

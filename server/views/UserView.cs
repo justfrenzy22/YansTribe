@@ -21,7 +21,7 @@ namespace server.views
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
-        public ActionResult create_success()
+        public ActionResult register_success()
         {
             var data = new { status = 200, message = "user registered successfully!" };
             return new ObjectResult(data) { StatusCode = 200 };
@@ -45,10 +45,34 @@ namespace server.views
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
+        public ActionResult get_users(List<User> users)
+        {
+            var data = new { status = 200, message = "users retrieved successfully!", users = users };
+            return new ObjectResult(data) { StatusCode = 200 };
+        }
+
         public ActionResult not_found()
         {
             var data = new { status = 404, message = "user not found" };
             return new ObjectResult(data) { StatusCode = 404 };
+        }
+
+        public ActionResult prob(string msg)
+        {
+            var data = new { status = 500, message = msg };
+            return new ObjectResult(data) { StatusCode = 500 };
+        }
+
+        public ActionResult bad_credentials()
+        {
+            var data = new { status = 401, message = "bad credentials" };
+            return new ObjectResult(data) { StatusCode = 401 };
+        }
+
+        public ActionResult get_role(core.enums.Role role)
+        {
+            var data = new { status = 200, message = "role retrieved successfully!", role = role };
+            return new ObjectResult(data) { StatusCode = 200 };
         }
 
         public ActionResult error(string msg)

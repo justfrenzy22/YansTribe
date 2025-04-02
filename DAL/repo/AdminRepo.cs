@@ -100,11 +100,9 @@ namespace dal.repo
 
                 var row = res.Rows[0];
 
-                int user_id = Convert.ToInt32(row["user_id"]);
+                // int user_id = Convert.ToInt32(row["user_id"]);
 
-                // !TODO Add JWT Token integration
-
-                return new AdminLoginRes { check = true, user_id = user_id };
+                return new AdminLoginRes { check = true, user_id = Convert.ToInt32(row["user_id"]) };
             }
 
             catch (SqlException)
