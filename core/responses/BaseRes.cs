@@ -7,8 +7,21 @@ namespace core.responses
         [Display(Name = "exception")]
         public string? exception { get; set; }
 
-        [Required]
+        // [Required]
         [Display(Name = "check")]
-        public required bool check { get; set; }
+        public bool check { get; set; }
+
+
+        public BaseRes()
+        {
+            check = false;
+        }
+
+        // when run into an exception
+        public BaseRes(bool check, string? exception = null)
+        {
+            this.check = check;
+            this.exception = exception;
+        }
     }
 }

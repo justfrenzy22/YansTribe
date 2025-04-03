@@ -1,6 +1,6 @@
 using System.Data;
 
-namespace dal.interfaces
+namespace dal.interfaces.db
 {
     public interface IDBRepo
     {

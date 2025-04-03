@@ -24,11 +24,22 @@ namespace server.mapper
             };
         }
 
+        public dal.requests.UserGetRoleReq mapGetRoleReq(int user_id) => new dal.requests.UserGetRoleReq { user_id = user_id };
         // Override MapTo for generic mapping (if needed)
         // public override object MapTo(object from)
         // {
         //     // Implement logic for generic mapping if required
         //     throw new NotImplementedException("Generic mapping is not implemented.");
         // }
+
+        public server.responses.AdminGetUsersRes mapGetUsersRes(dal.responses.AdminGetUsersRes from)
+        {
+            return new server.responses.AdminGetUsersRes
+            {
+                check = from.check,
+                users = from.users,
+                exception = from.exception
+            };
+        }
     }
 }

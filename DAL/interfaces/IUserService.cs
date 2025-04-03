@@ -1,7 +1,7 @@
 using dal.requests;
 using dal.responses;
 
-namespace dal.interfaces
+namespace dal.interfaces.service
 {
     public interface IUserService
     {

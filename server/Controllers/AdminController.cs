@@ -9,6 +9,9 @@ using core.enums;
 using core.mapper;
 using server.mapper;
 using System.Net;
+// using dal.responses;
+using dal.interfaces.service;
+using server.services;
 
 namespace server.controllers
 {
@@ -22,14 +25,16 @@ namespace server.controllers
         private readonly IAdminService admin_service;
         private readonly IUserService user_service;
         private readonly ILogger<AdminController> _logger;
-        private readonly services.IAuthService auth_service;
+        private readonly IAuthService auth_service;
+        private readonly IHashService hash_service;
         private AdminMapper mapper;
 
-        public AdminController (
+        public AdminController(
             IAdminService admin_service,
             IUserService user_service,
             ILogger<AdminController> logger,
-            services.IAuthService auth_service,
+            IAuthService auth_service,
+            IHashService hash_service,
             AdminMapper mapper
         )
         {
@@ -39,6 +44,7 @@ namespace server.controllers
             this.user_service = user_service;
             this._logger = logger;
             this.auth_service = auth_service;
+            this.hash_service = hash_service;
             this.mapper = mapper;
         }
 
@@ -82,6 +88,8 @@ namespace server.controllers
                 return BadRequest(ModelState);
             }
 
+
+
             dal.requests.AdminLoginReq req = this.mapper.mapLoginReq(model);
 
             var res = await this.admin_service.ValidateLogin(req);
@@ -120,20 +128,28 @@ namespace server.controllers
                     return View("Login");
                 }
                 int user_id = Convert.ToInt32(TempData["user_id"]);
-                List<User>? users = await this.GetUsers(admin_id: user_id);
-                return View("Home", users);
+                var mapped_id = this.mapper.mapGetRoleReq(user_id);
+
+                var res = await this.GetUsers(admin_id: mapped_id);
+
+                AdminGetUsersRes server_res = this.mapper.mapGetUsersRes(res);
+
+                if (server_res.exception != null)
+                {
+                    return BadRequest(server_res.exception);
+                }
+
+                return View("Home", server_res.users);
             }
             catch (Exception e)
             {
+                // return BadRequest(e.Message);
                 return BadRequest(e.Message);
             }
         }
 
 
-        private async Task<List<User>?> GetUsers(int admin_id)
-        {
-            return await this.admin_service.GetUsersAsync(admin_id);
-        }
-
+        private async Task<dal.responses.AdminGetUsersRes> GetUsers(dal.requests.UserGetRoleReq admin_id) =>
+            await this.admin_service.GetUsersAsync(admin_id);
     }
 }

@@ -1,5 +1,6 @@
 using core.enums;
 using dal.interfaces;
+using dal.interfaces.db;
 
 public abstract class BaseUserRepo
 {

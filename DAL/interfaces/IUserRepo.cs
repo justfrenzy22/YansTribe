@@ -2,7 +2,7 @@ using core.entities;
 using core.enums;
 using dal.requests;
 
-namespace dal.interfaces
+namespace dal.interfaces.repo
 {
     public interface IUserRepo
     {

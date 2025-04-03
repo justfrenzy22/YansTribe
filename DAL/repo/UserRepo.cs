@@ -3,6 +3,8 @@ using core.entities;
 using core.enums;
 using dal.exceptions;
 using dal.interfaces;
+using dal.interfaces.db;
+using dal.interfaces.repo;
 using dal.queries;
 using dal.requests;
 using dal.responses;
