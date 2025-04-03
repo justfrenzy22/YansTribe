@@ -126,18 +126,25 @@ public class UserRepo : BaseUserRepo, IUserRepo
         }
     }
 
-    public async Task<User?> GetUserById(UserGetUserReq user_id)
+    public async Task<User?> GetUserById(UserGetUserReq model)
     {
         try
         {
-            if (user_id == null)
+            if (model.user_id == null)
             {
                 throw new EmptyRequestDataException("User id is required.");
             }
 
+            if (!int.TryParse(model.user_id, out int int_user_id) == true)
+            {
+                // throw new InvalidRequestDataTypeException("User id must be of type int.");
+                throw new DataAccessException("User id must be of type int.");
+            }
+
+
             var parameters = new Dictionary<string, object> {
-            { "@user_id", user_id }
-        };
+                { "@user_id", Convert.ToInt32(model.user_id) }
+            };
 
             DataTable? res = await dBRepo.reader(userQuery.get_user_by_id(), parameters);
 

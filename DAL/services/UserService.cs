@@ -27,6 +27,10 @@ namespace dal.services.user
         public async Task<UserGetUserRes> GetUserById(UserGetUserReq model) =>
             await this.executeSecure(async () =>
             {
+                if (model is UserGetUserReq { user_id: string strModel }) {
+                    Convert.ToInt32(strModel);
+                }
+
                 User? user = await this.repo.GetUserById(model);
 
                 return new UserGetUserRes { check = true, user = user };

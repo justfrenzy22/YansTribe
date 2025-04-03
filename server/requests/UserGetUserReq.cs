@@ -6,6 +6,6 @@ namespace server.requests
     {
         [Required]
         [Display(Name = "user_id")]
-        public required int user_id { get; set; }
+        public required string user_id { get; set; }
     }
 }

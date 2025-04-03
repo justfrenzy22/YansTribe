@@ -95,7 +95,7 @@ namespace dal.repo
             }
         }
 
-        private void AddParameters(SqlCommand command, Dictionary<string, object>? parameters)
+        private void AddParameters(SqlCommand cmd, Dictionary<string, object>? parameters)
         {
             try
             {
@@ -103,14 +103,35 @@ namespace dal.repo
                 {
                     foreach (var param in parameters)
                     {
-                        if (param.Value == null)
+                        SqlParameter sql_param = new SqlParameter(param.Key, param.Value ?? DBNull.Value);
+
+                        if (param.Value is int)
                         {
-                            command.Parameters.Add(param.Key, SqlDbType.VarChar).Value = DBNull.Value;
+                            sql_param.SqlDbType = SqlDbType.Int;
+                        }
+                        else if (param.Value is string)
+                        {
+                            sql_param.SqlDbType = SqlDbType.VarChar;
+                        }
+                        else if (param.Value is bool)
+                        {
+                            sql_param.SqlDbType = SqlDbType.Bit;
+                        }
+                        else if (param.Value is DateTime)
+                        {
+                            sql_param.SqlDbType = SqlDbType.DateTime;
+                        }
+                        else if (param.Value is double)
+                        {
+                            sql_param.SqlDbType = SqlDbType.Float;
                         }
                         else
                         {
-                            command.Parameters.Add(param.Key, SqlDbType.VarChar).Value = param.Value.ToString();
+                            sql_param.SqlDbType = SqlDbType.VarChar;
                         }
+
+                        cmd.Parameters.Add(sql_param);
+
                     }
                 }
             }
