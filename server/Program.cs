@@ -96,21 +96,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // VPN configuration
-// var vpn = new desktop_app.config.VPN();
-// var status = await Task.Run(() => vpn.get());
+var vpn = new desktop_app.config.VPN();
+var status = await Task.Run(() => vpn.get());
 
-// if (status == desktop_app.config.status.Disconnected)
-// {
+if (status == desktop_app.config.status.Disconnected)
+{
     builder.WebHost.UseUrls("http://localhost:5114");
-// }
-// else if (status == desktop_app.config.status.Connected)
-// {
-//     builder.WebHost.UseUrls("http://10.123.105.3:5114", "http://localhost:5114");
-// }
-// else
-// {
-//     throw new Exception("There was a problem checking the VPN status. Check the VPN config class.");
-// }
+}
+else if (status == desktop_app.config.status.Connected)
+{
+    builder.WebHost.UseUrls("http://10.123.105.3:5114", "http://localhost:5114");
+}
+else
+{
+    throw new Exception("There was a problem checking the VPN status. Check the VPN config class.");
+}
 
 // Build application
 var app = builder.Build();
