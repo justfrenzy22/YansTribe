@@ -22,7 +22,7 @@ export default function WaitLayout({
 		if (data) {
 			setTimeout(() => {
 				setIsLoaded(true);
-			}, 5000);
+			}, 200);
 		}
 	}, [data]);
 

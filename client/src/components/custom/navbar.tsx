@@ -21,7 +21,7 @@ import BottomNav from "./bottom-nav";
 import { Drawer, DrawerTrigger, DrawerContent } from "../ui/drawer";
 import MobileNav from "./mobile-nav";
 
-export const Navbar = () => {
+export const Navbar = (): React.ReactElement => {
 	const [searchOpen, isSearchOpen] = useState<boolean>(false);
 	const isMobile = useDevice();
 

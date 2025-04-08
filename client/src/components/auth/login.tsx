@@ -1,19 +1,22 @@
+import { useRouter } from "next/navigation";
 import { ILoginForm } from "@/types/ILoginForm";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Label } from "../ui/label";
-import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Loader2, Lock, Mail, Router } from "lucide-react";
 import { Input } from "../ui/input";
 import Link from "next/link";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
 import Error from "next/error";
 import { ILoginErrors } from "@/types/ILoginErrors";
-import { useRouter } from "next/router";
 import { ApiService } from "@/api/auth/apiService";
+import { toast } from "sonner";
+import { Toaster } from "../ui/sonner";
 
 const Login = ({ isLogin }: { isLogin: boolean }) => {
 	const service = new ApiService();
+	const router = useRouter();
 	const [isLoading, setLoading] = useState<boolean>(false);
 	const [formData, setFormData] = useState<ILoginForm>({
 		email: "",
@@ -65,21 +68,30 @@ const Login = ({ isLogin }: { isLogin: boolean }) => {
 
 		try {
 			const res = await service.login(formData.email, formData.password);
-			if (res.status === 200) {
-				console.log(res);
-				// document.cookie = `token=your-token; path=/; Secure; HttpOnly; SameSite=None`;
-				// document.cookie = `token=${res.token}; path=/; Secure; HttpOnly; SameSite=None`;
-				// display the message
-				// wait for a bit (500ms)
-				// router.push("/");
-			} else {
-				// setErrors({ form: `Invalid email or password` });
-				setErrors({ form: res.message });
-			}
+			// if (res.status === 200) {
+			console.log(res);
+			toast(res.message, {
+				description: res.message,
+				action: {
+					label: "Ok",
+					onClick: () => router.push("/"),
+				},
+			});
+
+			// router.push("/");
+			// document.cookie = `token=your-token; path=/; Secure; HttpOnly; SameSite=None`;
+			// document.cookie = `token=${res.token}; path=/; Secure; HttpOnly; SameSite=None`;
+			// display the message
+			// wait for a bit (500ms)
+			// router.push("/");
+			// } else {
+			// setErrors({ form: `Invalid email or password` });
+			// setErrors({ form: res.message });
+			// }
 		} catch (err: Error | any) {
 			setErrors({ form: err });
 		} finally {
-			// setLoading(false);
+			setLoading(false);
 		}
 	};
 
@@ -228,6 +240,7 @@ const Login = ({ isLogin }: { isLogin: boolean }) => {
 			>
 				Red
 			</Button> */}
+			<Toaster position="top-right" />
 		</form>
 	);
 };
