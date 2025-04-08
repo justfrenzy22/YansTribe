@@ -1,3 +1,4 @@
+using core.entities;
 using dal.requests;
 using dal.responses;
 
@@ -5,11 +6,9 @@ namespace dal.interfaces.service
 {
     public interface IUserService
     {
-        Task<UserRegisterRes> AddUser(UserRegisterReq model);
-        Task<UserGetRoleRes> GetRoleById(UserGetRoleReq model);
-        // Task<User> GetByEmail(string email);
-        Task<UserGetUserRes> GetUserById(UserGetUserReq model);
+        Task<UserRegisterRes> RegisterUser(core.entities.User user);
+        Task<User?> GetUserById(int user_id);
 
-        Task<UserLoginRes> ValidateUser(UserLoginReq model);
+        Task<int> ValidateUser(string email, string password);
     }
 }

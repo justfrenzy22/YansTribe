@@ -12,9 +12,9 @@ namespace dal.services
             {
                 return await action();
             }
-            catch (Exception ex) when (ex is EmptyRequestDataException or DuplicateWaitObjectException or NotFoundException or DatabaseOperationException or DataAccessException)
+            catch (BaseException ex) when (ex is EmptyRequestDataException or DuplicateUserException or NotFoundException or DatabaseOperationException or DataAccessException)
             {
-                return new T { check = false, exception = ex.Message };
+                return new T { check = false, exception = ex.Message, status = ex.status };
             }
         }
     }

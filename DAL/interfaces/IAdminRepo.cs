@@ -5,8 +5,7 @@ namespace dal.interfaces.repo
 {
     public interface IAdminRepo
     {
-        Task<List<User>> GetAllUsersAsync();
-        Task<List<User>> GetStandardUsersAsync();
+        Task<List<User>?> GetAllUsersAsync(int admin_id);
         Task<int> ValidateLogin(AdminLoginReq loginModel);
     }
 }

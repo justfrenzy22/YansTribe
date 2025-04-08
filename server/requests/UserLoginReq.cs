@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace server.requests
+namespace server.dto
 {
-    public class UserLoginReq
+    public class UserLoginDTO
     {
         [Required]
         [Display(Name = "email")]

@@ -16,40 +16,24 @@ namespace dal.services.user
 
         public UserService(IUserRepo repo) => this.repo = repo;
 
-        public async Task<UserRegisterRes> AddUser(UserRegisterReq user) =>
-            await this.executeSecure(async () =>
-            {
-                int user_id = await this.repo.AddUser(user);
+        public async Task<int> AddUser(User user) => await this.repo.RegisterUser(user);
 
-                return new UserRegisterRes { check = true, user_id = user_id };
-            });
 
-        public async Task<UserGetUserRes> GetUserById(UserGetUserReq model) =>
-            await this.executeSecure(async () =>
-            {
-                if (model is UserGetUserReq { user_id: string strModel }) {
-                    Convert.ToInt32(strModel);
-                }
+        public async Task<User?> GetUserById(int user_id) => await this.repo.GetUserById(user_id);
+            // await this.executeSecure(async () =>
+            //     if (model is UserGetUserReq { user_id: string strModel })
+            //     {
+            //         Convert.ToInt32(strModel);
+            //     }
 
-                User? user = await this.repo.GetUserById(model);
+            //     User? user = await this.repo.GetUserById(model);
 
-                return new UserGetUserRes { check = true, user = user };
-            });
+            //     return new UserGetUserRes { check = true, user = user };
+            // });
 
-        public async Task<UserGetRoleRes> GetRoleById(UserGetRoleReq model) =>
-            await this.executeSecure(async () =>
-            {
-                Role? role = await this.repo.GetRoleById(model);
+        public async Task<int> ValidateUser(string email, string password) => await this.repo.ValidateUser(email, password);
 
-                return new UserGetRoleRes { check = true, role = (Role)role };
-            });
-
-        public async Task<UserLoginRes> ValidateUser(UserLoginReq model) =>
-            await this.executeSecure(async () =>
-            {
-                int user_id = await this.repo.ValidateUser(model);
-
-                return new UserLoginRes { check = true, user_id = user_id };
-            });
+        // return new UserLoginRes { check = true, user_id = user_id };
+        // });
     }
 }
