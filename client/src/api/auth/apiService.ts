@@ -51,15 +51,15 @@ export class ApiService {
 					return null as T;
 				}
 				// console.log(`ApiService headers`, response.headers.all());
-				if (
-					response.headers.get("testaccess") === undefined ||
-					response.headers.get("testaccess") === null
-				) {
-					alert(`asdasdads`);
-					throw new Error("Access token not found in response headers.");
-				} else {
-					alert(`asdasjdnjasndjkasndkjanskdjajkdnsajkja`);
-				}
+				// if (
+				// 	response.headers.get("testaccess") === undefined ||
+				// 	response.headers.get("testaccess") === null
+				// ) {
+				// 	alert(`asdasdads`);
+				// 	throw new Error("Access token not found in response headers.");
+				// } else {
+				// 	alert(`asdasjdnjasndjkasndkjanskdjajkdnsajkja`);
+				// }
 				// } else {
 				const accessToken = response.headers.get("testaccess");
 				Cookie.set("testaccessa", accessToken as string, {
@@ -75,7 +75,11 @@ export class ApiService {
 						`Failed to parse JSON response from ${url}:`,
 						jsonError
 					);
-					throw new Error(`Invalid JSON received from server for ${url}.`);
+					return JSON.stringify({
+						status: 500,
+						message: `Invalid JSON received from server for ${url}.`,
+					}) as T;
+					// throw new Error(`Invalid JSON received from server for ${url}.`);
 				}
 			} else {
 				let errorMessage = `Request failed with status ${response.status}`;
@@ -100,10 +104,11 @@ export class ApiService {
 					}
 				}
 
-				const err = new Error(errorMessage);
-				(err as any).status = response.status;
-				(err as any).data = errorData;
-				throw err;
+				// const err = new Error(errorMessage);
+				// (err as any).status = response.status;
+				// (err as any).data = errorData;
+				// throw err;
+				return response as unknown as T;
 			}
 		} catch (networkError: any) {
 			console.error(`Network error during fetch to ${url}:`, networkError);

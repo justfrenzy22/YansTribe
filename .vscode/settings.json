@@ -6,5 +6,6 @@
         "superadmin",
         "Yans",
         "yanstribe"
-    ]
+    ],
+    "liveServer.settings.port": 5501
 }

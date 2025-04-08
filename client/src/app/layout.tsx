@@ -16,7 +16,7 @@ export default function RootLayout({
 	return (
 		<html lang="en" data-theme="default" suppressHydrationWarning>
 			<head />
-			<body className={`selection:bg-blue-400 bg-[var(--app-background)] `}>
+			<body className={`selection:bg-blue-400 bg-background `}>
 				<ThemeProvider defaultTheme="dark">{children}</ThemeProvider>
 			</body>
 		</html>
