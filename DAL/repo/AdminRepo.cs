@@ -1,7 +1,5 @@
 using System.Data;
 using core.entities;
-using core.enums;
-using dal.requests;
 using dal.queries;
 using Microsoft.Data.SqlClient;
 using dal.exceptions;
@@ -24,9 +22,8 @@ namespace dal.repo
             this.userQuery = userQuery;
         }
 
-        public async Task<List<User>> GetAllUsersAsync(int admin_id)
+        public async Task<List<User>?> GetAllUsersAsync(int admin_id)
         {
-
             try
             {
                 DataTable? res = await this.dbRepo.reader(
@@ -40,7 +37,7 @@ namespace dal.repo
                     user_id: Convert.ToInt32(row["user_id"]),
                     username: row["username"]?.ToString() ?? string.Empty,
                     email: row["email"]?.ToString() ?? string.Empty,
-                    password_hash: row["password_hash"]?.ToString() ?? string.Empty,
+                    password: row["password_hash"]?.ToString() ?? string.Empty,
                     full_name: row["full_name"]?.ToString() ?? string.Empty,
                     bio: row["bio"]?.ToString() ?? string.Empty,
                     pfp_src: row["pfp_src"]?.ToString() ?? string.Empty,
@@ -48,7 +45,7 @@ namespace dal.repo
                     website: row["website"]?.ToString() ?? string.Empty,
                     is_private: Convert.ToBoolean(row["is_private"]),
                     created_at: Convert.ToDateTime(row["created_at"]),
-                    role: ParseRole<Role>(row["role"].ToString() ?? "")
+                    role: ParseRole(row["role"].ToString() ?? string.Empty)
                 )).ToList();
             }
             catch (SqlException sqlEx)
@@ -99,41 +96,36 @@ namespace dal.repo
         // }
 
 
-        public async Task<int> ValidateLogin(AdminLoginReq model)
-        {
+        // public async Task<int> ValidateLogin(AdminLoginReq model)
+        // {
 
-            // Dictionary<string, object> parameters = new Dictionary<string, object> {
-            //     {"@email", model.email},
-            //     {"@password_hash", model.password}
-            // };
+        //     try
+        //     {
+        //         DataTable? res = await dbRepo.reader(
+        //             adminQuery.get_admin_login(),
+        //             new Dictionary<string, object> {
+        //                 {"@email", model.email},
+        //                 {"@password_hash", model.password}
+        //             }
+        //         );
 
-            try
-            {
-                DataTable? res = await dbRepo.reader(
-                    adminQuery.get_admin_login(),
-                    new Dictionary<string, object> {
-                        {"@email", model.email},
-                        {"@password_hash", model.password}
-                    }
-                );
+        //         if (res.Rows.Count == 0)
+        //         {
+        //             throw new NotFoundException("Admin with this email was not found.");
+        //         }
+        //         var row = res.Rows[0];
+        //         return Convert.ToInt32(res.Rows[0]["user_id"]);
+        //     }
+        //     catch (SqlException sqlEx)
+        //     {
+        //         throw new DatabaseOperationException($"Database error during admin validation: {sqlEx.Message}", sqlEx);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         throw new DataAccessException($"Database error during admin validation: {ex.Message}", ex);
+        //     }
 
-                if (res.Rows.Count == 0)
-                {
-                    throw new NotFoundException("Admin with this email was not found.");
-                }
-                var row = res.Rows[0];
-                return Convert.ToInt32(res.Rows[0]["user_id"]);
-            }
-            catch (SqlException sqlEx)
-            {
-                throw new DatabaseOperationException($"Database error during admin validation: {sqlEx.Message}", sqlEx);
-            }
-            catch (Exception ex)
-            {
-                throw new DataAccessException($"Database error during admin validation: {ex.Message}", ex);
-            }
-
-        }
+        // }
 
 
 

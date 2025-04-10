@@ -6,8 +6,6 @@ using dal.interfaces;
 using dal.interfaces.db;
 using dal.interfaces.repo;
 using dal.queries;
-using dal.requests;
-using dal.responses;
 using Microsoft.Data.SqlClient;
 
 public class UserRepo : BaseUserRepo, IUserRepo
@@ -31,18 +29,31 @@ public class UserRepo : BaseUserRepo, IUserRepo
                 throw new EmptyRequestDataException("User is required.");
             }
 
-            var parameters = new Dictionary<string, object> {
+            //     var parameters = new Dictionary<string, object> {
+            //     { "@username", user.username },
+            //     { "@email", user.email },
+            //     { "@password_hash", user.password },
+            //     { "@full_name", user.full_name },
+            //     { "@bio", user.bio },
+            //     { "@location", user.location },
+            //     { "@website", user.website },
+            //     { "@role", user.role.ToString() },
+            //     { "@is_private", user.is_private },
+            //     { "@created_at", user.created_at.ToString() },
+            // };
+
+            object? result = await dBRepo.scalar(userQuery.add_user(), new Dictionary<string, object> {
             { "@username", user.username },
             { "@email", user.email },
-            { "@password_hash", user.password_hash },
+            { "@password_hash", user.password },
             { "@full_name", user.full_name },
             { "@bio", user.bio },
-            { "@pfp_src", user.pfp_src },
             { "@location", user.location },
-            { "@website", user.website }
-        };
-
-            object? result = await dBRepo.scalar(userQuery.add_user(), parameters);
+            { "@website", user.website },
+            { "@role", user.role.ToString() },
+            { "@is_private", user.is_private },
+            { "@created_at", user.created_at.ToString() },
+        });
 
             if (result != null && result != DBNull.Value)
             {
@@ -92,50 +103,17 @@ public class UserRepo : BaseUserRepo, IUserRepo
         }
     }
 
-    // public async Task<Role?> GetRoleById(UserGetRoleReq user_id)
-    // {
-    //     try
-    //     {
-    //         if (user_id == null)
-    //         {
-    //             throw new EmptyRequestDataException("User id is required.");
-    //         }
-
-    //         var parameters = new Dictionary<string, object> {
-    //             { "@user_id", user_id }
-    //         };
-
-    //         DataTable? res = await dBRepo.reader(userQuery.get_role_by_id(), parameters);
-
-    //         if (res.Rows.Count == 0)
-    //         {
-    //             throw new NotFoundException("User with this id was not found.");
-    //         }
-
-    //         var row = res.Rows[0];
-
-    //         return ParseRole<Role>(row["role"].ToString() ?? "");
-    //     }
-    //     catch (Exception ex) when (ex.InnerException is SqlException sqlEx)
-    //     {
-    //         throw new DatabaseOperationException($"Database error during role retrieval: {sqlEx.Message}", sqlEx);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         throw new DataAccessException($"An unexpected error occurred during role retrieval: {ex.Message}", ex);
-    //     }
-    // }
-
-
     public async Task<User?> GetUserById(int user_id)
     {
         try
         {
-            var parameters = new Dictionary<string, object> {
-                { "@user_id", Convert.ToInt32(user_id) }
-            };
+            // var parameters = new Dictionary<string, object> {
+            //     { "@user_id", Convert.ToInt32(user_id) }
+            // };
 
-            DataTable? res = await dBRepo.reader(userQuery.get_user_by_id(), parameters);
+            DataTable? res = await dBRepo.reader(userQuery.get_user_by_id(), new Dictionary<string, object> {
+                { "@user_id", Convert.ToInt32(user_id) }
+            });
 
             if (res.Rows.Count == 0)
             {
@@ -148,7 +126,7 @@ public class UserRepo : BaseUserRepo, IUserRepo
                 user_id: Convert.ToInt32(row["user_id"]),
                 username: row["username"]?.ToString() ?? string.Empty,
                 email: row["email"]?.ToString() ?? string.Empty,
-                password_hash: row["password_hash"]?.ToString() ?? string.Empty,
+                password: row["password_hash"]?.ToString() ?? string.Empty,
                 full_name: row["full_name"]?.ToString() ?? string.Empty,
                 bio: row["bio"]?.ToString() ?? string.Empty,
                 pfp_src: row["pfp_src"]?.ToString() ?? string.Empty,
@@ -156,7 +134,7 @@ public class UserRepo : BaseUserRepo, IUserRepo
                 website: row["website"]?.ToString() ?? string.Empty,
                 is_private: Convert.ToBoolean(row["is_private"]),
                 created_at: Convert.ToDateTime(row["created_at"]),
-                role: ParseRole<Role>(row["role"].ToString() ?? "")
+                role: ParseRole(row["role"].ToString() ?? "")
             );
 
         }
@@ -171,35 +149,125 @@ public class UserRepo : BaseUserRepo, IUserRepo
         }
     }
 
-    public async Task<int> ValidateUser(string email, string password)
+    public async Task<User?> GetUserByEmail(string email)
     {
         try
         {
-            var parameters = new Dictionary<string, object> {
-                { "@email", email },
-                { "@password_hash", password }
-            };
+            // var parameters = new Dictionary<string, object> {
+            //     { "@email", email }
+            // };
 
-            DataTable? res = await dBRepo.reader(userQuery.get_user_by_email_and_password(), parameters);
+            DataTable? res = await dBRepo.reader(userQuery.get_user_by_email(), new Dictionary<string, object> {
+                { "@email", email }
+            });
 
             if (res.Rows.Count == 0)
             {
-                throw new DataAccessException("User or password is incorrect.");
+                throw new NotFoundException("User with this email was not found.");
             }
 
             var row = res.Rows[0];
 
-            return Convert.ToInt32(row["user_id"]);
+            return new User(
+                user_id: Convert.ToInt32(row["user_id"]),
+                username: row["username"]?.ToString() ?? string.Empty,
+                email: row["email"]?.ToString() ?? string.Empty,
+                password: row["password_hash"]?.ToString() ?? string.Empty,
+                full_name: row["full_name"]?.ToString() ?? string.Empty,
+                bio: row["bio"]?.ToString() ?? string.Empty,
+                pfp_src: row["pfp_src"]?.ToString() ?? string.Empty,
+                location: row["location"]?.ToString() ?? string.Empty,
+                website: row["website"]?.ToString() ?? string.Empty,
+                is_private: Convert.ToBoolean(row["is_private"]),
+                created_at: Convert.ToDateTime(row["created_at"]),
+                role: ParseRole(row["role"].ToString() ?? "")
+            );
         }
-        catch (Exception ex) when (ex.InnerException is SqlException sqlEx)
+        catch (SqlException sqlEx)
         {
-            throw new DatabaseOperationException($"Database error during user validation: {sqlEx.Message}", sqlEx);
+            throw new DatabaseOperationException($"Database error during user retrieval by email: {sqlEx.Message}", sqlEx);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw new DataAccessException("User or password is incorrect.");
+            throw new DataAccessException($"An unexpected error occurred during user retrieval by email: {ex.Message}", ex);
         }
     }
+
+    public async Task<User?> GetUserByUsername(string username)
+    {
+        try
+        {
+            // var parameters = new Dictionary<string, object> {
+            //     { "@username", username }
+            // };
+
+            DataTable? res = await dBRepo.reader(userQuery.get_user_by_username(), new Dictionary<string, object> {
+                    { "@username", username }
+                });
+
+            if (res.Rows.Count == 0)
+            {
+                throw new NotFoundException("User with this email was not found.");
+            }
+
+            var row = res.Rows[0];
+
+            return new User(
+                user_id: Convert.ToInt32(row["user_id"]),
+                username: row["username"]?.ToString() ?? string.Empty,
+                email: row["email"]?.ToString() ?? string.Empty,
+                password: row["password_hash"]?.ToString() ?? string.Empty,
+                full_name: row["full_name"]?.ToString() ?? string.Empty,
+                bio: row["bio"]?.ToString() ?? string.Empty,
+                pfp_src: row["pfp_src"]?.ToString() ?? string.Empty,
+                location: row["location"]?.ToString() ?? string.Empty,
+                website: row["website"]?.ToString() ?? string.Empty,
+                is_private: Convert.ToBoolean(row["is_private"]),
+                created_at: Convert.ToDateTime(row["created_at"]),
+                role: ParseRole(row["role"].ToString() ?? "")
+            );
+        }
+        catch (SqlException sqlEx)
+        {
+            throw new DatabaseOperationException($"Database error during user retrieval by email: {sqlEx.Message}", sqlEx);
+        }
+        catch (Exception ex)
+        {
+            throw new DataAccessException($"An unexpected error occurred during user retrieval by email: {ex.Message}", ex);
+        }
+    }
+
+    // public async Task<int> ValidateUser(string email, string password)
+    // {
+    //     try
+    //     {
+    //         // var parameters = new Dictionary<string, object> {
+    //         //     { "@email", email },
+    //         //     { "@password_hash", password }
+    //         // };
+
+    //         DataTable? res = await dBRepo.reader(userQuery.get_user_by_email_and_password(), new Dictionary<string, object> {
+    //             { "@email", email },
+    //         });
+
+    //         if (res.Rows.Count == 0)
+    //         {
+    //             throw new DataAccessException("User or password is incorrect.");
+    //         }
+
+    //         var row = res.Rows[0];
+
+    //         return Convert.ToInt32(row["user_id"]);
+    //     }
+    //     catch (Exception ex) when (ex.InnerException is SqlException sqlEx)
+    //     {
+    //         throw new DatabaseOperationException($"Database error during user validation: {sqlEx.Message}", sqlEx);
+    //     }
+    //     catch (Exception)
+    //     {
+    //         throw new DataAccessException("User or password is incorrect.");
+    //     }
+    // }
 
 
 }
