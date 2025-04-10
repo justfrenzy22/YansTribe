@@ -147,6 +147,8 @@ namespace server.controllers
             return view.login_success(token);
         }
 
+
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] requests.UserRegisterReq model)
         {
             if (!ModelState.IsValid)
