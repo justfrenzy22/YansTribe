@@ -1,11 +1,11 @@
 WITH FriendsCTE AS (
     SELECT
         CASE
-            WHEN f.user_1_id = 1 THEN f.user_2_id
+            WHEN f.user_1_id = @user_id THEN f.user_2_id
             ELSE f.user_1_id
         END AS friend_user_id
     FROM friend f
-    WHERE (f.user_1_id = 1 OR f.user_2_id = 1)
+    WHERE (f.user_1_id = 1 OR f.user_2_id = @user_id)
       AND f.status = 'accepted'
 ),
 LatestFriendPostCTE AS (
@@ -27,7 +27,7 @@ PostLikesCTE AS (
         COUNT(*) AS post_like_count
     FROM LatestFriendPostCTE lfp
     LEFT JOIN post_like pl ON lfp.post_id = pl.post_id
-    WHERE lfp.rn = 1 
+    WHERE lfp.rn = 1
     GROUP BY lfp.post_id
 ),
 CommentCountCTE AS (
@@ -36,8 +36,8 @@ CommentCountCTE AS (
         COUNT(c.comment_id) AS comment_count
     FROM comment c
     JOIN LatestFriendPostCTE lfp ON c.post_id = lfp.post_id
-    WHERE lfp.rn = 1 
-      AND c.parent_id IS NULL 
+    WHERE lfp.rn = 1
+      AND c.parent_id IS NULL
     GROUP BY c.post_id
 )
 SELECT

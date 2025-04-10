@@ -11,6 +11,8 @@ namespace core.responses
         [Display(Name = "check")]
         public bool check { get; set; }
 
+        [Display(Name = "status")]
+        public int status { get; set; }
 
         public BaseRes()
         {
@@ -18,9 +20,10 @@ namespace core.responses
         }
 
         // when run into an exception
-        public BaseRes(bool check, string? exception = null)
+        public BaseRes(bool check, int status, string? exception = null)
         {
             this.check = check;
+            this.status = status;
             this.exception = exception;
         }
     }

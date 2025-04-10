@@ -1,14 +1,12 @@
 using core.entities;
-using core.enums;
-using dal.requests;
 
 namespace dal.interfaces.repo
 {
     public interface IUserRepo
     {
-        Task<int> AddUser(UserRegisterReq user);
-        Task<Role?> GetRoleById(UserGetRoleReq user_id);
-        Task<int> ValidateUser(UserLoginReq model);
-        Task<User?> GetUserById(UserGetUserReq user_id);
+        Task<int> RegisterUser(User user);
+        Task<User?> GetUserById(int user_id);
+        Task<User?> GetUserByEmail(string email);
+        Task<User?> GetUserByUsername(string username);
     }
 }

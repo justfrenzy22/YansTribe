@@ -1,7 +1,7 @@
 namespace dal.exceptions
 {
-    public class EmptyRequestDataException : Exception
+    public class EmptyRequestDataException : BaseException
     {
-        public EmptyRequestDataException(string message) : base(message) { }
+        public EmptyRequestDataException(string message) : base(message, 400) { }
     }
 }

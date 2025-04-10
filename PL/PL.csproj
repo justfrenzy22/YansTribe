@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseAppHost>false</UseAppHost><!--UseAppHost could be removed -->
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="3.1.1" />
+    <!-- <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.3" /> -->
+    <!-- <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" /> -->
+    <!-- <PackageReference Include="System.Data.SqlClient" Version="4.9.0" /> -->
+    <!-- <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.6.1" /> -->
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DAL\DAL.csproj" Version="1.0.0" />
+    <ProjectReference Include="..\core\core.csproj" Version="1.0.1" />
+    <ProjectReference Include="..\BLL\BLL.csproj" />
+  </ItemGroup>
+</Project>
