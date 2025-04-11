@@ -6,11 +6,11 @@ namespace core.entities
         private int _user_id;
         private string _title;
         private bool _has_img;
-        private string? _media_src;
+        private string _media_src;
         private string _content;
         private DateTime _created_at;
 
-        public Post(int post_id, int user_id, string title, bool has_img, string? media_src, string content, DateTime created_at)
+        public Post(int post_id, int user_id, string title, bool has_img, string media_src, string content, DateTime created_at)
         {
             this._post_id = post_id;
             this._user_id = user_id;
@@ -25,7 +25,7 @@ namespace core.entities
         public int user_id => this._user_id;
         public string title => this._title;
         public bool has_img => this._has_img;
-        public string? media_src => this._media_src;
+        public string media_src => this._media_src;
         public string content => this._content;
         public DateTime created_at => this.created_at;
     }

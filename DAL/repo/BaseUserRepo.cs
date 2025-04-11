@@ -1,33 +1,54 @@
 using core.enums;
-using dal.interfaces;
+// using dal.interfaces;
 using dal.interfaces.db;
 
-public abstract class BaseUserRepo
+namespace dal.repo
 {
-    private readonly IDBRepo _dbRepo;
-
-    public BaseUserRepo(IDBRepo dbRepo) => this._dbRepo = dbRepo;
-
-    // public IDBRepo dbRepo { get; set; }
-
-    // public Role ParseRole<Role>(string value) => (Role)Enum.Parse(typeof(Role), value, true);
-    public Role ParseRole(string value)
+    public abstract class BaseUserRepo : BaseRepo
     {
-        if (value == "user")
+        public BaseUserRepo(IDBRepo db_repo) : base(db_repo) { }
+
+        // private readonly IDBRepo _dbRepo;
+
+        // public BaseUserRepo(IDBRepo dbRepo) => this._dbRepo = dbRepo;
+
+        // public IDBRepo dbRepo { get; set; }
+
+        // public Role ParseRole<Role>(string value) => (Role)Enum.Parse(typeof(Role), value, true);
+        public Role ParseRole(string value)
         {
-            return Role.User;
+            if (value == "user")
+            {
+                return Role.User;
+            }
+            else if (value == "admin")
+            {
+                return Role.Admin;
+            }
+            else if (value == "superadmin")
+            {
+                return Role.SuperAdmin;
+            }
+            else
+            {
+                throw new Exception("Invalid role value");
+            }
         }
-        else if (value == "admin")
+
+        public string ParseStringRole(Role role)
         {
-            return Role.Admin;
-        }
-        else if (value == "superadmin")
-        {
-            return Role.SuperAdmin;
-        }
-        else
-        {
-            throw new Exception("Invalid role value");
+            if (role == Role.User)
+            {
+                return "user";
+            }
+            else if (role == Role.Admin)
+            {
+                return "admin";
+            }
+            else
+            {
+                return "superadmin";
+            }
         }
     }
 }

@@ -5,48 +5,62 @@ using Microsoft.Data.SqlClient;
 using dal.exceptions;
 using dal.interfaces.repo;
 using dal.interfaces.db;
+using dal.dto;
 
 namespace dal.repo
 {
     public class AdminRepo : BaseUserRepo, IAdminRepo
     {
-        // private readonly string connString;
-        private readonly IDBRepo dbRepo;
         private readonly AdminQuery adminQuery;
         private readonly UserQuery userQuery;
 
-        public AdminRepo(IDBRepo dbRepo, AdminQuery adminQuery, UserQuery userQuery) : base(dbRepo)
+        public AdminRepo(IDBRepo db_repo, AdminQuery adminQuery, UserQuery userQuery) : base(db_repo)
         {
-            this.dbRepo = dbRepo;
             this.adminQuery = adminQuery;
             this.userQuery = userQuery;
         }
 
-        public async Task<List<User>?> GetAllUsersAsync(int admin_id)
+        public async Task<List<UserDTO>?> GetAllUsersAsync(int admin_id)
         {
             try
             {
-                DataTable? res = await this.dbRepo.reader(
+                DataTable? res = await this.db_repo.reader(
                     this.adminQuery.get_all_users(),
                     new Dictionary<string, object> {
                         {"@admin_id", admin_id}
                     }
                 );
 
-                return res.AsEnumerable().Select(row => new User(
-                    user_id: Convert.ToInt32(row["user_id"]),
-                    username: row["username"]?.ToString() ?? string.Empty,
-                    email: row["email"]?.ToString() ?? string.Empty,
-                    password: row["password_hash"]?.ToString() ?? string.Empty,
-                    full_name: row["full_name"]?.ToString() ?? string.Empty,
-                    bio: row["bio"]?.ToString() ?? string.Empty,
-                    pfp_src: row["pfp_src"]?.ToString() ?? string.Empty,
-                    location: row["location"]?.ToString() ?? string.Empty,
-                    website: row["website"]?.ToString() ?? string.Empty,
-                    is_private: Convert.ToBoolean(row["is_private"]),
-                    created_at: Convert.ToDateTime(row["created_at"]),
-                    role: ParseRole(row["role"].ToString() ?? string.Empty)
-                )).ToList();
+                // return res.AsEnumerable().Select(row => new User(
+                //     user_id: Convert.ToInt32(row["user_id"]),
+                //     username: row["username"]?.ToString() ?? string.Empty,
+                //     email: row["email"]?.ToString() ?? string.Empty,
+                //     password: row["password_hash"]?.ToString() ?? string.Empty,
+                //     full_name: row["full_name"]?.ToString() ?? string.Empty,
+                //     bio: row["bio"]?.ToString() ?? string.Empty,
+                //     pfp_src: row["pfp_src"]?.ToString() ?? string.Empty,
+                //     location: row["location"]?.ToString() ?? string.Empty,
+                //     website: row["website"]?.ToString() ?? string.Empty,
+                //     is_private: Convert.ToBoolean(row["is_private"]),
+                //     created_at: Convert.ToDateTime(row["created_at"]),
+                //     role: ParseRole(row["role"].ToString() ?? string.Empty)
+                // )).ToList();
+
+                return res.AsEnumerable().Select(row => new UserDTO
+                {
+                    user_id = Convert.ToInt32(row["user_id"]),
+                    username = row["username"]?.ToString() ?? string.Empty,
+                    email = row["email"]?.ToString() ?? string.Empty,
+                    full_name = row["full_name"]?.ToString() ?? string.Empty,
+                    bio = row["bio"]?.ToString() ?? string.Empty,
+                    pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
+                    location = row["location"]?.ToString() ?? string.Empty,
+                    website = row["website"]?.ToString() ?? string.Empty,
+                    is_private = Convert.ToBoolean(row["is_private"]),
+                    created_at = Convert.ToDateTime(row["created_at"]),
+                    role = ParseRole(row["role"].ToString() ?? "")
+
+                }).ToList();
             }
             catch (SqlException sqlEx)
             {

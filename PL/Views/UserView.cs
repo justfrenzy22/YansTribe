@@ -1,23 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
-// using server.domains;
-// using server.models;
 using core.entities;
+using dal.dto;
 
 namespace server.views
 {
-
-
     public class UserView : ViewComponent
     {
         public ActionResult success()
         {
             var data = new { status = 200, message = "Successful test" };
-            return new ObjectResult(data) { StatusCode = 200 };
-        }
-
-        public ActionResult nig()
-        {
-            var data = new { status = 200, message = "nigga" };
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
@@ -39,15 +30,15 @@ namespace server.views
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
-        public ActionResult get_user(User user)
+        public ActionResult get_user(UserDTO user)
         {
-            var data = new { status = 200, message = "user retrieved successfully!", user = user };
+            var data = new { status = 200, message = "user retrieved successfully!", user };
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
-        public ActionResult get_users(List<User> users)
+        public ActionResult get_users(List<UserDTO> users)
         {
-            var data = new { status = 200, message = "users retrieved successfully!", users = users };
+            var data = new { status = 200, message = "users retrieved successfully!", users };
             return new ObjectResult(data) { StatusCode = 200 };
         }
 

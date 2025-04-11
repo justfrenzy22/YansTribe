@@ -1,4 +1,5 @@
 using core.entities;
+using dal.dto;
 
 namespace bll.interfaces
 {
@@ -6,6 +7,6 @@ namespace bll.interfaces
     {
         Task<string> ValidateUser(string email, string password);
         Task<int?> RegisterUser(User user);
-        Task<User?> GetUserById(int user_id);
+        Task<UserDTO?> GetUserById(int user_id);
     }
 }

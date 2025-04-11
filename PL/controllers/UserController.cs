@@ -5,6 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using server.views;
 using bll.interfaces;
 using core.entities;
+using dal.dto;
 
 namespace pl.controllers
 {
@@ -17,20 +18,14 @@ namespace pl.controllers
         private UserView view;
         // private UserManager userManager;
         private IUserService service;
-        private IAuthService auth_service;
-
-        private IHashService hash_service;
-        // private UserMapper mapper;
 
         private readonly ILogger<UserController> _logger;
 
-        public UserController(ILogger<UserController> logger, IUserService service, IAuthService auth_service, IHashService hash_service, UserView view)
+        public UserController(ILogger<UserController> logger, IUserService service, UserView view)
         {
             this._logger = logger;
             // this.isAdmin = false;
             this.service = service;
-            this.auth_service = auth_service;
-            this.hash_service = hash_service;
             this.view = view;
         }
 
@@ -48,7 +43,7 @@ namespace pl.controllers
                 return view.bad_credentials();
             }
 
-            User? user = await this.service.GetUserById(Convert.ToInt32(model.user_id));
+            UserDTO? user = await this.service.GetUserById(Convert.ToInt32(model.user_id));
 
             if (user == null)
             {

@@ -1,5 +1,6 @@
 using bll.interfaces;
 using core.entities;
+using dal.dto;
 using dal.exceptions;
 using dal.interfaces.repo;
 
@@ -19,7 +20,7 @@ namespace bll.services
         }
         public async Task<string> ValidateUser(string email, string password)
         {
-            User? user = await this.repo.GetUserByEmail(email);
+            User? user = await this.repo.ValidateUserByEmail(email);
 
             if (user == null)
             {
@@ -40,14 +41,14 @@ namespace bll.services
 
         public async Task<int?> RegisterUser(User user)
         {
-            User? userEmail = await this.repo.GetUserByEmail(user.email);
+            UserDTO? userEmail = await this.repo.GetUserByEmail(user.email);
 
             if (userEmail != null)
             {
                 throw new DataAccessException("User with this email already exists.");
             }
 
-            User? userUsername = await this.repo.GetUserByUsername(user.username);
+            UserDTO? userUsername = await this.repo.GetUserByUsername(user.username);
 
             if (userUsername != null)
             {
@@ -68,6 +69,6 @@ namespace bll.services
             return user_id;
         }
 
-        public async Task<User?> GetUserById(int user_id) => await this.repo.GetUserById(user_id);
+        public async Task<UserDTO?> GetUserById(int user_id) => await this.repo.GetUserById(user_id);
     }
 }

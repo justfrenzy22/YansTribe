@@ -18,6 +18,7 @@ using dal.repo;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using pl.middleware;
 using server.services;
 using server.views;
 
@@ -62,6 +63,13 @@ builder.Services.AddTransient<IAdminService, AdminService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IHashService, HashService>();
+
+
+// Admin Auth Middleware
+builder.Services.AddScoped<AdminAuth>();
+// builder.Services.AddScoped<SuperAdminAuth>();
+builder.Services.AddScoped<SuperAdminAuthFilter>();
+
 
 // Configure CORS to allow specific frontend
 builder.Services.AddCors(options =>
