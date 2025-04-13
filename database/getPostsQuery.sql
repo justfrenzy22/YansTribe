@@ -6,7 +6,7 @@ WITH FriendsCTE AS (
         END AS friend_user_id
     FROM friend f
     WHERE (f.user_1_id = 1 OR f.user_2_id = @user_id)
-      AND f.status = 'accepted'
+        AND f.status = 'accepted'
 ),
 LatestFriendPostCTE AS (
     SELECT
@@ -37,7 +37,7 @@ CommentCountCTE AS (
     FROM comment c
     JOIN LatestFriendPostCTE lfp ON c.post_id = lfp.post_id
     WHERE lfp.rn = 1
-      AND c.parent_id IS NULL
+        AND c.parent_id IS NULL
     GROUP BY c.post_id
 )
 SELECT
@@ -53,8 +53,8 @@ SELECT
     COALESCE(plc.post_like_count, 0) AS post_like_count,
     COALESCE(cc.comment_count, 0) AS comment_count
 FROM FriendsCTE f
-JOIN [user] friend_user ON f.friend_user_id = friend_user.user_id 
-LEFT JOIN LatestFriendPostCTE lfp ON f.friend_user_id = lfp.friend_user_id AND lfp.rn = 1 
+JOIN [user] friend_user ON f.friend_user_id = friend_user.user_id
+LEFT JOIN LatestFriendPostCTE lfp ON f.friend_user_id = lfp.friend_user_id AND lfp.rn = 1
 LEFT JOIN PostLikesCTE plc ON lfp.post_id = plc.post_id
 LEFT JOIN CommentCountCTE cc ON lfp.post_id = cc.post_id
 ORDER BY

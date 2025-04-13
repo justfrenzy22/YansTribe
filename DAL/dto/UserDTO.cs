@@ -1,4 +1,3 @@
-using core.entities;
 using core.enums;
 
 namespace dal.dto

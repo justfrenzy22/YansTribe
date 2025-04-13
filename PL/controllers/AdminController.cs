@@ -62,13 +62,11 @@ namespace pl.controllers
         [HttpPost]
         [ServiceFilter(typeof(SuperAdminAuthFilter))]
         public async Task<IActionResult> ChangeRole([FromForm] AdminChangeRoleDTO model)
-        // model.user_id, model.role
         {
             if (!ModelState.IsValid)
             {
                 TempData["message"] = "Invalid credentials. Please try again.";
                 return RedirectToAction("Index");
-                // return BadRequest(ModelState);
             }
 
             bool check = HttpContext.Items["check"] is bool value && value;
@@ -78,8 +76,6 @@ namespace pl.controllers
                 string exceptionStr = HttpContext.Items["exception"] as string ?? "";
                 TempData["message"] = exceptionStr;
                 return RedirectToAction("Index");
-                    // return RedirectToAction("Home", "Admin", )
-                // return BadRequest(exceptionStr);
             }
 
             string resMessage = await this.service.ChangeRole(model.user_id, model.role);

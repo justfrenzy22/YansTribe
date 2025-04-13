@@ -144,7 +144,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts(); // Use HTTP Strict Transport Security for non-development environments
 }
 
-app.UseMiddleware<pl.middleware.ExceptionMiddleware>();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection(); // Redirect HTTP requests to HTTPS
 app.UseStaticFiles(); // Serve static files
 app.UseRouting(); // Enable routing

@@ -3,7 +3,10 @@ using dal.exceptions;
 using dal.interfaces.db;
 using dal.queries;
 using Microsoft.Data.SqlClient;
-// !TODO: start implementing the post repo
+
+/* TODO: start implementing the post repo
+*/
+
 namespace dal.repo
 {
     public class PostRepo : BaseRepo

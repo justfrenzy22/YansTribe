@@ -3,10 +3,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using bll.dto;
 using bll.interfaces;
 
-/* TODO multiline example
-**  MAKE IT WORK
-*/
-
 namespace pl.middleware
 {
     public class SuperAdminAuthFilter : IAsyncActionFilter

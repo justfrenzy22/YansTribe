@@ -33,6 +33,21 @@ namespace core.entities
             this._role = role;
         }
 
+        public User(int user_id, string username, string email, string full_name, string bio, string pfp_src, string location, string website, bool is_private, DateTime created_at, Role role)
+        {
+            this._user_id = user_id;
+            this._username = username;
+            this._email = email;
+            this._full_name = full_name;
+            this._bio = bio;
+            this._pfp_src = pfp_src;
+            this._location = location;
+            this._website = website;
+            this._is_private = is_private;
+            this._created_at = created_at;
+            this._role = role;
+        }
+
         public User(string username, string email, string password, string full_name, string bio, string location, string website, Role role, bool is_private, DateTime created_at)
         {
             this._username = username;
