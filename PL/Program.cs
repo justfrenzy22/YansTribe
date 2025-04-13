@@ -3,6 +3,7 @@ using bll.interfaces;
 using bll.services;
 using dal.interfaces.db;
 using dal.interfaces.repo;
+using dal.mapper;
 using dal.queries;
 using dal.repo;
 
@@ -40,6 +41,9 @@ builder.Services.AddTransient<UserView>();
 builder.Services.AddTransient<AdminQuery>();
 builder.Services.AddTransient<UserQuery>();
 
+// Mapper
+builder.Services.AddTransient<UserMapper>();
+
 // Register repositories
 builder.Services.AddTransient<IDBRepo>(prov => new DBRepo(connString));
 builder.Services.AddTransient<IAdminRepo>(provider =>
@@ -47,15 +51,17 @@ builder.Services.AddTransient<IAdminRepo>(provider =>
     var dbRepo = provider.GetRequiredService<IDBRepo>();
     var adminQuery = provider.GetRequiredService<AdminQuery>();
     var userQuery = provider.GetRequiredService<UserQuery>();
+    var mapper = provider.GetRequiredService<UserMapper>();
 
-    return new AdminRepo(dbRepo, adminQuery, userQuery);
+    return new AdminRepo(dbRepo, adminQuery, userQuery, mapper);
 });
 builder.Services.AddTransient<IUserRepo>(provider =>
 {
     var dbRepo = provider.GetRequiredService<IDBRepo>();
     var userQuery = provider.GetRequiredService<UserQuery>();
+    var mapper = provider.GetRequiredService<UserMapper>();
 
-    return new UserRepo(dbRepo, userQuery);
+    return new UserRepo(dbRepo, userQuery, mapper);
 });
 
 // Register services

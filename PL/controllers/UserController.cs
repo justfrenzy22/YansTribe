@@ -43,7 +43,7 @@ namespace pl.controllers
                 return view.bad_credentials();
             }
 
-            UserDTO? user = await this.service.GetUserById(Convert.ToInt32(model.user_id));
+            User? user = await this.service.GetUserById(Convert.ToInt32(model.user_id));
 
             if (user == null)
             {

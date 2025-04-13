@@ -41,14 +41,14 @@ namespace bll.services
 
         public async Task<int?> RegisterUser(User user)
         {
-            UserDTO? userEmail = await this.repo.GetUserByEmail(user.email);
+            User? userEmail = await this.repo.GetUserByEmail(user.email);
 
             if (userEmail != null)
             {
                 throw new DataAccessException("User with this email already exists.");
             }
 
-            UserDTO? userUsername = await this.repo.GetUserByUsername(user.username);
+            User? userUsername = await this.repo.GetUserByUsername(user.username);
 
             if (userUsername != null)
             {
@@ -69,6 +69,6 @@ namespace bll.services
             return user_id;
         }
 
-        public async Task<UserDTO?> GetUserById(int user_id) => await this.repo.GetUserById(user_id);
+        public async Task<User?> GetUserById(int user_id) => await this.repo.GetUserById(user_id);
     }
 }

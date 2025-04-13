@@ -30,13 +30,13 @@ namespace server.views
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
-        public ActionResult get_user(UserDTO user)
+        public ActionResult get_user(User user)
         {
             var data = new { status = 200, message = "user retrieved successfully!", user };
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
-        public ActionResult get_users(List<UserDTO> users)
+        public ActionResult get_users(List<User> users)
         {
             var data = new { status = 200, message = "users retrieved successfully!", users };
             return new ObjectResult(data) { StatusCode = 200 };

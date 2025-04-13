@@ -6,6 +6,7 @@ using dal.exceptions;
 using dal.interfaces;
 using dal.interfaces.db;
 using dal.interfaces.repo;
+using dal.mapper;
 using dal.queries;
 using Microsoft.Data.SqlClient;
 
@@ -17,11 +18,13 @@ namespace dal.repo
     {
         // private readonly IDBRepo db_repo;
         private readonly UserQuery userQuery;
+        private readonly UserMapper mapper;
 
-        public UserRepo(IDBRepo db_repo, UserQuery userQuery) : base(db_repo)
+        public UserRepo(IDBRepo db_repo, UserQuery userQuery, UserMapper mapper) : base(db_repo)
         {
             // this.db_repo = db_repo;
             this.userQuery = userQuery;
+            this.mapper = mapper;
         }
 
         public async Task<int> RegisterUser(User user)
@@ -102,7 +105,7 @@ namespace dal.repo
             }
         }
 
-        public async Task<UserDTO?> GetUserById(int user_id)
+        public async Task<User?> GetUserById(int user_id)
         {
             try
             {
@@ -115,7 +118,7 @@ namespace dal.repo
                     throw new NotFoundException("User with this id was not found.");
                 }
                 var row = res.Rows[0];
-                return new UserDTO
+                return this.mapper.MapTo(new UserDTO
                 {
                     user_id = Convert.ToInt32(row["user_id"]),
                     username = row["username"]?.ToString() ?? string.Empty,
@@ -128,8 +131,7 @@ namespace dal.repo
                     is_private = Convert.ToBoolean(row["is_private"]),
                     created_at = Convert.ToDateTime(row["created_at"]),
                     role = ParseRole(row["role"].ToString() ?? "")
-                };
-
+                });
             }
 
             catch (Exception ex) when (ex.InnerException is SqlException sqlEx)
@@ -142,14 +144,10 @@ namespace dal.repo
             }
         }
 
-        public async Task<UserDTO?> GetUserByEmail(string email)
+        public async Task<User?> GetUserByEmail(string email)
         {
             try
             {
-                // var parameters = new Dictionary<string, object> {
-                //     { "@email", email }
-                // };
-
                 DataTable? res = await this.db_repo.reader(userQuery.get_user_by_email(), new Dictionary<string, object> {
                 { "@email", email }
             });
@@ -161,7 +159,7 @@ namespace dal.repo
 
                 var row = res.Rows[0];
 
-                return new UserDTO
+                return this.mapper.MapTo(new UserDTO
                 {
                     user_id = Convert.ToInt32(row["user_id"]),
                     username = row["username"]?.ToString() ?? string.Empty,
@@ -174,7 +172,7 @@ namespace dal.repo
                     is_private = Convert.ToBoolean(row["is_private"]),
                     created_at = Convert.ToDateTime(row["created_at"]),
                     role = ParseRole(row["role"].ToString() ?? "")
-                };
+                });
             }
             catch (SqlException sqlEx)
             {
@@ -206,20 +204,21 @@ namespace dal.repo
                 var row = res.Rows[0];
 
                 return new User
-                {
-                    user_id = Convert.ToInt32(row["user_id"]),
-                    username = row["username"]?.ToString() ?? string.Empty,
-                    email = row["email"]?.ToString() ?? string.Empty,
-                    password = row["password_hash"]?.ToString() ?? string.Empty,
-                    full_name = row["full_name"]?.ToString() ?? string.Empty,
-                    bio = row["bio"]?.ToString() ?? string.Empty,
-                    pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
-                    location = row["location"]?.ToString() ?? string.Empty,
-                    website = row["website"]?.ToString() ?? string.Empty,
-                    is_private = Convert.ToBoolean(row["is_private"]),
-                    created_at = Convert.ToDateTime(row["created_at"]),
-                    role = ParseRole(row["role"].ToString() ?? "")
-                };
+                (
+                    user_id: Convert.ToInt32(row["user_id"]),
+                    username: row["username"]?.ToString() ?? string.Empty,
+                    email: row["email"]?.ToString() ?? string.Empty,
+                    password: row["password_hash"]?.ToString() ?? string.Empty,
+                    full_name: row["full_name"]?.ToString() ?? string.Empty,
+                    bio: row["bio"]?.ToString() ?? string.Empty,
+                    pfp_src: row["pfp_src"]?.ToString() ?? string.Empty,
+                    location: row["location"]?.ToString() ?? string.Empty,
+                    website: row["website"]?.ToString() ?? string.Empty,
+                    is_private: Convert.ToBoolean(row["is_private"]),
+                    created_at: Convert.ToDateTime(row["created_at"]),
+                    role: ParseRole(row["role"].ToString() ?? "")
+                );
+
             }
             catch (SqlException sqlEx)
             {
@@ -247,35 +246,52 @@ namespace dal.repo
 
                 var row = res.Rows[0];
 
-                UserDTO userDto = new UserDTO
-                {
-                    user_id = Convert.ToInt32(row["user_id"]),
-                    username = row["username"]?.ToString() ?? string.Empty,
-                    email = row["email"]?.ToString() ?? string.Empty,
-                    full_name = row["full_name"]?.ToString() ?? string.Empty,
-                    bio = row["bio"]?.ToString() ?? string.Empty,
-                    pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
-                    location = row["location"]?.ToString() ?? string.Empty,
-                    website = row["website"]?.ToString() ?? string.Empty,
-                    is_private = Convert.ToBoolean(row["is_private"]),
-                    created_at = Convert.ToDateTime(row["created_at"]),
-                    role = ParseRole(row["role"].ToString() ?? "")
-                };
-
-                return new User
-                (
-                    user_id: userDto.user_id,
-                    username: userDto.username,
-                    email: userDto.email,
-                    full_name: userDto.full_name,
-                    bio: userDto.bio,
-                    pfp_src: userDto.pfp_src,
-                    location: userDto.location,
-                    website: userDto.website,
-                    is_private: userDto.is_private,
-                    created_at: userDto.created_at,
-                    role: userDto.role
+                return this.mapper.MapTo(
+                    new UserDTO
+                    {
+                        user_id = Convert.ToInt32(row["user_id"]),
+                        username = row["username"]?.ToString() ?? string.Empty,
+                        email = row["email"]?.ToString() ?? string.Empty,
+                        full_name = row["full_name"]?.ToString() ?? string.Empty,
+                        bio = row["bio"]?.ToString() ?? string.Empty,
+                        pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
+                        location = row["location"]?.ToString() ?? string.Empty,
+                        website = row["website"]?.ToString() ?? string.Empty,
+                        is_private = Convert.ToBoolean(row["is_private"]),
+                        created_at = Convert.ToDateTime(row["created_at"]),
+                        role = ParseRole(row["role"].ToString() ?? "")
+                    }
                 );
+
+                // UserDTO userDto = new UserDTO
+                // {
+                //     user_id = Convert.ToInt32(row["user_id"]),
+                //     username = row["username"]?.ToString() ?? string.Empty,
+                //     email = row["email"]?.ToString() ?? string.Empty,
+                //     full_name = row["full_name"]?.ToString() ?? string.Empty,
+                //     bio = row["bio"]?.ToString() ?? string.Empty,
+                //     pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
+                //     location = row["location"]?.ToString() ?? string.Empty,
+                //     website = row["website"]?.ToString() ?? string.Empty,
+                //     is_private = Convert.ToBoolean(row["is_private"]),
+                //     created_at = Convert.ToDateTime(row["created_at"]),
+                //     role = ParseRole(row["role"].ToString() ?? "")
+                // };
+
+                // return new User
+                // (
+                //     user_id: userDto.user_id,
+                //     username: userDto.username,
+                //     email: userDto.email,
+                //     full_name: userDto.full_name,
+                //     bio: userDto.bio,
+                //     pfp_src: userDto.pfp_src,
+                //     location: userDto.location,
+                //     website: userDto.website,
+                //     is_private: userDto.is_private,
+                //     created_at: userDto.created_at,
+                //     role: userDto.role
+                // );
 
                 // return new UserDTO
                 // {

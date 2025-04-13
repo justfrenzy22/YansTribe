@@ -7,6 +7,6 @@ namespace bll.interfaces
     {
         Task<string> ValidateUser(string email, string password);
         Task<int?> RegisterUser(User user);
-        Task<UserDTO?> GetUserById(int user_id);
+        Task<User?> GetUserById(int user_id);
     }
 }

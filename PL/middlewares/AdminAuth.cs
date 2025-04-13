@@ -20,7 +20,7 @@ namespace pl.middleware
 
             if (string.IsNullOrEmpty(token))
             {
-            context.Result = new UnauthorizedResult();
+            context.Result = new RedirectToActionResult("getLogin", "admin", null);
             return;
             }
 
@@ -29,7 +29,7 @@ namespace pl.middleware
 
             if (!res.check)
             {
-            context.Result = new RedirectToActionResult("Login", "Admin", null);
+            context.Result = new RedirectToActionResult("getLogin", "admin", null);
             return;
             }
 

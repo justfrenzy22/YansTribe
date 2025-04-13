@@ -92,8 +92,16 @@ namespace pl.controllers
             }
         }
 
+        [HttpGet]
+        // [Route("admin/login")]
+        public IActionResult getLogin()
+        {
+            return View("Login");
+        }
+
+
         [HttpPost]
-        [Route("admin/Login")]
+        [Route("admin/login")]
         public async Task<IActionResult> Login([FromForm] AdminLoginDTO model)
         {
             if (!ModelState.IsValid)
@@ -114,7 +122,7 @@ namespace pl.controllers
                     Secure = true,
                     Expires = DateTime.Now.AddDays(1)
                 });
-                return RedirectToAction("Home");
+                return RedirectToAction("Index");
             }
         }
 
@@ -125,11 +133,12 @@ namespace pl.controllers
         {
             int user_id = Convert.ToInt32(HttpContext.Items["user_id"]);
 
-            List<UserDTO>? users = await this.service.GetUsersAsync(user_id);
+            List<User>? users = await this.service.GetUsersAsync(user_id);
 
             return View("Home", users);
         }
 
+        public IActionResult error(string msg) => View("Error", msg);
         // private async Task<dal.responses.AdminGetUsersRes> GetUsers(dal.requests.UserGetRoleReq admin_id) =>
         // await this.admin_service.GetUsersAsync(admin_id);
     }

@@ -69,7 +69,7 @@ namespace bll.services
                 };
             }
 
-            UserDTO? admin = await this.user_repo.GetUserById(res.user_id ?? 0);
+            User? admin = await this.user_repo.GetUserById(res.user_id ?? 0);
 
             if (admin != null && admin.role == Role.Admin)
             {
@@ -95,9 +95,9 @@ namespace bll.services
         }
 
 
-        public async Task<List<UserDTO>?> GetUsersAsync(int admin_id)
+        public async Task<List<User>?> GetUsersAsync(int admin_id)
         {
-            List<UserDTO>? users = await this.repo.GetAllUsersAsync(admin_id);
+            List<User>? users = await this.repo.GetAllUsersAsync(admin_id);
             return users;
         }
 
