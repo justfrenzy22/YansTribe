@@ -1,4 +1,5 @@
 using core.entities;
+using dal.dto;
 
 namespace bll.interfaces
 {

@@ -1,13 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using core.entities;
-// using server.services;
 using core.enums;
 using core.mapper;
 using System.Net;
 using bll.interfaces;
 using pl.dto;
 using bll.dto;
-// using dal.responses;
+using dal.dto;
+using Microsoft.AspNetCore.Authorization;
+using pl.middleware;
+using Microsoft.AspNetCore.Components.Routing;
+using System.Threading.Tasks;
+using System.Net.Http.Headers;
 
 namespace pl.controllers
 {
@@ -24,49 +28,92 @@ namespace pl.controllers
             IAdminService service
         )
         {
-            // this.controller = "Admin";
             this._logger = logger;
             this.service = service;
         }
 
-        [HttpGet("/")]
-        public IActionResult Index()
+        // [HttpGet("/")]
+        // public IActionResult Index()
+        // {
+        //     try
+        //     {
+        //         string token = HttpContext.Request.Cookies["token"] ?? "";
+        //         if (string.IsNullOrEmpty(token))
+        //         {
+        //             return View("Login");
+        //         }
+        //         VerifyTokenRes res = this.service.AuthAdmin(token);
+        //         if (res.check)
+        //         {
+        //             TempData["user_id"] = res.user_id;
+        //             return RedirectToAction("Home");
+        //         }
+        //         else
+        //         {
+        //             return View("Login");
+        //         }
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         return BadRequest(e.Message);
+        //     }
+        // }
+
+        [HttpPost]
+        [ServiceFilter(typeof(SuperAdminAuthFilter))]
+        public async Task<IActionResult> ChangeRole([FromForm] AdminChangeRoleDTO model)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                string token = HttpContext.Request.Cookies["token"] ?? "";
-                if (string.IsNullOrEmpty(token))
-                {
-                    return View("Login");
-                }
-                VerifyTokenRes res = this.service.AuthAdmin(token);
-                if (res.check)
-                {
-                    TempData["user_id"] = res.user_id;
-                    return RedirectToAction("Home");
-                }
-                else
-                {
-                    return View("Login");
-                }
+                TempData["message"] = "Invalid credentials. Please try again.";
+                return RedirectToAction("Index");
             }
-            catch (Exception e)
+
+            bool check = HttpContext.Items["check"] is bool value && value;
+
+            if (!check)
             {
-                return BadRequest(e.Message);
+                string exceptionStr = HttpContext.Items["exception"] as string ?? "";
+                TempData["message"] = exceptionStr;
+                return RedirectToAction("Index");
+            }
+
+            string resMessage = await this.service.ChangeRole(model.user_id, model.role);
+
+            if (resMessage.Contains("successfully"))
+            {
+                TempData["message"] = resMessage;
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                TempData["message"] = resMessage;
+                return RedirectToAction("Index");
             }
         }
 
+        [HttpGet]
+        // [Route("admin/login")]
+        public IActionResult getLogin()
+        {
+            return View("Login");
+        }
+
+
         [HttpPost]
+        [Route("admin/login")]
         public async Task<IActionResult> Login([FromForm] AdminLoginDTO model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            string token = await this.service.ValidateLogin(model.email, model.password);
-            if (token == "")
+            string? token = await this.service.ValidateLogin(model.email, model.password);
+
+            if (token == null)
             {
-                return BadRequest("Invalid credentials. Please try again.");
+                TempData["err"] = "Invalid credentials. Please try again.";
+                return View("Login");
             }
             else
             {
@@ -75,24 +122,23 @@ namespace pl.controllers
                     Secure = true,
                     Expires = DateTime.Now.AddDays(1)
                 });
-                return RedirectToAction("Home");
+                return RedirectToAction("Index");
             }
         }
 
-        public async Task<IActionResult> Home()
-        {
-            if (!TempData.ContainsKey("user_id"))
-            {
-                return View("Login");
-            }
 
-            int user_id = Convert.ToInt32(TempData["user_id"]);
+        [ServiceFilter(typeof(AdminAuth))]
+        [HttpGet("/")]
+        public async Task<IActionResult> Index()
+        {
+            int user_id = Convert.ToInt32(HttpContext.Items["user_id"]);
 
             List<User>? users = await this.service.GetUsersAsync(user_id);
 
             return View("Home", users);
         }
 
+        public IActionResult error(string msg) => View("Error", msg);
         // private async Task<dal.responses.AdminGetUsersRes> GetUsers(dal.requests.UserGetRoleReq admin_id) =>
         // await this.admin_service.GetUsersAsync(admin_id);
     }

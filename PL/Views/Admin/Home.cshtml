@@ -1,4 +1,4 @@
-@model List<core.entities.User>
+@model List<dal.dto.UserDTO>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,7 +12,10 @@
 <body class="bg-gray-100 ">
     <div class="container mx-auto py-10 items-center">
         <div class="bg-white shadow-md rounded-lg p-6">
-            <h1 class="text-3xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
+            <div class="w-full flex flex-row justify-between items-center">
+                <h1 class="text-3xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
+                <button class="px-4 py-2 bg-gray-500 text-white hover:bg-gray-600 focus:outline-none shadow-md rounded-2xl">log out</button>
+            </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white border border-gray-200 rounded-lg">
                     <thead class="bg-gray-50">
@@ -53,8 +56,9 @@
                                 @* px-6 py-4 *@
                                 <td class=" whitespace-nowrap text-sm text-end text-gray-700">
                                     <div class="flex w-full justify-start items-center">
-                                        <button class="text-gray-500 hover:text-gray-700 focus:outline-none ml-4"><svg
-                                                xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                        <button class="text-gray-500 hover:text-gray-700 focus:outline-none ml-4"
+                                            onclick="openModal('@user.username', '@user.email', '@user.full_name', '@user.role', '@user.bio', '@user.website', '@user.location', '@user.is_private', '@user.user_id')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
                                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                                 stroke-linejoin="round">
                                                 <circle cx="12" cy="12" r="1"></circle>
@@ -77,15 +81,187 @@
             </div>
         </div>
     </div>
+    @await Html.PartialAsync("_ErrorModal")
+
+    @await Html.PartialAsync("_UserModal")
+
+    <script>
+
+        const err_modal = document.getElementById(`err_modal`);
+        @* const tempMessage = `@TempData["message"]`; *@
+        const tempMessage = err_modal.getAttribute(`data-message`);
+
+        const openErrModal = () => {
+            if (err_modal && tempMessage) {
+                err_modal.classList.remove(`hidden`);
+                err_modal.classList.add(`flex`);
+            }
+        }
+        openErrModal();
+
+        const hideErrorModal = () => {
+            err_modal.classList.remove(`flex`);
+            err_modal.classList.add(`hidden`);
+        }
+
+        const userModal = document.getElementById('userModal');
+        const modalFullName = document.getElementById('modalFullName');
+        const modalUsername = document.getElementById('modalUsername');
+        const modalEmail = document.getElementById('modalEmail');
+        const modalRole = document.getElementById('modalRole');
+        const modalBio = document.getElementById('modalBio');
+        const modalWebsite = document.getElementById('modalWebsite');
+        const modalLocation = document.getElementById('modalLocation');
+        const modalIsPrivate = document.getElementById('modalIsPrivate');
+        @* const actionUsername = document.getElementById('actionUsername'); *@
+        const closeModalXButton = document.getElementById('closeModalX');
+        const closeModalFooterButton = document.getElementById('closeModalFooter');
+        const tabs = document.querySelectorAll('.tab-button');
+        const panels = document.querySelectorAll('.tab-panel');
+
+        function openModal(username, email, full_name, role, bio, website, location, is_private, user_id) {
+            document.getElementById('userIdInp').value = user_id;
+            console.log(`test`, username, email, full_name, role, bio, website, location, is_private)
+            modalUsername.textContent = username || 'N/A';
+            modalEmail.textContent = email || 'N/A';
+            modalRole.textContent = role || 'N/A';
+            modalIsPrivate.textContent = is_private === 'true' ? 'Private' : 'Public';
+
+
+            modalFullName.textContent = full_name || 'N/A';
+            modalBio.textContent = bio || 'N/A';
+            modalBio.classList.remove('italic');
+            modalWebsite.textContent = website || 'N/A';
+            modalWebsite.classList.remove('italic');
+            modalLocation.textContent = location || 'N/A';
+            modalLocation.classList.remove('italic');
+
+            @* if (actionUsername) {
+                actionUsername.textContent = username || 'this user';
+            } *@
+
+            const userIdInput = document.getElementById('userIdInput');
+            console.log(`testasdnsakjdn`, user_id);
+            if (userIdInput) {
+                userIdInput.value = user_id;
+            }
+
+            tabs.forEach((tab, idx) => {
+                const panel = document.getElementById(tab.getAttribute('aria-controls'));
+                if (idx === 0) {
+                    tab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    tab.classList.add('border-indigo-500', 'text-indigo-600');
+                    tab.setAttribute('aria-selected', 'true');
+                    if (panel) panel.classList.remove('hidden');
+                } else {
+                    tab.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    tab.classList.remove('border-indigo-500', 'text-indigo-600');
+                    tab.setAttribute('aria-selected', 'false');
+                    if (panel) panel.classList.add('hidden');
+                }
+            });
+
+            if (userModal) {
+                userModal.classList.remove('hidden');
+                userModal.classList.add("flex");
+            }
+        }
+
+        function hideModal() {
+            if (userModal) {
+                userModal.classList.remove('flex');
+                userModal.classList.add('hidden');
+            }
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.classList.remove('border-indigo-500', 'text-indigo-600');
+                    t.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    t.setAttribute('aria-selected', 'false');
+                });
+                panels.forEach(p => {
+                    p.classList.add('hidden');
+                });
+
+                tab.classList.add('border-indigo-500', 'text-indigo-600');
+                tab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                tab.setAttribute('aria-selected', 'true');
+
+                const targetPanelId = tab.getAttribute('aria-controls');
+                const targetPanel = document.getElementById(targetPanelId);
+                if (targetPanel) {
+                    targetPanel.classList.remove('hidden');
+                }
+            });
+        });
+
+
+        @* 
+        if (closeModalXButton) {
+            closeModalXButton.addEventListener('click', hideModal());
+        }
+        if (closeModalFooterButton) {
+            closeModalFooterButton.addEventListener('click', hideModal());
+        }
+
+        if (userModal) {
+            userModal.addEventListener('click', (event) => {
+                if (event.target === userModal) {
+                    hideModal();
+                }
+            });
+        } *@
+
+        const deleteButton = document.querySelector('#panel-actions button.text-red-700');
+        if (deleteButton) {
+            deleteButton.addEventListener('click', () => {
+                const userToDelete = modalUsername.textContent; // Get username from the populated details
+                if (confirm(`Are you sure you want to delete user: ${userToDelete}?`)) {
+                    console.log(`Initiating delete for ${userToDelete}`);
+                }
+            });
+        }
+
+        const actionButtons = document.querySelector(`.actionButtons`);
+        const changeRoleForm = document.querySelector(`#changeRoleForm`);
+
+        // Show the Change Role Form
+        const showChangeRoleForm = () => {
+            if (changeRoleForm && actionButtons) {
+                changeRoleForm.classList.remove(`hidden`);
+                changeRoleForm.classList.add(`flex`);
+                actionButtons.classList.add(`hidden`);
+                actionButtons.classList.remove(`flex`);
+            }
+        };
+
+        // Hide the Change Role Form and Show Action Buttons
+        const hideChangeRoleForm = () => {
+            if (changeRoleForm && actionButtons) {
+                changeRoleForm.classList.add(`hidden`);
+                changeRoleForm.classList.remove(`flex`);
+                actionButtons.classList.remove(`hidden`);
+                actionButtons.classList.add(`flex`);
+            }
+        };
+
+    </script>
+    @* <script>
+        function openModal(username, email, full_name, role) {
+            document.getElementById('modalFullName').textContent = full_name;
+            document.getElementById('modalUsername').textContent = username;
+            document.getElementById('modalEmail').textContent = email;
+            document.getElementById('modalRole').textContent = role;
+            document.getElementById('userModal').classList.remove('hidden');
+        }
+
+        document.getElementById('closeModal').addEventListener('click', function () {
+            document.getElementById('userModal').classList.add('hidden');
+        });
+    </script> *@
 </body>
 
 
 </html>
-
-@*
- @foreach (var user in Model)
-        {
-            <li>@user.full_name</li>
-        }
-
- *@

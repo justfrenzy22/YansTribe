@@ -1,7 +1,9 @@
+using System.Reflection.Metadata.Ecma335;
 using bll.dto;
 using bll.interfaces;
 using core.entities;
 using core.enums;
+using dal.dto;
 using dal.exceptions;
 using dal.interfaces.repo;
 
@@ -25,13 +27,13 @@ namespace bll.services
             this.auth_service = auth_service;
         }
 
-        public async Task<string> ValidateLogin(string email, string password)
+        public async Task<string?> ValidateLogin(string email, string password)
         {
-            User? user = await this.user_repo.GetUserByEmail(email);
+            User? user = await this.user_repo.ValidateUserByEmail(email);
 
             if (user == null)
             {
-                throw new DataAccessException("User or password is incorrect.");
+                return null;
             }
 
             if (user.role != Role.Admin && user.role != Role.SuperAdmin)
@@ -54,10 +56,58 @@ namespace bll.services
         }
         public VerifyTokenRes AuthAdmin(string token) => this.auth_service.VerifyTokenAsync(token, isAdmin: true);
 
+        public async Task<VerifySuperAdminDTO> AuthSuperAdmin(string token)
+        {
+            VerifyTokenRes res = this.auth_service.VerifyTokenAsync(token, isAdmin: true);
+
+            if (!res.check)
+            {
+                return new VerifySuperAdminDTO
+                {
+                    check = res.check,
+                    exception = res.exception,
+                };
+            }
+
+            User? admin = await this.user_repo.GetUserById(res.user_id ?? 0);
+
+            if (admin != null && admin.role == Role.Admin)
+            {
+                return new VerifySuperAdminDTO
+                {
+                    check = false,
+                    exception = "Unauthorized permissions"
+                };
+            }
+            else if (admin != null && admin.role == Role.SuperAdmin)
+            {
+                return new VerifySuperAdminDTO
+                {
+                    check = true
+                };
+            }
+
+            return new VerifySuperAdminDTO
+            {
+                check = false,
+                exception = "User not found or invalid role"
+            };
+        }
+
+
         public async Task<List<User>?> GetUsersAsync(int admin_id)
         {
             List<User>? users = await this.repo.GetAllUsersAsync(admin_id);
             return users;
+        }
+
+        public async Task<string> ChangeRole(string user_id, string role)
+        {
+            int conv_user_id = Convert.ToInt32(user_id);
+
+            bool check = await this.user_repo.ChangeRole(conv_user_id, role);
+
+            return check ? "User role updated successfully." : "Failed to update user role.";
         }
     }
 }

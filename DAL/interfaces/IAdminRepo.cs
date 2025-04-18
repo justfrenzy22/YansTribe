@@ -1,5 +1,6 @@
 using dal.requests;
 using core.entities;
+using dal.dto;
 
 namespace dal.interfaces.repo
 {

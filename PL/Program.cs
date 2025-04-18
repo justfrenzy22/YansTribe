@@ -3,6 +3,7 @@ using bll.interfaces;
 using bll.services;
 using dal.interfaces.db;
 using dal.interfaces.repo;
+using dal.mapper;
 using dal.queries;
 using dal.repo;
 
@@ -18,6 +19,7 @@ using dal.repo;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using pl.middleware;
 using server.services;
 using server.views;
 
@@ -39,6 +41,9 @@ builder.Services.AddTransient<UserView>();
 builder.Services.AddTransient<AdminQuery>();
 builder.Services.AddTransient<UserQuery>();
 
+// Mapper
+builder.Services.AddTransient<UserMapper>();
+
 // Register repositories
 builder.Services.AddTransient<IDBRepo>(prov => new DBRepo(connString));
 builder.Services.AddTransient<IAdminRepo>(provider =>
@@ -46,15 +51,17 @@ builder.Services.AddTransient<IAdminRepo>(provider =>
     var dbRepo = provider.GetRequiredService<IDBRepo>();
     var adminQuery = provider.GetRequiredService<AdminQuery>();
     var userQuery = provider.GetRequiredService<UserQuery>();
+    var mapper = provider.GetRequiredService<UserMapper>();
 
-    return new AdminRepo(dbRepo, adminQuery, userQuery);
+    return new AdminRepo(dbRepo, adminQuery, userQuery, mapper);
 });
 builder.Services.AddTransient<IUserRepo>(provider =>
 {
     var dbRepo = provider.GetRequiredService<IDBRepo>();
     var userQuery = provider.GetRequiredService<UserQuery>();
+    var mapper = provider.GetRequiredService<UserMapper>();
 
-    return new UserRepo(dbRepo, userQuery);
+    return new UserRepo(dbRepo, userQuery, mapper);
 });
 
 // Register services
@@ -62,6 +69,13 @@ builder.Services.AddTransient<IAdminService, AdminService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IHashService, HashService>();
+
+
+// Admin Auth Middleware
+builder.Services.AddScoped<AdminAuth>();
+// builder.Services.AddScoped<SuperAdminAuth>();
+builder.Services.AddScoped<SuperAdminAuthFilter>();
+
 
 // Configure CORS to allow specific frontend
 builder.Services.AddCors(options =>
@@ -136,7 +150,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts(); // Use HTTP Strict Transport Security for non-development environments
 }
 
-app.UseMiddleware<pl.middleware.ExceptionMiddleware>();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection(); // Redirect HTTP requests to HTTPS
 app.UseStaticFiles(); // Serve static files
 app.UseRouting(); // Enable routing

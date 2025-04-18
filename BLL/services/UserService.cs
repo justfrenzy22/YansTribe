@@ -1,5 +1,6 @@
 using bll.interfaces;
 using core.entities;
+using dal.dto;
 using dal.exceptions;
 using dal.interfaces.repo;
 
@@ -19,7 +20,7 @@ namespace bll.services
         }
         public async Task<string> ValidateUser(string email, string password)
         {
-            User? user = await this.repo.GetUserByEmail(email);
+            User? user = await this.repo.ValidateUserByEmail(email);
 
             if (user == null)
             {
