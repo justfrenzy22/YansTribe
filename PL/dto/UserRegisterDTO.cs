@@ -9,6 +9,5 @@ namespace pl.dto
         public required string bio { get; set; }
         public required string location { get; set; }
         public required string website { get; set; }
-        public required DateTime created_at { get; set; }
     }
 }

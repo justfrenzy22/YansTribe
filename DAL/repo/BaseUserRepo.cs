@@ -17,15 +17,15 @@ namespace dal.repo
         // public Role ParseRole<Role>(string value) => (Role)Enum.Parse(typeof(Role), value, true);
         public Role ParseRole(string value)
         {
-            if (value == "user")
+            if (value == "user" || value == "User")
             {
                 return Role.User;
             }
-            else if (value == "admin")
+            else if (value == "admin" || value == "Admin")
             {
                 return Role.Admin;
             }
-            else if (value == "superadmin")
+            else if (value == "superadmin" || value == "SuperAdmin")
             {
                 return Role.SuperAdmin;
             }

@@ -41,6 +41,7 @@ namespace bll.services
 
         public async Task<Guid?> RegisterUser(User user)
         {
+
             User? userEmail = await this.repo.GetUserByEmail(user.email);
 
             if (userEmail != null)

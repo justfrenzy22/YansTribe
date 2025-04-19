@@ -98,7 +98,7 @@ namespace dal.repo
 
                 if (res.Rows.Count == 0)
                 {
-                    throw new NotFoundException("User with this id was not found.");
+                    return null;
                 }
                 var row = res.Rows[0];
                 return this.mapper.MapTo(new UserDTO
@@ -137,7 +137,7 @@ namespace dal.repo
 
                 if (res.Rows.Count == 0)
                 {
-                    throw new NotFoundException("User with this email was not found.");
+                    return null;
                 }
 
                 var row = res.Rows[0];
@@ -171,9 +171,6 @@ namespace dal.repo
         {
             try
             {
-                // var parameters = new Dictionary<string, object> {
-                //     { "@email", email }
-                // };
 
                 DataTable? res = await this.db_repo.reader(userQuery.get_user_by_email(), new Dictionary<string, object> {
                 { "@email", email }
@@ -224,7 +221,7 @@ namespace dal.repo
 
                 if (res.Rows.Count == 0)
                 {
-                    throw new NotFoundException("User with this email was not found.");
+                    return null;
                 }
 
                 var row = res.Rows[0];
