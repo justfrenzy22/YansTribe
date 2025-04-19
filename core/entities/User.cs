@@ -62,6 +62,15 @@ namespace core.entities
             this._created_at = created_at;
         }
 
+        // Mock data constructor
+        public User(int user_id, string email, string password, Role role)
+        {
+            this._user_id = user_id;
+            this._email = email;
+            this._password = password;
+            this._role = role;
+        }
+
         public int user_id => this._user_id;
         public string username => this._username;
         public string email => this._email;

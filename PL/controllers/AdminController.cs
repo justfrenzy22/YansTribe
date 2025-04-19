@@ -61,6 +61,7 @@ namespace pl.controllers
 
         [HttpPost]
         [ServiceFilter(typeof(SuperAdminAuthFilter))]
+        [Route("/changeRole")]
         public async Task<IActionResult> ChangeRole([FromForm] AdminChangeRoleDTO model)
         {
             if (!ModelState.IsValid)
@@ -99,9 +100,7 @@ namespace pl.controllers
             return View("Login");
         }
 
-
-        [HttpPost]
-        [Route("admin/login")]
+        [HttpPost("/login")]
         public async Task<IActionResult> Login([FromForm] AdminLoginDTO model)
         {
             if (!ModelState.IsValid)
@@ -138,6 +137,7 @@ namespace pl.controllers
             return View("Home", users);
         }
 
+        [Route("/error")]
         public IActionResult error(string msg) => View("Error", msg);
         // private async Task<dal.responses.AdminGetUsersRes> GetUsers(dal.requests.UserGetRoleReq admin_id) =>
         // await this.admin_service.GetUsersAsync(admin_id);

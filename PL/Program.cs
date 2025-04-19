@@ -114,6 +114,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // url configuration
 var vpnOn = builder.Configuration["VPN:Enabled"]?.ToLower() == "true";
+Console.WriteLine($"VPN enabled: {vpnOn}");
 if (vpnOn)
 {
     builder.WebHost.UseUrls("http://10.123.105.3:5114", "http://localhost:5114");
