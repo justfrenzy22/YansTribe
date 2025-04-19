@@ -146,7 +146,7 @@ export class ApiService {
 		username: string,
 		email: string,
 		password: string,
-		fullName: string,
+		full_name: string,
 		bio: string,
 		location: string,
 		website: string,
@@ -154,7 +154,7 @@ export class ApiService {
 		return this._req<{ message: string; status: number }>(
 			`/user/register`,
 			`POST`,
-			{ username, email, password, fullName, bio, location, website },
+			{ username, email, password, full_name, bio, location, website },
 			false
 		);
 	}
