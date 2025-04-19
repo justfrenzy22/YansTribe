@@ -130,7 +130,7 @@ namespace pl.controllers
         [HttpGet("/")]
         public async Task<IActionResult> Index()
         {
-            int user_id = Convert.ToInt32(HttpContext.Items["user_id"]);
+            string user_id = HttpContext.Items["user_id"]?.ToString() ?? "";
 
             List<User>? users = await this.service.GetUsersAsync(user_id);
 
@@ -139,7 +139,5 @@ namespace pl.controllers
 
         [Route("/error")]
         public IActionResult error(string msg) => View("Error", msg);
-        // private async Task<dal.responses.AdminGetUsersRes> GetUsers(dal.requests.UserGetRoleReq admin_id) =>
-        // await this.admin_service.GetUsersAsync(admin_id);
     }
 }

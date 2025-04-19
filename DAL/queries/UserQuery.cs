@@ -3,7 +3,7 @@ namespace dal.queries
     public class UserQuery
     {
         public string add_user() => @"
-            INSERT INTO [user] (username, email, password_hash, full_name, bio, location, website, role, is_private, created_at) OUTPUT INSERTED.user_id 
+            INSERT INTO [user] (username, email, password_hash, full_name, bio, location, website, role, is_private, created_at) OUTPUT INSERTED.user_id
             VALUES
                 (@username, @email, @password_hash, @full_name, @bio, @location, @website, @role, @is_private, @created_at)";
         public string get_user_by_id() => @"

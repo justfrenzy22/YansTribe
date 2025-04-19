@@ -16,6 +16,7 @@ namespace YansTribe.Tests.BLL.AdminService
 
             Assert.IsNull(token);
         }
+        /* TODO : Add more test cases and make them work with Mock data */
 
         [TestMethod]
         public void ValidLogin_ReturnsToken()
@@ -27,7 +28,7 @@ namespace YansTribe.Tests.BLL.AdminService
 
             var user = new User
             (
-                user_id: 1,
+                user_id: Guid.NewGuid(),
                 email: email,
                 password: hashedPassword,
                 role: core.enums.Role.Admin

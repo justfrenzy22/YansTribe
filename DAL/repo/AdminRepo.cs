@@ -23,7 +23,7 @@ namespace dal.repo
             this.mapper = mapper;
         }
 
-        public async Task<List<User>?> GetAllUsersAsync(int admin_id)
+        public async Task<List<User>?> GetAllUsersAsync(Guid admin_id)
         {
             try
             {
@@ -53,19 +53,19 @@ namespace dal.repo
 
                 return res.AsEnumerable()
                     .Select(row => mapper.MapTo(new UserDTO
-                        {
-                            user_id = Convert.ToInt32(row["user_id"]),
-                            username = row["username"]?.ToString() ?? string.Empty,
-                            email = row["email"]?.ToString() ?? string.Empty,
-                            full_name = row["full_name"]?.ToString() ?? string.Empty,
-                            bio = row["bio"]?.ToString() ?? string.Empty,
-                            pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
-                            location = row["location"]?.ToString() ?? string.Empty,
-                            website = row["website"]?.ToString() ?? string.Empty,
-                            is_private = Convert.ToBoolean(row["is_private"]),
-                            created_at = Convert.ToDateTime(row["created_at"]),
-                            role = ParseRole(row["role"].ToString() ?? "")
-                        }))
+                    {
+                        user_id = Guid.Parse(row["user_id"]?.ToString() ?? string.Empty),
+                        username = row["username"]?.ToString() ?? string.Empty,
+                        email = row["email"]?.ToString() ?? string.Empty,
+                        full_name = row["full_name"]?.ToString() ?? string.Empty,
+                        bio = row["bio"]?.ToString() ?? string.Empty,
+                        pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
+                        location = row["location"]?.ToString() ?? string.Empty,
+                        website = row["website"]?.ToString() ?? string.Empty,
+                        is_private = Convert.ToBoolean(row["is_private"]),
+                        created_at = Convert.ToDateTime(row["created_at"]),
+                        role = ParseRole(row["role"].ToString() ?? "")
+                    }))
                     .ToList();
             }
             catch (SqlException sqlEx)
