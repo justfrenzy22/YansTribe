@@ -99,6 +99,7 @@ namespace pl.controllers
             return view.login_success(token);
         }
 
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] dto.UserRegisterDTO model)
         {
             if (!ModelState.IsValid)
