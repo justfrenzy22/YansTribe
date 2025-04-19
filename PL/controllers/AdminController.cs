@@ -94,7 +94,6 @@ namespace pl.controllers
         }
 
         [HttpGet]
-        // [Route("admin/login")]
         public IActionResult getLogin()
         {
             return View("Login");

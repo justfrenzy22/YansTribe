@@ -151,13 +151,14 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts(); // Use HTTP Strict Transport Security for non-development environments
 }
 
-app.UseMiddleware<ExceptionMiddleware>();
-app.UseHttpsRedirection(); // Redirect HTTP requests to HTTPS
-app.UseStaticFiles(); // Serve static files
 app.UseRouting(); // Enable routing
-app.UseCors("allow_frontend"); // Use CORS policy
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthentication(); // Use authentication
 app.UseAuthorization(); // Use authorization
+app.MapControllers();
+app.UseHttpsRedirection(); // Redirect HTTP requests to HTTPS
+app.UseStaticFiles(); // Serve static files
+app.UseCors("allow_frontend"); // Use CORS policy
 
 // Map all controllers automatically
 app.MapControllers();

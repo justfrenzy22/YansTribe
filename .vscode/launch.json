@@ -8,7 +8,7 @@
             "name": "C#: PL Debug",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "./PL/PL.csproj"
+            "projectPath": "./PL/Program.cs"
         }
 
     ]

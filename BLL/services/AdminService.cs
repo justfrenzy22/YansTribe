@@ -39,7 +39,8 @@ namespace bll.services
             if (user.role != Role.Admin && user.role != Role.SuperAdmin)
             {
                 // throw new DataAccessException("User or password is incorrect.");
-                throw new DataAccessException("User role is incorrect.");
+                // throw new DataAccessException("User role is incorrect.");
+                return null;
             }
 
             string hash_password = this.hash_service.hash(password);

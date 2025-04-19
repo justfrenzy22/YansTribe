@@ -56,10 +56,10 @@ namespace bll.services
 
                 var userId = jwtToken.Claims.First(x => x.Type == JwtRegisteredClaimNames.UniqueName).Value;
 
-                int parsedUserId = int.Parse(userId);
+                // int parsedUserId = int.Parse(userId);
 
 
-                return new VerifyTokenRes { check = true, user_id = parsedUserId };
+                return new VerifyTokenRes { check = true, user_id = Guid.Parse(userId) };
 
             }
             catch (SecurityTokenExpiredException expEx)
