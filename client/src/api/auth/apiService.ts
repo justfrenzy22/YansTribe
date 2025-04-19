@@ -142,6 +142,24 @@ export class ApiService {
 		);
 	}
 
+	public async register(
+		username: string,
+		email: string,
+		password: string,
+		fullName: string,
+		bio: string,
+		location: string,
+		website: string,
+	) : Promise<{ message: string; status: number }> {
+		return this._req<{ message: string; status: number }>(
+			`/user/register`,
+			`POST`,
+			{ username, email, password, fullName, bio, location, website },
+			false
+		);
+	}
+
+
 	// public async register (
 	// 	email: string,
 	// 	password: string,

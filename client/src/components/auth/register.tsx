@@ -2,7 +2,7 @@ import { IRegisterForm } from "@/types/IRegisterForm";
 import { step } from "@/types/stepType";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-import ProgressSteps from "./progress-steps";	
+import ProgressSteps from "./progress-steps";
 import AccountStep from "./account-step";
 import { IRegisterErrors } from "@/types/IRegisterErrors";
 import { Button } from "../ui/button";
@@ -10,6 +10,7 @@ import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import ProfileStep from "./profile-step";
 import ReviewStep from "./review-step";
 import { useTheme } from "next-themes";
+import { ApiService } from "@/api/auth/apiService";
 
 const Register = ({
 	setLogin,
@@ -38,6 +39,8 @@ const Register = ({
 	const [showPassord, setShowPassword] = useState<boolean>(false);
 	const [showConfirmPassword, setShowConfirmPassword] =
 		useState<boolean>(false);
+
+	const [apiService] = useState<ApiService>(new ApiService());
 
 	useEffect(() => {
 		if (currStep === `account`) {
@@ -104,15 +107,28 @@ const Register = ({
 
 		try {
 			setLoading(true);
-			const res = await fetch("/api/auth/register", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(formData),
-			})
-				.then((res) => res.json())
-				.catch((err) => console.error(err));
+
+			const res = await apiService.register(
+				formData.username,
+				formData.email,
+				formData.password,
+				formData.fullName,
+				formData.bio,
+				formData.location,
+				formData.website
+			);
+			// const res = await apiService.
+			// const res = await ApiService
+
+			// const res = await fetch("/api/auth/register", {
+			// 	method: "POST",
+			// 	headers: {
+			// 		"Content-Type": "application/json",
+			// 	},
+			// 	body: JSON.stringify(formData),
+			// })
+			// 	.then((res) => res.json())
+			// 	.catch((err) => console.error(err));
 			if (res.status === 200) {
 				// display the message
 				// wait for a bit (500ms)
