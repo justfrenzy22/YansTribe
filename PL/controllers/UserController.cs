@@ -43,7 +43,7 @@ namespace pl.controllers
                 return view.bad_credentials();
             }
 
-            User? user = await this.service.GetUserById(Convert.ToInt32(model.user_id));
+            User? user = await this.service.GetUserById(Guid.Parse(model.user_id));
 
             if (user == null)
             {
@@ -119,8 +119,8 @@ namespace pl.controllers
             );
 
 
-            int? user_id = await this.service.RegisterUser(user);
-            if (user_id != null && user_id != -1)
+            Guid? user_id = await this.service.RegisterUser(user);
+            if (user_id != null && user_id != Guid.Empty)
             {
                 return view.register_success();
             }

@@ -27,23 +27,10 @@ namespace dal.repo
             this.mapper = mapper;
         }
 
-        public async Task<int> RegisterUser(User user)
+        public async Task<Guid> RegisterUser(User user)
         {
             try
             {
-                //     var parameters = new Dictionary<string, object> {
-                //     { "@username", user.username },
-                //     { "@email", user.email },
-                //     { "@password_hash", user.password },
-                //     { "@full_name", user.full_name },
-                //     { "@bio", user.bio },
-                //     { "@location", user.location },
-                //     { "@website", user.website },
-                //     { "@role", user.role.ToString() },
-                //     { "@is_private", user.is_private },
-                //     { "@created_at", user.created_at.ToString() },
-                // };
-
                 object? result = await this.db_repo.scalar(userQuery.add_user(), new Dictionary<string, object> {
                     { "@username", user.username },
                     { "@email", user.email },
@@ -59,11 +46,7 @@ namespace dal.repo
 
                 if (result != null && result != DBNull.Value)
                 {
-                    if (int.TryParse(result.ToString(), out int user_id))
-                    {
-                        return user_id;
-                    }
-                    return -1;
+                    return Guid.Parse(result.ToString() ?? "");
                 }
                 else
                 {
@@ -105,12 +88,12 @@ namespace dal.repo
             }
         }
 
-        public async Task<User?> GetUserById(int user_id)
+        public async Task<User?> GetUserById(Guid user_id)
         {
             try
             {
                 DataTable? res = await this.db_repo.reader(userQuery.get_user_by_id(), new Dictionary<string, object> {
-                { "@user_id", Convert.ToInt32(user_id) }
+                { "@user_id", Guid.Parse(user_id.ToString() ?? "") }
                 });
 
                 if (res.Rows.Count == 0)
@@ -120,7 +103,7 @@ namespace dal.repo
                 var row = res.Rows[0];
                 return this.mapper.MapTo(new UserDTO
                 {
-                    user_id = Convert.ToInt32(row["user_id"]),
+                    user_id = Guid.Parse(row["user_id"].ToString() ?? ""),
                     username = row["username"]?.ToString() ?? string.Empty,
                     email = row["email"]?.ToString() ?? string.Empty,
                     full_name = row["full_name"]?.ToString() ?? string.Empty,
@@ -161,7 +144,7 @@ namespace dal.repo
 
                 return this.mapper.MapTo(new UserDTO
                 {
-                    user_id = Convert.ToInt32(row["user_id"]),
+                    user_id = Guid.Parse(row["user_id"]?.ToString() ?? ""),
                     username = row["username"]?.ToString() ?? string.Empty,
                     email = row["email"]?.ToString() ?? string.Empty,
                     full_name = row["full_name"]?.ToString() ?? string.Empty,
@@ -205,7 +188,7 @@ namespace dal.repo
 
                 return new User
                 (
-                    user_id: Convert.ToInt32(row["user_id"]),
+                    user_id: Guid.Parse(row["user_id"]?.ToString() ?? ""),
                     username: row["username"]?.ToString() ?? string.Empty,
                     email: row["email"]?.ToString() ?? string.Empty,
                     password: row["password_hash"]?.ToString() ?? string.Empty,
@@ -249,7 +232,7 @@ namespace dal.repo
                 return this.mapper.MapTo(
                     new UserDTO
                     {
-                        user_id = Convert.ToInt32(row["user_id"]),
+                        user_id = Guid.Parse(row["user_id"]?.ToString() ?? ""),
                         username = row["username"]?.ToString() ?? string.Empty,
                         email = row["email"]?.ToString() ?? string.Empty,
                         full_name = row["full_name"]?.ToString() ?? string.Empty,
@@ -320,14 +303,14 @@ namespace dal.repo
 
 
 
-        public async Task<bool> ChangeRole(int user_id, string role)
+        public async Task<bool> ChangeRole(Guid user_id, string role)
         {
 
 
             // string roleStr = ParseStringRole(role);
 
             int result = await db_repo.nonQuery(userQuery.update_user_role(), new Dictionary<string, object> {
-                { "@user_id", user_id.ToString() },
+                { "@user_id", Guid.Parse(user_id.ToString() ?? "") },
                 { "@role", role }
             });
 

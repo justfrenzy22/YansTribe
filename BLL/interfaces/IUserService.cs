@@ -6,7 +6,7 @@ namespace bll.interfaces
     public interface IUserService
     {
         Task<string> ValidateUser(string email, string password);
-        Task<int?> RegisterUser(User user);
-        Task<User?> GetUserById(int user_id);
+        Task<Guid?> RegisterUser(User user);
+        Task<User?> GetUserById(Guid user_id);
     }
 }

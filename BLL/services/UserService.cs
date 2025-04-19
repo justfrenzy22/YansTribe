@@ -39,7 +39,7 @@ namespace bll.services
             return token;
         }
 
-        public async Task<int?> RegisterUser(User user)
+        public async Task<Guid?> RegisterUser(User user)
         {
             User? userEmail = await this.repo.GetUserByEmail(user.email);
 
@@ -59,9 +59,9 @@ namespace bll.services
 
             user.HashPassword(hash_password);
 
-            int? user_id = await this.repo.RegisterUser(user);
+            Guid? user_id = await this.repo.RegisterUser(user);
 
-            if (user_id == null || user_id == -1)
+            if (Guid.Empty == user_id || user_id == null)
             {
                 throw new DataAccessException("User with this email or username already exists.");
             }
@@ -69,6 +69,6 @@ namespace bll.services
             return user_id;
         }
 
-        public async Task<User?> GetUserById(int user_id) => await this.repo.GetUserById(user_id);
+        public async Task<User?> GetUserById(Guid user_id) => await this.repo.GetUserById(user_id);
     }
 }

@@ -4,7 +4,7 @@ namespace core.entities
 {
     public class User
     {
-        private int _user_id;
+        private Guid _user_id;
         private string _username;
         private string _email;
         private string _password;
@@ -17,7 +17,7 @@ namespace core.entities
         private DateTime _created_at;
         private Role _role;
 
-        public User(int user_id, string username, string email, string password, string full_name, string bio, string pfp_src, string location, string website, bool is_private, DateTime created_at, Role role)
+        public User(Guid user_id, string username, string email, string password, string full_name, string bio, string pfp_src, string location, string website, bool is_private, DateTime created_at, Role role)
         {
             this._user_id = user_id;
             this._username = username;
@@ -33,7 +33,7 @@ namespace core.entities
             this._role = role;
         }
 
-        public User(int user_id, string username, string email, string full_name, string bio, string pfp_src, string location, string website, bool is_private, DateTime created_at, Role role)
+        public User(Guid user_id, string username, string email, string full_name, string bio, string pfp_src, string location, string website, bool is_private, DateTime created_at, Role role)
         {
             this._user_id = user_id;
             this._username = username;
@@ -62,7 +62,16 @@ namespace core.entities
             this._created_at = created_at;
         }
 
-        public int user_id => this._user_id;
+        // Mock data constructor
+        public User(Guid user_id, string email, string password, Role role)
+        {
+            this._user_id = user_id;
+            this._email = email;
+            this._password = password;
+            this._role = role;
+        }
+
+        public Guid user_id => this._user_id;
         public string username => this._username;
         public string email => this._email;
         public string password => this._password;
