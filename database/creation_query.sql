@@ -1,13 +1,3 @@
--- Created UID version of user table
-
--- create table user_test (
--- user_id uniqueidentifier primary key default NEWID(),
--- username varchar(255)
--- );
-
--- and it worked
-
-
 create table [user] (
     user_id uniqueidentifier primary key default newid(),
     username nvarchar(50) not null unique,
@@ -27,10 +17,7 @@ create table post (
     post_id uniqueidentifier primary key default newid(),
     user_id uniqueidentifier not null,
     title nvarchar(50) not null,
-    has_img bit not null default 0,
-    media_src nvarchar(255) null,
     content nvarchar(max) not null,
-    -- visibility
     created_at datetime not null default getdate(),
     constraint fk_post_user foreign key (user_id) references [user](user_id)
 );
@@ -44,6 +31,18 @@ create table post_like (
     constraint fk_post_like_post foreign key (post_id) references post(post_id)
 );
 
+-- In the future
+-- //TODO Add tags
+-- create table post_tag ()
+
+create table post_media (
+    media_id uniqueidentifier primary key default newid(),
+    post_id uniqueidentifier not null,
+    media_type nvarchar(20) not null check (media_type in ('image', 'video')),
+    media_src nvarchar(255) not null,
+    [order] int not null default 0,
+    constraint fk_post_media_post foreign key (post_id) references post(post_id)
+)
 
 create table comment (
     comment_id uniqueidentifier primary key default newid(),
@@ -70,7 +69,7 @@ create table friend (
     friendship_id uniqueidentifier primary key default newid(),
     user_1_id uniqueidentifier not null,
     user_2_id uniqueidentifier not null,
-    status nvarchar(50) not null default 'pending' check (status in ('pending', 'accepted', 'rejected', 'blocked')), -- Allowed values: 'pending', 'accepted', 'rejected',
+    status nvarchar(50) not null default 'pending' check (status in ('pending', 'accepted', 'rejected', 'blocked')), -- Allowed values: 'pending', 'accepted', 'rejected', 'blocked'
     created_at datetime not null default getdate(),
     constraint friend_user_1 foreign key (user_1_id) references [user](user_id),
     constraint friend_user_2 foreign key (user_2_id) references [user](user_id)

@@ -1,3 +1,4 @@
+using bll.dto;
 using bll.interfaces;
 using core.entities;
 using dal.dto;
@@ -71,5 +72,7 @@ namespace bll.services
         }
 
         public async Task<User?> GetUserById(Guid user_id) => await this.repo.GetUserById(user_id);
+
+        public VerifyTokenRes AuthUser(string token) => this.auth_service.VerifyTokenAsync(token, isAdmin: false);
     }
 }

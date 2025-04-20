@@ -18,27 +18,37 @@ namespace dal.repo
         {
             try
             {
-                object? result = await this.db_repo.scalar(postQuery.add_post(), new Dictionary<string, object>{
-                    { "@title", post.title },
-                    { "@has_img", post.has_img},
-                    { "@media_src", post.media_src},
+                var result = await this.db_repo.scalar(postQuery.add_post(), new Dictionary<string, object> {
+                    { "@user_id", post.user_id },
                     { "@content", post.content },
-                    { "@crated_at", post.created_at }
+                    { "@created_at", post.created_at }
                 });
 
-                if (result != null && result != DBNull.Value)
+                if (result == null || result == DBNull.Value)
                 {
-                    if (int.TryParse(result.ToString(), out int user_id))
-                    {
-                        return user_id;
-                    }
+                    throw new DatabaseOperationException("Post creation query executed but did not return a valid post_id");
+                }
 
-                    return -1;
-                }
-                else
+                Guid post_id = (Guid)result;
+
+                if (
+                    post.media == null || post.media.Count == 0
+                )
                 {
-                    throw new DatabaseOperationException("Post creation query executed but did not return the executed post_id");
+                    return 1;
                 }
+                
+
+                foreach (PostMedia media in post.media)
+                {
+                    await this.db_repo.nonQuery(postQuery.add_post_media(), new Dictionary<string, object> {
+                        { "@post_id", post_id },
+                        { "@media_type", media.media_type.ToString() },
+                        { "@media_src", media.media_src }
+                    });
+                }
+
+                return 1;
             }
             catch (SqlException sqlEx)
             {

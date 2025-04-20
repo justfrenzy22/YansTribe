@@ -1,3 +1,4 @@
+using bll.dto;
 using core.entities;
 using dal.dto;
 
@@ -8,5 +9,6 @@ namespace bll.interfaces
         Task<string> ValidateUser(string email, string password);
         Task<Guid?> RegisterUser(User user);
         Task<User?> GetUserById(Guid user_id);
+        VerifyTokenRes AuthUser(string token);
     }
 }

@@ -9,15 +9,13 @@ namespace dal.queries
         ORDER BY created_at DESC;";
 
         public string add_post() => @"
-        INSERT INTO post (user_id, title, has_img, media_src, content, created_at) VALUES
-        (
-            (SELECT user_id FROM [user] WHERE user_id = @user_id),
-            @title,
-            @has_img,
-            @media_src,
-            @content,
-            @created_at
-        );
+        DECLARE @InsertedPostId UNIQUEIDENTIFIER;
+
+        INSERT INTO post (user_id, content, created_at)
+        OUTPUT INSERTED.post_id INTO @InsertedPostId
+        VALUES (@user_id, @content, @created_at);
+
+        SELECT @InsertedPostId;
         ";
 
         public string delete_post_by_id() => @"DELETE FROM [post] WHERE post_id = @post_id;";
@@ -30,6 +28,10 @@ namespace dal.queries
                 @created_at
             );
         ";
+
+        public string add_post_media() => @"
+        INSERT INTO post_media (post_id, media_type, media_src)
+        VALUES (@post_id, @media_type, @media_src);";
 
         public string delete_post_like() => @"
         DELETE FROM post_like
