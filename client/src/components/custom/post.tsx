@@ -9,15 +9,12 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
-// import CircleSvg from "@/public/filledHeart.svg";
+import { formatDistanceToNow } from "date-fns";
 import {
 	Bookmark,
-	ChevronRight,
 	CircleMinus,
 	Delete,
-	DeleteIcon,
 	Ellipsis,
-	EyeClosed,
 	Heart,
 	MessageCircle,
 	Pencil,
@@ -25,13 +22,8 @@ import {
 	Share,
 	Trash,
 	UserRoundPlus,
+	X,
 } from "lucide-react";
-import {
-	ContextMenu,
-	ContextMenuContent,
-	ContextMenuItem,
-	ContextMenuTrigger,
-} from "../ui/context-menu";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -39,13 +31,27 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import Comment from "../home/comment";
+import { useState } from "react";
+import {
+	Dialog,
+	DialogTrigger,
+	DialogContent,
+	DialogTitle,
+} from "../ui/dialog";
 
-const Post = ({ post }: any) => {
+const Post = ({
+	post,
+	isViewMode = false,
+}: {
+	post: any;
+	isViewMode?: boolean;
+}) => {
+	const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
+
 	return (
 		<div>
+			{/* Dialog for enlarged media */}
+
 			<Separator orientation="horizontal" className="w-full border-1 " />
 			<MotionCard className="space-y-4">
 				{/* bg-secondary border-none border-0 */}
@@ -70,12 +76,9 @@ const Post = ({ post }: any) => {
 										{post.user.username}
 									</Link>
 									<p className="text-sm text-muted-foreground items-center">
-										{post === 0
-											? "2 hours ago"
-											: post === 1
-											? "Yesterday"
-											: "3 days ago"}
-										{/* Logic for date calculation */}
+										{formatDistanceToNow(new Date(post.created_at), {
+											addSuffix: true,
+										})}
 									</p>
 								</div>
 							</div>
@@ -90,10 +93,6 @@ const Post = ({ post }: any) => {
 									>
 										<Ellipsis />
 									</Button>
-									{/* <Button variant="ghost" size="icon" className="rounded-full">
-                    <MoreHorizontal className="h-5 w-5" />
-                    <span className="sr-only">More options</span>
-                  </Button> */}
 								</DropdownMenuTrigger>
 								<DropdownMenuContent className="flex flex-col w-48 px-2 py-4 ">
 									<DropdownMenuItem className="p-2 flex flex-row justify-between cursor-pointer">
@@ -134,53 +133,96 @@ const Post = ({ post }: any) => {
 					</CardHeader>
 					<CardContent className="pl-12 pt-0">
 						<p className="mb-4">{post.content}</p>
-						<motion.div
-							initial={{ opacity: 0, scale: 0.95 }}
-							animate={{ opacity: 1, scale: 1 }}
-							transition={{ duration: 0.3, delay: 0.3 }}
-							className="rounded-lg overflow-hidden"
+						<div
+							className={`flex flex-wrap ${
+								post.media.length > 1 ? "gap-4 justify-start" : "justify-center"
+							}`}
 						>
-							<img
-								src={`./code.jpg`}
-								// src={`/placeholder.svg?height=400&width=600&text=${
-								// post.post_id === 0
-								// 	? "Your Post " + (post.post_id + 1)
-								// 	: "Post Image " + (post.post_id + 1)
-								// }`}
-								alt={`Post trululu`}
-								className="w-full object-cover rounded-xl shadow-md bg-primary outline"
-							/>
-						</motion.div>
+							{post.media &&
+								post.media.map(
+									(media: { type: string; url: string }, index: number) => (
+										<div
+											key={index}
+											className="rounded-lg overflow-hidden max-w-md mx-auto cursor-pointer"
+											onClick={() => {
+												if (media.type === "image") {
+													setSelectedMedia(media.url);
+												}
+											}}
+										>
+											<Dialog>
+												{media.type === "image" ? (
+													<DialogTrigger asChild>
+														<img
+															src={media.url}
+															alt={`Media ${index + 1}`}
+															className="w-full max-h-80 object-cover rounded-xl shadow-md"
+														/>
+													</DialogTrigger>
+												) : (
+													<DialogTrigger asChild>
+														<video
+															src={media.url}
+															controls
+															className="w-full max-h-80 object-contain rounded-xl shadow-md"
+														/>
+													</DialogTrigger>
+												)}
+												<DialogContent className="backdrop-blur-sm bg-transparent bg-opacity-50 p-4 flex justify-center items-center flex-col w-auto h-auto max-w-[95vw] max-h-[95vh]">
+													<DialogTitle>Extended Media</DialogTitle>
+													<div className="w-full rounded-lg shadow-lg p-4">
+														{media.type === "image" ? (
+															<img
+																src={selectedMedia ?? "code.jpg"}
+																alt="Enlarged media"
+																className="rounded-lg shadow-lg object-contain max-w-full max-h-[90vh]"
+															/>
+														) : (
+															<video
+																src={media.url}
+																controls
+																className="rounded-lg shadow-lg object-contain max-w-full max-h-[90vh]"
+															/>
+														)}
+													</div>
+												</DialogContent>
+											</Dialog>
+										</div>
+									)
+								)}
+						</div>
 					</CardContent>
 				</div>
-				{/* <Separator orientation="horizontal" /> */}
-				{/* <Divider? */}
 			</MotionCard>
 			{/* buttons functionality */}
-			<div className="w-full flex flex-row  justify-between gap-2 pt-4 px-10">
+			<div className="w-full flex flex-row justify-between gap-2 pt-4 px-10">
 				<div className="flex flex-row gap-4">
 					<MotionButton className="flex-1">
 						<Button
 							variant={`ghost`}
 							className="px-4 rounded-full cursor-pointer"
+							disabled={isViewMode}
 						>
-							{/* <filledHeart /> */}
 							<Heart />
-							<p>1</p>
+							<p>{post.likes > 0 ? post.likes : ""}</p>{" "}
 						</Button>
 					</MotionButton>
 					<MotionButton className="flex-1">
 						<Button
 							variant={`ghost`}
 							className="px-4 rounded-full cursor-pointer"
+							disabled={isViewMode}
 						>
 							<MessageCircle />
-							<p>15</p>
+							<p>{post.comments > 0 ? post.comments : ""}</p>{" "}
 						</Button>
 					</MotionButton>
 					<MotionButton className="flex-1">
-						<Button variant={`ghost`} className="p-5 rounded-xl cursor-pointer">
-							{/* <filledHeart /> */}
+						<Button
+							variant={`ghost`}
+							className="p-5 rounded-xl cursor-pointer"
+							disabled={isViewMode}
+						>
 							<Share />
 						</Button>
 					</MotionButton>
@@ -190,61 +232,12 @@ const Post = ({ post }: any) => {
 						variant={`ghost`}
 						className="px-4 rounded-full cursor-pointer"
 						size={`icon`}
+						disabled={isViewMode}
 					>
 						<Bookmark />
 					</Button>
 				</MotionButton>
 			</div>
-			{/* <div className="w-full flex flex-col gap-2 px-4 mb-4">
-				<Comment />
-				<Comment />
-				<div className="w-full flex justify-center items-center">
-					<MotionButton className="">
-						<Button
-							variant={`ghost`}
-							className="px-4 rounded-full cursor-pointer"
-						>
-							<p>See all comments</p>
-							<ChevronRight />
-						</Button>
-					</MotionButton>
-				</div>
-				<div className="pl-8">
-					<Comment />
-				</div>
-			</div> */}
-
-			{/* <div className="flex flex-row md:px-4 gap-2 px-2 w-full justify-center items-center mb-4">
-				<Avatar className="w-9 h-9">
-					<AvatarImage src={`../${post.user.pfp_src}`} alt="User pic" />
-					<AvatarFallback>
-						YT
-						{
-							// alternative name
-						}
-					</AvatarFallback>
-				</Avatar>
-				<Input
-
-					className="pl-10 border outline shadow-md rounded-xl"
-					// className="pl-10 border outline shadow-md rounded-lg bg-secondary"
-					placeholder="Comment something..."
-				/>
-				<Button
-					variant="ghost"
-					size={`icon`}
-					className="cursor-pointer rounded-full"
-				>
-					<Send className="" />
-				</Button>
-			</div> */}
-
-			{/* <Separator orientation="horizontal" className="w-full border-1 my-4" /> */}
-			{/* //{" "} */}
-			{/* <Card className="bg-primary w-full">
-				// <a></a>
-				//{" "}
-			</Card> */}
 		</div>
 	);
 };
