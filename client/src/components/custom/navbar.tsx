@@ -20,10 +20,13 @@ import { useDevice } from "@/contexts/DeviceContext";
 import BottomNav from "./bottom-nav";
 import { Drawer, DrawerTrigger, DrawerContent } from "../ui/drawer";
 import MobileNav from "./mobile-nav";
+import { useUser } from "@/contexts/UserContext";
+import { IBaseUser } from "@/types/IEssentialsUser";
 
 export const Navbar = (): React.ReactElement => {
 	const [searchOpen, isSearchOpen] = useState<boolean>(false);
 	const isMobile = useDevice();
+	const user = useUser();
 
 	return (
 		<>
@@ -127,7 +130,9 @@ export const Navbar = (): React.ReactElement => {
 												src="/placeholder.svg?height=32&width=32"
 												alt="@user"
 											/>
-											<AvatarFallback>U</AvatarFallback>
+											<AvatarFallback>
+												{user?.username.charAt(0)}
+											</AvatarFallback>
 										</Avatar>
 									</Button>
 								</DropdownMenuTrigger>

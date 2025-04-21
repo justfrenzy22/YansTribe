@@ -11,6 +11,7 @@ namespace dal.interfaces.repo
         Task<User?> GetUserByEmail(string email);
         Task<User?> ValidateUserByEmail(string email);
         Task<bool> ChangeRole(Guid user_id, string role);
+        Task<User?> GetUserEssentials(Guid user_id);
 
         Task<User?> GetUserByUsername(string username);
     }

@@ -10,7 +10,7 @@ import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
 import Error from "next/error";
 import { ILoginErrors } from "@/types/ILoginErrors";
-import { ApiService } from "@/api/auth/apiService";
+import { ApiService } from "@/api/apiService";
 import { toast } from "sonner";
 import { Toaster } from "../ui/sonner";
 

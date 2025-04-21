@@ -6,13 +6,18 @@ import { redirect, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import LoadingComponent from "../custom/loading-component";
 import { useTheme } from "next-themes";
+import { IBaseUser } from "@/types/IEssentialsUser";
 
 export default function WaitLayout({
 	children,
 	data,
 }: {
 	children: React.ReactNode;
-	data: any;
+	data: {
+		message: string;
+		status: number;
+		user: IBaseUser;
+	};
 }) {
 	const { theme } = useTheme();
 	const pathname = usePathname();
@@ -26,7 +31,7 @@ export default function WaitLayout({
 		}
 	}, [data]);
 
-	if (data.status === 400) {
+	if (data.status !== 200) {
 		redirect("/auth");
 	}
 

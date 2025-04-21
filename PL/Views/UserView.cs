@@ -56,8 +56,8 @@ namespace server.views
 
         public ActionResult bad_credentials()
         {
-            var data = new { status = 401, message = "bad credentials" };
-            return new ObjectResult(data) { StatusCode = 401 };
+            var data = new { status = 400, message = "bad credentials" };
+            return new ObjectResult(data) { StatusCode = 400 };
         }
 
         public ActionResult get_role(core.enums.Role role)

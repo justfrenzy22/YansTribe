@@ -73,6 +73,8 @@ namespace bll.services
 
         public async Task<User?> GetUserById(Guid user_id) => await this.repo.GetUserById(user_id);
 
+        public async Task<User?> GetUserEssentials(Guid user_id) => await this.repo.GetUserEssentials(user_id);
+
         public VerifyTokenRes AuthUser(string token) => this.auth_service.VerifyTokenAsync(token, isAdmin: false);
     }
 }

@@ -53,7 +53,7 @@ namespace pl.controllers
                 return view.bad_credentials();
             }
 
-            User? user = await this.service.GetUserById(Guid.Parse(user_id));
+            User? user = await this.service.GetUserEssentials(Guid.Parse(user_id));
 
             if (user == null)
             {

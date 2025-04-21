@@ -10,6 +10,11 @@ namespace dal.queries
             SELECT * FROM [user]
             WHERE user_id = @user_id";
 
+        public string get_user_essentials_by_id() => @"
+            SELECT user_id, username, pfp_src
+            FROM [user]
+            WHERE user_id = @user_id";
+
         public string get_user_by_username() => @"
         SELECT * FROM [user]
         WHERE username = @username";

@@ -127,6 +127,40 @@ namespace dal.repo
             }
         }
 
+        public async Task<User?> GetUserEssentials(Guid user_id)
+        {
+            try
+            {
+                DataTable? res = await this.db_repo.reader(userQuery.get_user_essentials_by_id(), new Dictionary<string, object> {
+                    { "@user_id", Guid.Parse(user_id.ToString() ?? "") }
+                });
+
+                if (res.Rows.Count == 0)
+                {
+                    return null;
+                }
+
+                var row = res.Rows[0];
+
+                return this.mapper.MapTo(new EssentialsUserDTO
+                {
+                    user_id = Guid.Parse(row["user_id"]?.ToString() ?? ""),
+                    username = row["username"]?.ToString() ?? string.Empty,
+                    pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
+                    is_private = Convert.ToBoolean(row["is_private"]),
+                });
+            }
+            catch (Exception ex) when (ex.InnerException is SqlException sqlEx)
+            {
+                throw new DatabaseOperationException($"Database error during user retrieval: {sqlEx.Message}", sqlEx);
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException($"An unexpected error occurred during user retrieval: {ex.Message}", ex);
+            }
+        }
+
+
         public async Task<User?> GetUserByEmail(string email)
         {
             try

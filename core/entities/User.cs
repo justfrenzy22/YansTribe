@@ -71,6 +71,14 @@ namespace core.entities
             this._role = role;
         }
 
+        // essentials constructor
+        public User(Guid user_id, string username, string pfp_src)
+        {
+            this._user_id = user_id;
+            this._username = username;
+            this._pfp_src = pfp_src;
+        }
+
         public Guid user_id => this._user_id;
         public string username => this._username;
         public string email => this._email;

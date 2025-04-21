@@ -19,5 +19,15 @@ namespace dal.mapper
             created_at: entity.created_at,
             role: entity.role
         );
+
+        public User MapTo (EssentialsUserDTO entity) => new User(
+            user_id: entity.user_id,
+            username: entity.username,
+            pfp_src: entity.pfp_src
+        );
+
+        // public override User MapTo
+
+    
     }
 }

@@ -10,7 +10,7 @@ import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import ProfileStep from "./profile-step";
 import ReviewStep from "./review-step";
 import { useTheme } from "next-themes";
-import { ApiService } from "@/api/auth/apiService";
+import { ApiService } from "@/api/apiService";
 
 const Register = ({
 	setLogin,
