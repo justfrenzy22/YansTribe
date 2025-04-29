@@ -7,6 +7,7 @@ using bll.interfaces;
 using core.entities;
 using dal.dto;
 using pl.middleware;
+using pl.dto;
 
 namespace pl.controllers
 {
@@ -36,7 +37,7 @@ namespace pl.controllers
             return this.view.success();
         }
 
-        [HttpGet("get_user/{user_id}")]
+        [HttpGet("get_user")]
         // [ServiceFilter(typeof(AdminAuth))]
         [ServiceFilter(typeof(UserAuth))]
         public async Task<IActionResult> GetUserById()
@@ -60,7 +61,13 @@ namespace pl.controllers
                 return view.not_found();
             }
 
-            return view.get_user(user);
+            BaseUserDTO userDTO = new BaseUserDTO(
+                user.user_id.ToString(),
+                user.username,
+                user.pfp_src
+            );
+
+            return view.get_base_user(userDTO);
         }
 
         [HttpPost("login")]
@@ -78,7 +85,7 @@ namespace pl.controllers
                 return view.bad_credentials();
             }
 
-            HttpContext.Response.Headers.Append("testaccess", token);
+            HttpContext.Response.Headers.Append("auth_token", token);
             return view.login_success(token);
         }
 

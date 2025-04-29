@@ -25,8 +25,6 @@ namespace pl.middleware
             this._provider = provider;
         }
 
-
-
         public async Task InvokeAsync(HttpContext context)
         {
             try
@@ -53,7 +51,7 @@ namespace pl.middleware
             else
             {
                 statusCode = StatusCodes.Status500InternalServerError;
-                message = "Internal Server Error";
+                message = ex.Message;
             }
 
             var controller = context.Request.RouteValues["controller"]?.ToString();
@@ -73,10 +71,13 @@ namespace pl.middleware
         {
             context.Response.ContentType = MediaTypeNames.Application.Json;
             context.Response.StatusCode = status;
-            await context.Response.WriteAsync(JsonSerializer.Serialize(new
-            {
-                error = new { status, message }
-            }));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(
+                new
+                {
+                    status,
+                    message,
+                }
+            ));
         }
 
 

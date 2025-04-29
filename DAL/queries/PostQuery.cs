@@ -9,13 +9,9 @@ namespace dal.queries
         ORDER BY created_at DESC;";
 
         public string add_post() => @"
-        DECLARE @InsertedPostId UNIQUEIDENTIFIER;
-
         INSERT INTO post (user_id, content, created_at)
-        OUTPUT INSERTED.post_id INTO @InsertedPostId
+        OUTPUT INSERTED.post_id
         VALUES (@user_id, @content, @created_at);
-
-        SELECT @InsertedPostId;
         ";
 
         public string delete_post_by_id() => @"DELETE FROM [post] WHERE post_id = @post_id;";

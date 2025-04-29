@@ -147,7 +147,6 @@ namespace dal.repo
                     user_id = Guid.Parse(row["user_id"]?.ToString() ?? ""),
                     username = row["username"]?.ToString() ?? string.Empty,
                     pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
-                    is_private = Convert.ToBoolean(row["is_private"]),
                 });
             }
             catch (Exception ex) when (ex.InnerException is SqlException sqlEx)

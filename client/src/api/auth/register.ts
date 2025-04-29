@@ -17,8 +17,7 @@ const register = async (
 	apiService.request<{ message: string; status: number }>(
 		`/user/register`,
 		`POST`,
-		{ username, email, password, full_name, bio, location, website },
-		false
+		{ body: { username, email, password, full_name, bio, location, website } } // Updated to use options object
 	);
 
 export default register;

@@ -1,31 +1,24 @@
-import getUserById from "@/api/getUserById";
-import Footer from "@/components/auth/footer";
+// import Footer from "@/components/auth/footer";
+import getUserById from "@/api/auth/getUserById";
 import { Navbar } from "@/components/custom/navbar";
 import PostFeed from "@/components/home/post-feed";
 import WaitLayout from "@/components/home/waiting-animation";
 import DeviceProvider from "@/contexts/DeviceContext";
 import { UserProvider } from "@/contexts/UserContext";
+import UseTokenHook from "@/hooks/useTokenHook";
 import { IBaseUser } from "@/types/IEssentialsUser";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 
 const Home = async () => {
-	let data: {
+	// const cookieStore = await cookies();
+
+	const data: {
 		message: string;
 		status: number;
 		user: IBaseUser;
-	};
-	try {
-		const res = await getUserById();
-		if (res.status !== 200) {
-			redirect("/auth");
-		}
+	} = await getUserById(await UseTokenHook());
 
-		data = res;
-		// return res;
-	} catch (error) {
-		redirect("/auth");
-	}
+	console.log("data", data);
 
 	const userAgent = (await headers()).get("user-agent") || "";
 

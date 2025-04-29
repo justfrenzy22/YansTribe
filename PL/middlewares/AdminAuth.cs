@@ -24,7 +24,6 @@ namespace pl.middleware
                 return;
             }
 
-            // Await the asynchronous call to ensure it completes before proceeding
             VerifyTokenRes res = await Task.Run(() => this._service.AuthAdmin(token));
 
             if (!res.check)

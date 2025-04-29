@@ -29,7 +29,7 @@ namespace core.entities
         public Guid user_id => this._user_id;
         public List<PostMedia> media => this._media;
         public string content => this._content;
-        public DateTime created_at => this.created_at;
+        public DateTime created_at => this._created_at;
 
         public void AddMedia(PostMedia media)
         {

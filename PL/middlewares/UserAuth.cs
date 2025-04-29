@@ -18,7 +18,7 @@ namespace pl.middleware
 
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            string? token = context.HttpContext.Request.Cookies["token"];
+            string? token = context.HttpContext.Request.Headers["auth_token"];
 
             if (string.IsNullOrEmpty(token))
             {
@@ -26,7 +26,13 @@ namespace pl.middleware
                 return;
             }
 
-            VerifyTokenRes res = await Task.Run(() => this._service.AuthUser(token ?? ""));
+            // Remove "Bearer " prefix if present
+            if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            {
+                token = token.Substring("Bearer ".Length).Trim();
+            }
+
+            VerifyTokenRes res = await Task.Run(() => this._service.AuthUser(token));
 
             if (!res.check)
             {

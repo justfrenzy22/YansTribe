@@ -8,7 +8,7 @@ namespace YansTribe.Tests.BLL.AuthService
         [TestMethod]
         public void ValidTokenAdmin_ReturnsTrue()
         {
-            string? token = this._service.GenerateJwtToken(user_id: this.TestUserId.ToString(), isAdmin: false);
+            string? token = this._service.GenerateJwtToken(user_id: this.TestUserId.ToString() ?? "", isAdmin: false);
             VerifyTokenRes result = this._service.VerifyTokenAsync(token: token, isAdmin: false);
 
             Assert.IsTrue(result.check);

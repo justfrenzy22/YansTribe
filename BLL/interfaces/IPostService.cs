@@ -4,6 +4,6 @@ namespace bll.interfaces
 {
     public interface IPostService
     {
-        Task<int?> AddPost(Post post);
+        Task<int?> CreatePost(Post post);
     }
 }

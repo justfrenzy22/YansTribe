@@ -8,7 +8,7 @@ namespace YansTribe.Tests.BLL.AuthService
         public IConfiguration _conf = null!;
         protected bll.services.AuthService _service = null!;
 
-        protected int? TestUserId = 123;
+        protected Guid TestUserId = Guid.NewGuid();
 
         [TestInitialize]
         public void Init()

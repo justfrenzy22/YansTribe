@@ -15,13 +15,19 @@ namespace server.views
 
         public ActionResult bad_credentials()
         {
-            var data = new { status = 401, message = "bad credentials" };
+            var data = new { status = 401, message = "bad post credentials" };
+            return new ObjectResult(data) { StatusCode = 401 };
+        }
+
+        public ActionResult wrong_credentials()
+        {
+            var data = new { status = 401, message = "wrong credentials" };
             return new ObjectResult(data) { StatusCode = 401 };
         }
 
         public ActionResult created()
         {
-            var data = new { status = 201, message = "Post created successfully!" };
+            var data = new { status = 200, message = "Post created successfully!" };
             return new ObjectResult(data) { StatusCode = 201 };
         }
 

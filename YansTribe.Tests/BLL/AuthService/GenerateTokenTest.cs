@@ -47,7 +47,7 @@ namespace YansTribe.Tests.BLL.AuthService
 
             var claim = decoded.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name || c.Type == "unique_name");
 
-            Assert.IsTrue(Convert.ToInt32(claim?.Value) == this.TestUserId);
+            Assert.IsTrue(claim != null && Guid.Parse(claim.Value) == this.TestUserId);
         }
 
     }

@@ -175,7 +175,8 @@ const Post = ({
 															<img
 																src={selectedMedia ?? "code.jpg"}
 																alt="Enlarged media"
-																className="rounded-lg shadow-lg object-contain max-w-full max-h-[90vh]"
+																className="rounded-lg shadow-lg  max-h-[90vh]"
+																// TODO: fix the size of the image to be responsive
 															/>
 														) : (
 															<video

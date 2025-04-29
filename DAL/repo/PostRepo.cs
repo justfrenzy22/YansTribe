@@ -1,20 +1,21 @@
 using core.entities;
 using dal.exceptions;
 using dal.interfaces.db;
+using dal.interfaces.repo;
 using dal.queries;
 using Microsoft.Data.SqlClient;
 
-/* TODO: start implementing the post repo
+/* TODO: continue implementing the post repo
 */
 
 namespace dal.repo
 {
-    public class PostRepo : BaseRepo
+    public class PostRepo : BaseRepo, IPostRepo
     {
         private readonly PostQuery postQuery;
         public PostRepo(IDBRepo db_repo, PostQuery postQuery) : base(db_repo) => this.postQuery = postQuery;
 
-        public async Task<int> AddPost(Post post)
+        public async Task<int> CreatePost(Post post)
         {
             try
             {
@@ -37,7 +38,7 @@ namespace dal.repo
                 {
                     return 1;
                 }
-                
+
 
                 foreach (PostMedia media in post.media)
                 {
