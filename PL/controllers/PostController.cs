@@ -35,18 +35,17 @@ namespace pl.controllers
 
             if (string.IsNullOrEmpty(model.content))
             {
-                return BadRequest(ModelState);
+                return view.wrong_credentials();
             }
 
             string? user_id = this.HttpContext.Items["user_id"]?.ToString();
 
             Post post = new Post(
+                post_id: Guid.NewGuid(),
                 user_id: Guid.Parse(user_id ?? ""),
                 content: model.content,
                 created_at: DateTime.Now
             );
-
-            return this.view.success();
 
             // if (model.files != null && model.files.Count > 0)
             // {
@@ -58,14 +57,20 @@ namespace pl.controllers
             //             Directory.CreateDirectory(uploadsFolder);
             //         }
 
-            //         var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+            //         Guid guid = Guid.NewGuid();
+
+            //         var fileName = guid + Path.GetExtension(file.FileName);
             //         var filePath = Path.Combine(uploadsFolder, fileName);
-            //         await System.IO.File.WriteAllBytesAsync(filePath, file.Content);
+            //         using (var memoryStream = new MemoryStream())
+            //         {
+            //             await file.CopyToAsync(memoryStream);
+            //             await System.IO.File.WriteAllBytesAsync(filePath, memoryStream.ToArray());
+            //         }
 
             //         post.AddMedia(new PostMedia
             //         (
-            //             post_id: Guid.NewGuid(),
-            //             media_id: Guid.NewGuid(),
+            //             post_id: post.post_id,
+            //             media_id: guid,
             //             media_type: file.ContentType.StartsWith("image/")
             //                 ? core.enums.MediaType.image
             //                 : core.enums.MediaType.video,
@@ -74,16 +79,14 @@ namespace pl.controllers
             //     }
             // }
 
-            // int? check = await this._postService.CreatePost(post);
+            int? check = await this._postService.CreatePost(post, files: model.files);
 
-            // if (check != null && check > 0)
-            // {
-            //     return view.created();
-            // }
-            // else
-            // {
-            //     return view.not_found();
-            // }
+            if (check != null && check > 0)
+            {
+                return view.created();
+            }
+
+            return view.bad_credentials();
         }
     }
 }

@@ -81,6 +81,7 @@ builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IHashService, HashService>();
 builder.Services.AddTransient<IPostService, PostService>();
+builder.Services.AddTransient<IFileService, FileService>();
 
 builder.Services.Configure<FormOptions>(options =>
 {

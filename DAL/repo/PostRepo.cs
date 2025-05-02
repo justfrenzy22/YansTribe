@@ -20,6 +20,7 @@ namespace dal.repo
             try
             {
                 var result = await this.db_repo.scalar(postQuery.add_post(), new Dictionary<string, object> {
+                    { "@post_id", post.post_id },
                     { "@user_id", post.user_id },
                     { "@content", post.content },
                     { "@created_at", post.created_at }
@@ -43,6 +44,7 @@ namespace dal.repo
                 foreach (PostMedia media in post.media)
                 {
                     await this.db_repo.nonQuery(postQuery.add_post_media(), new Dictionary<string, object> {
+                        { "@media_id", media.media_id },
                         { "@post_id", post_id },
                         { "@media_type", media.media_type.ToString() },
                         { "@media_src", media.media_src }

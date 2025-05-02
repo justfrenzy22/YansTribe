@@ -17,6 +17,7 @@ namespace core.entities
             this._media_src = media_src;
         }
 
+        public Guid media_id => this._media_id;
         public Guid post_id => this._post_id;
         public MediaType media_type => this._media_type;
         public string media_src => this._media_src;

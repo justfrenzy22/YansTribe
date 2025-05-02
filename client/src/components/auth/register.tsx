@@ -239,7 +239,6 @@ const Register = ({
 					)}
 				</div>
 			</form>
-			<Toaster position="top-right" />
 		</div>
 	);
 };

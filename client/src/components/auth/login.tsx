@@ -240,7 +240,6 @@ const Login = ({ isLogin }: { isLogin: boolean }) => {
 				Red
 			</Button> */}
 			</form>
-			<Toaster position="top-right" />
 		</div>
 	);
 };

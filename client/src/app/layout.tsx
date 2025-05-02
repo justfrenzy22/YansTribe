@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
 	title: "YansTribe - Home",
@@ -17,7 +18,10 @@ export default function RootLayout({
 		<html lang="en" data-theme="default" suppressHydrationWarning>
 			<head />
 			<body className={`selection:bg-blue-400 bg-background `}>
-				<ThemeProvider defaultTheme="dark">{children}</ThemeProvider>
+				<ThemeProvider defaultTheme="dark">
+					{children}
+					<Toaster position="top-right" />
+				</ThemeProvider>
 			</body>
 		</html>
 	);

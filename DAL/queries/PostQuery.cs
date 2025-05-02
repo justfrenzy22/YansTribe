@@ -9,9 +9,9 @@ namespace dal.queries
         ORDER BY created_at DESC;";
 
         public string add_post() => @"
-        INSERT INTO post (user_id, content, created_at)
+        INSERT INTO post (post_id, user_id, content, created_at)
         OUTPUT INSERTED.post_id
-        VALUES (@user_id, @content, @created_at);
+        VALUES (@post_id, @user_id, @content, @created_at);
         ";
 
         public string delete_post_by_id() => @"DELETE FROM [post] WHERE post_id = @post_id;";
@@ -26,8 +26,8 @@ namespace dal.queries
         ";
 
         public string add_post_media() => @"
-        INSERT INTO post_media (post_id, media_type, media_src)
-        VALUES (@post_id, @media_type, @media_src);";
+        INSERT INTO post_media (media_id, post_id, media_type, media_src)
+        VALUES (@media_id ,@post_id, @media_type, @media_src);";
 
         public string delete_post_like() => @"
         DELETE FROM post_like
