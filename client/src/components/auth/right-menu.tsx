@@ -15,15 +15,15 @@ import Register from "./register";
 const RightMenu = () => {
 	const [isLogin, setLogin] = useState<boolean>(true);
 	const { theme, setTheme } = useTheme();
-	const { colorTheme, setColorTheme } = useColorTheme();
+	// const { colorTheme, setColorTheme } = useColorTheme();
 	// useEffect(() => {
 	// 	document.documentElement.style.backgroundColor = "oklch(0.1 0.05 240)";
 	// }, []);
 
-	const handle = () => {
-		changeColorTheme("dark-blue");
-		// document.documentElement.style.backgroundColor = "oklch(0.1 0.05 240)";
-	};
+	// const handle = () => {
+	// 	changeColorTheme("dark-blue");
+	// 	// document.documentElement.style.backgroundColor = "oklch(0.1 0.05 240)";
+	// };
 // outline dark:border-gray-800
 	return (
 		<Card

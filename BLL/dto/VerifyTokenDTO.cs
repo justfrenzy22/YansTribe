@@ -7,6 +7,6 @@ namespace bll.dto
     {
         [Display(Name = "user_id")]
         [Required]
-        public int? user_id { get; set; }
+        public Guid? user_id { get; set; }
     }
 }

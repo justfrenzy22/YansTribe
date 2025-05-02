@@ -39,7 +39,8 @@ namespace bll.services
             if (user.role != Role.Admin && user.role != Role.SuperAdmin)
             {
                 // throw new DataAccessException("User or password is incorrect.");
-                throw new DataAccessException("User role is incorrect.");
+                // throw new DataAccessException("User role is incorrect.");
+                return null;
             }
 
             string hash_password = this.hash_service.hash(password);
@@ -69,7 +70,7 @@ namespace bll.services
                 };
             }
 
-            UserDTO? admin = await this.user_repo.GetUserById(res.user_id ?? 0);
+            User? admin = await this.user_repo.GetUserById(Guid.Parse(res.user_id?.ToString() ?? ""));
 
             if (admin != null && admin.role == Role.Admin)
             {
@@ -95,17 +96,17 @@ namespace bll.services
         }
 
 
-        public async Task<List<UserDTO>?> GetUsersAsync(int admin_id)
+        public async Task<List<User>?> GetUsersAsync(string admin_id)
         {
-            List<UserDTO>? users = await this.repo.GetAllUsersAsync(admin_id);
+            List<User>? users = await this.repo.GetAllUsersAsync(Guid.Parse(admin_id));
             return users;
         }
 
         public async Task<string> ChangeRole(string user_id, string role)
         {
-            int conv_user_id = Convert.ToInt32(user_id);
+            // int conv_user_id = Convert.ToInt32(user_id);
 
-            bool check = await this.user_repo.ChangeRole(conv_user_id, role);
+            bool check = await this.user_repo.ChangeRole(Guid.Parse(user_id), role);
 
             return check ? "User role updated successfully." : "Failed to update user role.";
         }

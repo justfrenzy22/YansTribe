@@ -20,7 +20,11 @@ namespace bll.services
             string key = "";
             if (isAdmin)
             {
-                key = this._config["Jwt:AdminKey"] ?? this._config["Jwt:UserKey"] ?? string.Empty;
+                key = this._config["Jwt:AdminKey"] ?? string.Empty;
+            }
+            else
+            {
+                key = this._config["Jwt:UserKey"] ?? string.Empty;
             }
 
             if (string.IsNullOrEmpty(token))
@@ -52,15 +56,23 @@ namespace bll.services
 
                 var userId = jwtToken.Claims.First(x => x.Type == JwtRegisteredClaimNames.UniqueName).Value;
 
-                int parsedUserId = int.Parse(userId);
+                // int parsedUserId = int.Parse(userId);
 
 
-                return new VerifyTokenRes { check = true, user_id = parsedUserId };
+                return new VerifyTokenRes { check = true, user_id = Guid.Parse(userId) };
 
             }
-            catch
+            catch (SecurityTokenExpiredException expEx)
             {
-                return new VerifyTokenRes { check = false };
+                return new VerifyTokenRes { check = false, exception = expEx.Message };
+            }
+            catch (SecurityTokenException secTEx)
+            {
+                return new VerifyTokenRes { check = false, exception = secTEx.Message };
+            }
+            catch (Exception ex)
+            {
+                return new VerifyTokenRes { check = false, exception = ex.Message };
             }
         }
 

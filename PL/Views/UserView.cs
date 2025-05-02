@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using core.entities;
 using dal.dto;
+using pl.dto;
 
 namespace server.views
 {
@@ -30,13 +31,30 @@ namespace server.views
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
-        public ActionResult get_user(UserDTO user)
+        public ActionResult get_user(object userDto)
         {
-            var data = new { status = 200, message = "user retrieved successfully!", user };
+
+            var data = new
+            {
+                status = 200,
+                message = "user retrieved successfully!",
+                user = userDto
+            };
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
-        public ActionResult get_users(List<UserDTO> users)
+        public ActionResult get_base_user(BaseUserDTO userDTO)
+        {
+            var data = new
+            {
+                status = 200,
+                message = "Base user retrieved successfully!",
+                user = userDTO
+            };
+            return new ObjectResult(data) { StatusCode = 200 };
+        }
+
+        public ActionResult get_users(List<User> users)
         {
             var data = new { status = 200, message = "users retrieved successfully!", users };
             return new ObjectResult(data) { StatusCode = 200 };
@@ -56,8 +74,8 @@ namespace server.views
 
         public ActionResult bad_credentials()
         {
-            var data = new { status = 401, message = "bad credentials" };
-            return new ObjectResult(data) { StatusCode = 401 };
+            var data = new { status = 400, message = "bad credentials" };
+            return new ObjectResult(data) { StatusCode = 400 };
         }
 
         public ActionResult get_role(core.enums.Role role)

@@ -109,6 +109,10 @@ namespace dal.repo
                         {
                             sql_param.SqlDbType = SqlDbType.Int;
                         }
+                        else if (param.Value is Guid)
+                        {
+                            sql_param.SqlDbType = SqlDbType.UniqueIdentifier;
+                        }
                         else if (param.Value is string)
                         {
                             sql_param.SqlDbType = SqlDbType.VarChar;

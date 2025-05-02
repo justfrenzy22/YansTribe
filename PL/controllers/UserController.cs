@@ -6,6 +6,8 @@ using server.views;
 using bll.interfaces;
 using core.entities;
 using dal.dto;
+using pl.middleware;
+using pl.dto;
 
 namespace pl.controllers
 {
@@ -35,50 +37,38 @@ namespace pl.controllers
             return this.view.success();
         }
 
-        [HttpGet("get_user/{user_id}")]
-        public async Task<IActionResult> GetUserById([FromRoute] dto.GetUserDTO model)
+        [HttpGet("get_user")]
+        // [ServiceFilter(typeof(AdminAuth))]
+        [ServiceFilter(typeof(UserAuth))]
+        public async Task<IActionResult> GetUserById()
         {
             if (!ModelState.IsValid)
             {
                 return view.bad_credentials();
             }
 
-            UserDTO? user = await this.service.GetUserById(Convert.ToInt32(model.user_id));
+            string? user_id = HttpContext.Items["user_id"]?.ToString();
+
+            if (user_id == null)
+            {
+                return view.bad_credentials();
+            }
+
+            User? user = await this.service.GetUserEssentials(Guid.Parse(user_id));
 
             if (user == null)
             {
                 return view.not_found();
             }
 
-            return view.get_user(user);
+            BaseUserDTO userDTO = new BaseUserDTO(
+                user.user_id.ToString(),
+                user.username,
+                user.pfp_src
+            );
+
+            return view.get_base_user(userDTO);
         }
-        // [HttpGet("role/{user_id}")]
-        // [Authorize] ask my teacher
-        // public async Task<IActionResult> GetRoleById([FromRoute] requests.UserGetRoleReq model)
-        // {
-        //     if (!ModelState.IsValid)
-        //     {
-        //         return view.bad_credentials();
-        //     }
-
-        //     dal.requests.UserGetRoleReq req = this.mapper.mapGetRoleReq(model);
-        //     var res = await this.service.GetRoleById(req);
-        //     UserGetRoleRes server_res = this.mapper.mapGetRoleRes(res);
-
-        //     if (server_res.exception != null)
-        //     {
-        //         return view.error(server_res.exception);
-        //     }
-
-        //     if (Enum.IsDefined(typeof(Role), server_res.role) == false)
-        //     {
-        //         return view.not_found();
-        //     }
-        //     else
-        //     {
-        //         return view.get_role(server_res.role);
-        //     }
-        // }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] dto.UserLoginDTO model)
@@ -95,10 +85,11 @@ namespace pl.controllers
                 return view.bad_credentials();
             }
 
-            HttpContext.Response.Headers.Append("testaccess", token);
+            HttpContext.Response.Headers.Append("auth_token", token);
             return view.login_success(token);
         }
 
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] dto.UserRegisterDTO model)
         {
             if (!ModelState.IsValid)
@@ -119,8 +110,8 @@ namespace pl.controllers
             );
 
 
-            int? user_id = await this.service.RegisterUser(user);
-            if (user_id != null && user_id != -1)
+            Guid? user_id = await this.service.RegisterUser(user);
+            if (user_id != null && user_id != Guid.Empty)
             {
                 return view.register_success();
             }

@@ -3,6 +3,7 @@ using bll.interfaces;
 using bll.services;
 using dal.interfaces.db;
 using dal.interfaces.repo;
+using dal.mapper;
 using dal.queries;
 using dal.repo;
 
@@ -17,6 +18,7 @@ using dal.repo;
 
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.IdentityModel.Tokens;
 using pl.middleware;
 using server.services;
@@ -35,10 +37,15 @@ builder.Services.AddControllersWithViews();
 
 // Register views
 builder.Services.AddTransient<UserView>();
+builder.Services.AddTransient<PostView>();
 
 // Register queries
 builder.Services.AddTransient<AdminQuery>();
 builder.Services.AddTransient<UserQuery>();
+builder.Services.AddTransient<PostQuery>();
+
+// Mapper
+builder.Services.AddTransient<UserMapper>();
 
 // Register repositories
 builder.Services.AddTransient<IDBRepo>(prov => new DBRepo(connString));
@@ -47,27 +54,44 @@ builder.Services.AddTransient<IAdminRepo>(provider =>
     var dbRepo = provider.GetRequiredService<IDBRepo>();
     var adminQuery = provider.GetRequiredService<AdminQuery>();
     var userQuery = provider.GetRequiredService<UserQuery>();
+    var mapper = provider.GetRequiredService<UserMapper>();
 
-    return new AdminRepo(dbRepo, adminQuery, userQuery);
+    return new AdminRepo(dbRepo, adminQuery, userQuery, mapper);
 });
 builder.Services.AddTransient<IUserRepo>(provider =>
 {
     var dbRepo = provider.GetRequiredService<IDBRepo>();
     var userQuery = provider.GetRequiredService<UserQuery>();
+    var mapper = provider.GetRequiredService<UserMapper>();
 
-    return new UserRepo(dbRepo, userQuery);
+    return new UserRepo(dbRepo, userQuery, mapper);
 });
+builder.Services.AddTransient<IPostRepo>(provider =>
+{
+    var dbRepo = provider.GetRequiredService<IDBRepo>();
+    var postQuery = provider.GetRequiredService<PostQuery>();
+
+    return new PostRepo(dbRepo, postQuery);
+});
+
 
 // Register services
 builder.Services.AddTransient<IAdminService, AdminService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IHashService, HashService>();
+builder.Services.AddTransient<IPostService, PostService>();
+builder.Services.AddTransient<IFileService, FileService>();
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 104857600; // 100 MB
+});
 
 
 // Admin Auth Middleware
 builder.Services.AddScoped<AdminAuth>();
-// builder.Services.AddScoped<SuperAdminAuth>();
+builder.Services.AddScoped<UserAuth>();
 builder.Services.AddScoped<SuperAdminAuthFilter>();
 
 
@@ -75,11 +99,11 @@ builder.Services.AddScoped<SuperAdminAuthFilter>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("allow_frontend", policy =>
-        policy.WithOrigins("http://192.168.0.101:3002")
-            .AllowCredentials()
+        policy.WithOrigins("http://192.168.0.101:3002", "http://localhost:3000")
+            .AllowCredentials() // Allows cookies to be sent
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .WithExposedHeaders("testaccess"));
+            .WithExposedHeaders("auth_token")); // Exposes the auth_token header
 });
 
 // Configure JWT authentication
@@ -108,6 +132,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // url configuration
 var vpnOn = builder.Configuration["VPN:Enabled"]?.ToLower() == "true";
+Console.WriteLine($"VPN enabled: {vpnOn}");
 if (vpnOn)
 {
     builder.WebHost.UseUrls("http://10.123.105.3:5114", "http://localhost:5114");
@@ -116,24 +141,6 @@ else
 {
     builder.WebHost.UseUrls("http://localhost:5114");
 }
-
-// VPN configuration
-// var vpn = new desktop_app.config.VPN();
-// var status = await Task.Run(() => vpn.get());
-
-// if (status == desktop_app.config.status.Disconnected)
-// {
-//     builder.WebHost.UseUrls("http://localhost:5114");
-// }
-// else if (status == desktop_app.config.status.Connected)
-// {
-//     builder.WebHost.UseUrls("http://10.123.105.3:5114", "http://localhost:5114");
-// }
-// else
-// {
-//     throw new Exception("There was a problem checking the VPN status. Check the VPN config class.");
-// }
-
 // Build application
 var app = builder.Build();
 
@@ -144,175 +151,19 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts(); // Use HTTP Strict Transport Security for non-development environments
 }
 
-app.UseMiddleware<ExceptionMiddleware>();
-app.UseHttpsRedirection(); // Redirect HTTP requests to HTTPS
-app.UseStaticFiles(); // Serve static files
 app.UseRouting(); // Enable routing
-app.UseCors("allow_frontend"); // Use CORS policy
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthentication(); // Use authentication
 app.UseAuthorization(); // Use authorization
+app.MapControllers();
+app.UseHttpsRedirection(); // Redirect HTTP requests to HTTPS
+app.UseStaticFiles(); // Serve static files
+app.UseCors("allow_frontend"); // Use CORS policy
 
-// Map all controllers automatically
 app.MapControllers();
 
-// Map default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Admin}/{action=Index}/{id?}");
 
-// Run the application
 app.Run();
-
-
-// using System.Text;
-
-// using dal.interfaces.db;
-// using dal.interfaces.repo;
-// using dal.interfaces.service;
-// using dal.queries;
-// using dal.repo;
-// using dal.services.admin;
-// using dal.services.user;
-
-// using DotNetEnv;
-// using Microsoft.AspNetCore.Authentication.JwtBearer;
-// using Microsoft.IdentityModel.Tokens;
-// using server.mapper;
-// using server.services;
-// using server.views;
-
-// var builder = WebApplication.CreateBuilder(args);
-
-// Env.Load();
-
-// //
-
-// // string connString = "Server=ACER/justf;Database=test;";
-// builder.Services.AddTransient<UserView>();
-
-// builder.Services.AddControllersWithViews();
-
-
-// string connString = "Server=localhost;database=yanstribe;Integrated Security=True;TrustServerCertificate=True";
-
-// builder.Services.AddTransient<IAdminService, AdminService>();
-// builder.Services.AddTransient<IUserService, UserService>();
-// builder.Services.AddTransient<AdminQuery>();
-// builder.Services.AddTransient<UserQuery>();
-// builder.Services.AddTransient<IAdminRepo>(provider =>
-// {
-//     var dbRepo = provider.GetRequiredService<IDBRepo>();
-//     var adminQuery = provider.GetRequiredService<AdminQuery>();
-//     var userQuery = provider.GetRequiredService<UserQuery>();
-
-//     return new AdminRepo(dbRepo, adminQuery, userQuery);
-// });
-// builder.Services.AddTransient<IUserRepo>(provider =>
-// {
-//     var dbRepo = provider.GetRequiredService<IDBRepo>();
-//     var userQuery = provider.GetRequiredService<UserQuery>();
-
-//     return new UserRepo(dbRepo, userQuery);
-// });
-
-// builder.Services.AddTransient<AdminMapper>();
-// builder.Services.AddTransient<UserMapper>();
-
-// builder.Services.AddTransient<IDBRepo>(prov => new DBRepo(connString));
-// builder.Services.AddTransient<IAuthService, AuthService>();
-// builder.Services.AddTransient<IHashService, HashService>();
-
-// builder.Services.AddCors(options =>
-//     {
-//         options.AddPolicy("allow_frontend",
-//         policy => policy
-//             .WithOrigins("http://192.168.0.101:3002")
-//             .AllowCredentials()
-//             .AllowAnyHeader()
-//             .AllowAnyMethod()
-//             .WithExposedHeaders("testaccess")
-//         );
-//     });
-
-
-// // JWT
-// // credit to https://auth0.com/blog/how-to-validate-jwt-dotnet/; https://medium.com/@softsusanta/how-to-implement-jwt-token-authentication-in-asp-net-core-api-833385ad60cc
-// string adminKey = builder.Configuration["Jwt:AdminKey"] ?? throw new InvalidOperationException("Admin JWT Key is not configured in appsettings.");
-// string userKey = builder.Configuration["Jwt:UserKey"] ?? throw new InvalidOperationException("User JWT Key is not configured in appsettings.");
-// string host = builder.Configuration["Jwt:Host"] ?? throw new InvalidOperationException("JWT Host is not configured in appsettings.");
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//     .AddJwtBearer(options =>
-//     {
-//         options.TokenValidationParameters = new TokenValidationParameters
-//         {
-//             ValidateIssuer = true,
-//             ValidateAudience = true,
-//             ValidateLifetime = true,
-//             ValidateIssuerSigningKey = true,
-//             ValidIssuer = "yanstribe",
-//             ValidAudience = host,
-//             IssuerSigningKeys = new List<SecurityKey> { new SymmetricSecurityKey(Encoding.UTF8.GetBytes(adminKey)), new SymmetricSecurityKey(Encoding.UTF8.GetBytes(userKey)) }
-//         };
-//     });
-
-
-// // credit to myself for VPN config https://github.com/justfrenzy22/desktop_app
-
-// var vpn = new desktop_app.config.VPN();
-
-// var status = await Task.Run(() => vpn.get());
-
-// if (status == desktop_app.config.status.Disconnected)
-// {
-//     builder.WebHost.UseUrls("http://localhost:5114");
-// }
-// else if (status == desktop_app.config.status.Connected)
-// {
-//     builder.WebHost.UseUrls("http://10.123.105.3:5114", "http://localhost:5114");
-// }
-// else
-// {
-//     throw new Exception("There was problem checking the VPN status. Check the VPN config class.");
-// }
-
-
-// var app = builder.Build();
-
-// // Configure the HTTP request pipeline.
-// if (!app.Environment.IsDevelopment())
-// {
-//     app.UseExceptionHandler("/Home/Error");
-//     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-//     app.UseHsts();
-// }
-
-
-// app.UseStaticFiles();
-
-// app.UseHttpsRedirection();
-
-// app.UseRouting();
-
-// app.UseAuthorization();
-
-// app.UseAuthentication();
-
-// //use CORS
-// app.UseCors("allow_frontend");
-// // app.UseCors(builder =>
-// //     builder.WithOrigins("*")
-// //         .AllowAnyHeader()
-// //         .AllowAnyMethod()
-// //         .AllowCredentials());
-
-
-// // app.MapStaticAssets();
-
-// // Map all Controllers automatically
-// app.MapControllers();
-
-// app.MapControllerRoute(
-//     name: "default",
-//     pattern: "{controller=Admin}/{action=Index}/{id?}");
-
-// app.Run();
