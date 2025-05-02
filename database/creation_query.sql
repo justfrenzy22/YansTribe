@@ -1,5 +1,6 @@
+
 create table [user] (
-    user_id uniqueidentifier primary key default newid(),
+    user_id int identity(1, 1) primary key,
     username nvarchar(50) not null unique,
     email nvarchar(100) not null unique,
     password_hash nvarchar(100) not null,
@@ -14,41 +15,32 @@ create table [user] (
 );
 
 create table post (
-    post_id uniqueidentifier primary key default newid(),
-    user_id uniqueidentifier not null,
+    post_id int identity(1, 1) primary key,
+    user_id int not null,
     title nvarchar(50) not null,
+    has_img bit not null default 0,
+    media_src nvarchar(255) null,
     content nvarchar(max) not null,
+    -- visibility
     created_at datetime not null default getdate(),
     constraint fk_post_user foreign key (user_id) references [user](user_id)
 );
 
 create table post_like (
-    user_id uniqueidentifier not null,
-    post_id uniqueidentifier not null,
+    user_id int not null,
+    post_id int not null,
     created_at datetime not null default getdate(),
     constraint pk_post_like primary key (user_id, post_id),
     constraint fk_post_like_user foreign key (user_id) references [user](user_id),
     constraint fk_post_like_post foreign key (post_id) references post(post_id)
 );
 
--- In the future
--- //TODO Add tags
--- create table post_tag ()
-
-create table post_media (
-    media_id uniqueidentifier primary key default newid(),
-    post_id uniqueidentifier not null,
-    media_type nvarchar(20) not null check (media_type in ('image', 'video')),
-    media_src nvarchar(255) not null,
-    [order] int not null default 0,
-    constraint fk_post_media_post foreign key (post_id) references post(post_id)
-)
 
 create table comment (
-    comment_id uniqueidentifier primary key default newid(),
-    post_id uniqueidentifier not null,
-    user_id uniqueidentifier not null,
-    parent_id uniqueidentifier null,
+    comment_id int identity(1, 1) primary key,
+    post_id int not null,
+    user_id int not null,
+    parent_id int null,
     content nvarchar(500) not null,
     created_at datetime not null default getdate(),
     constraint fk_comment_post foreign key (post_id) references post(post_id),
@@ -57,8 +49,8 @@ create table comment (
 );
 
 create table comment_like (
-    user_id uniqueidentifier not null,
-    comment_id uniqueidentifier not null,
+    user_id int not null,
+    comment_id int not null,
     created_at datetime not null default getdate(),
     constraint pk_comment_like primary key (user_id, comment_id),
     constraint fk_comment_like_user foreign key (user_id) references [user](user_id),
@@ -66,28 +58,28 @@ create table comment_like (
 );
 
 create table friend (
-    friendship_id uniqueidentifier primary key default newid(),
-    user_1_id uniqueidentifier not null,
-    user_2_id uniqueidentifier not null,
-    status nvarchar(50) not null default 'pending' check (status in ('pending', 'accepted', 'rejected', 'blocked')), -- Allowed values: 'pending', 'accepted', 'rejected', 'blocked'
+    friendship_id int identity(1, 1) primary key,
+    user_1_id int not null,
+    user_2_id int not null,
+    status nvarchar(50) not null default 'pending' check (status in ('pending', 'accepted', 'rejected', 'blocked')), -- Allowed values: 'pending', 'accepted', 'rejected',
     created_at datetime not null default getdate(),
     constraint friend_user_1 foreign key (user_1_id) references [user](user_id),
     constraint friend_user_2 foreign key (user_2_id) references [user](user_id)
 );
 
 create table chat (
-    chat_id uniqueidentifier primary key default newid(),
-    user_1_id uniqueidentifier not null,
-    user_2_id uniqueidentifier not null,
+    chat_id int identity(1, 1) primary key,
+    user_1_id int not null,
+    user_2_id int not null,
     created_at datetime not null default getdate(),
     constraint fk_chat_user_1 foreign key (user_1_id) references [user](user_id),
     constraint fk_chat_user_2 foreign key (user_2_id) references [user](user_id)
 );
 
 create table message (
-    message_id uniqueidentifier primary key default newid(),
-    chat_id uniqueidentifier not null,
-    sender_id uniqueidentifier not null,
+    message_id int identity(1, 1) primary key,
+    chat_id int not null,
+    sender_id int not null,
     content nvarchar(max) not null,
     send_at datetime not null default getdate(),
     constraint fk_message_chat foreign key (chat_id) references chat(chat_id),
@@ -95,8 +87,8 @@ create table message (
 );
 
 create table story (
-    story_id uniqueidentifier primary key default newid(),
-    user_id uniqueidentifier not null,
+    story_id int identity(1, 1) primary key,
+    user_id int not null,
     media_type nvarchar(20) not null check (media_type in ('image', 'video')),
     media_src nvarchar(255) not null,
     caption nvarchar(500) not null,

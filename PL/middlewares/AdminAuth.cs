@@ -9,7 +9,7 @@ namespace pl.middleware
     {
         private readonly IAdminService _service;
 
-        public AdminAuth(IAdminService service)
+        public AdminAuth (IAdminService service)
         {
             this._service = service;
         }
@@ -20,16 +20,17 @@ namespace pl.middleware
 
             if (string.IsNullOrEmpty(token))
             {
-                context.Result = new RedirectToActionResult("getLogin", "admin", null);
-                return;
+            context.Result = new UnauthorizedResult();
+            return;
             }
 
+            // Await the asynchronous call to ensure it completes before proceeding
             VerifyTokenRes res = await Task.Run(() => this._service.AuthAdmin(token));
 
             if (!res.check)
             {
-                context.Result = new RedirectToActionResult("getLogin", "admin", null);
-                return;
+            context.Result = new RedirectToActionResult("Login", "Admin", null);
+            return;
             }
 
             context.HttpContext.Items["user_id"] = res.user_id;

@@ -4,7 +4,7 @@ namespace dal.dto
 {
     public class UserDTO
     {
-        public required Guid user_id { get; set; }
+        public required int user_id { get; set; }
         public required string username { get; set; }
         public required string email { get; set; }
         public required string full_name { get; set; }

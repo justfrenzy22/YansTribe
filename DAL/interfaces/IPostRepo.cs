@@ -4,6 +4,6 @@ namespace dal.interfaces.repo
 {
     public interface IPostRepo
     {
-        Task<int> CreatePost(Post post);
+        Task<int> AddPost(Post post);
     }
 }

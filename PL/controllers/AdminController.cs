@@ -61,7 +61,6 @@ namespace pl.controllers
 
         [HttpPost]
         [ServiceFilter(typeof(SuperAdminAuthFilter))]
-        [Route("/changeRole")]
         public async Task<IActionResult> ChangeRole([FromForm] AdminChangeRoleDTO model)
         {
             if (!ModelState.IsValid)
@@ -93,13 +92,8 @@ namespace pl.controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult getLogin()
-        {
-            return View("Login");
-        }
-
-        [HttpPost("/login")]
+        [HttpPost]
+        [Route("admin/Login")]
         public async Task<IActionResult> Login([FromForm] AdminLoginDTO model)
         {
             if (!ModelState.IsValid)
@@ -120,7 +114,7 @@ namespace pl.controllers
                     Secure = true,
                     Expires = DateTime.Now.AddDays(1)
                 });
-                return RedirectToAction("Index");
+                return RedirectToAction("Home");
             }
         }
 
@@ -129,14 +123,14 @@ namespace pl.controllers
         [HttpGet("/")]
         public async Task<IActionResult> Index()
         {
-            string user_id = HttpContext.Items["user_id"]?.ToString() ?? "";
+            int user_id = Convert.ToInt32(HttpContext.Items["user_id"]);
 
-            List<User>? users = await this.service.GetUsersAsync(user_id);
+            List<UserDTO>? users = await this.service.GetUsersAsync(user_id);
 
             return View("Home", users);
         }
 
-        [Route("/error")]
-        public IActionResult error(string msg) => View("Error", msg);
+        // private async Task<dal.responses.AdminGetUsersRes> GetUsers(dal.requests.UserGetRoleReq admin_id) =>
+        // await this.admin_service.GetUsersAsync(admin_id);
     }
 }

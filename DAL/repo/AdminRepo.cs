@@ -6,7 +6,6 @@ using dal.exceptions;
 using dal.interfaces.repo;
 using dal.interfaces.db;
 using dal.dto;
-using dal.mapper;
 
 namespace dal.repo
 {
@@ -14,16 +13,14 @@ namespace dal.repo
     {
         private readonly AdminQuery adminQuery;
         private readonly UserQuery userQuery;
-        private readonly UserMapper mapper;
 
-        public AdminRepo(IDBRepo db_repo, AdminQuery adminQuery, UserQuery userQuery, UserMapper mapper) : base(db_repo)
+        public AdminRepo(IDBRepo db_repo, AdminQuery adminQuery, UserQuery userQuery) : base(db_repo)
         {
             this.adminQuery = adminQuery;
             this.userQuery = userQuery;
-            this.mapper = mapper;
         }
 
-        public async Task<List<User>?> GetAllUsersAsync(Guid admin_id)
+        public async Task<List<UserDTO>?> GetAllUsersAsync(int admin_id)
         {
             try
             {
@@ -49,24 +46,21 @@ namespace dal.repo
                 //     role: ParseRole(row["role"].ToString() ?? string.Empty)
                 // )).ToList();
 
+                return res.AsEnumerable().Select(row => new UserDTO
+                {
+                    user_id = Convert.ToInt32(row["user_id"]),
+                    username = row["username"]?.ToString() ?? string.Empty,
+                    email = row["email"]?.ToString() ?? string.Empty,
+                    full_name = row["full_name"]?.ToString() ?? string.Empty,
+                    bio = row["bio"]?.ToString() ?? string.Empty,
+                    pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
+                    location = row["location"]?.ToString() ?? string.Empty,
+                    website = row["website"]?.ToString() ?? string.Empty,
+                    is_private = Convert.ToBoolean(row["is_private"]),
+                    created_at = Convert.ToDateTime(row["created_at"]),
+                    role = ParseRole(row["role"].ToString() ?? "")
 
-
-                return res.AsEnumerable()
-                    .Select(row => mapper.MapTo(new UserDTO
-                    {
-                        user_id = Guid.Parse(row["user_id"]?.ToString() ?? string.Empty),
-                        username = row["username"]?.ToString() ?? string.Empty,
-                        email = row["email"]?.ToString() ?? string.Empty,
-                        full_name = row["full_name"]?.ToString() ?? string.Empty,
-                        bio = row["bio"]?.ToString() ?? string.Empty,
-                        pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
-                        location = row["location"]?.ToString() ?? string.Empty,
-                        website = row["website"]?.ToString() ?? string.Empty,
-                        is_private = Convert.ToBoolean(row["is_private"]),
-                        created_at = Convert.ToDateTime(row["created_at"]),
-                        role = ParseRole(row["role"].ToString() ?? "")
-                    }))
-                    .ToList();
+                }).ToList();
             }
             catch (SqlException sqlEx)
             {

@@ -25,6 +25,8 @@ namespace pl.middleware
             this._provider = provider;
         }
 
+
+
         public async Task InvokeAsync(HttpContext context)
         {
             try
@@ -51,7 +53,7 @@ namespace pl.middleware
             else
             {
                 statusCode = StatusCodes.Status500InternalServerError;
-                message = ex.Message;
+                message = "Internal Server Error";
             }
 
             var controller = context.Request.RouteValues["controller"]?.ToString();
@@ -71,24 +73,20 @@ namespace pl.middleware
         {
             context.Response.ContentType = MediaTypeNames.Application.Json;
             context.Response.StatusCode = status;
-            await context.Response.WriteAsync(JsonSerializer.Serialize(
-                new
-                {
-                    status,
-                    message,
-                }
-            ));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new
+            {
+                error = new { status, message }
+            }));
         }
 
 
         private async Task HandleAdminView(HttpContext context, int statusCode, string message)
         {
             var actionContext = new ActionContext(context, new RouteData(), new ActionDescriptor());
-            var viewResult = _engine.FindView(actionContext, "../../develop/PL/Views/Admin/Error.cshtml", false);
+            var viewResult = _engine.FindView(actionContext, "~/Views/Shared/Error.cshtml", false);
 
             if (!viewResult.Success)
             {
-                // If the view is not found, return a JSON error response
                 context.Response.ContentType = MediaTypeNames.Application.Json;
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 await context.Response.WriteAsync(JsonSerializer.Serialize(new
@@ -98,14 +96,12 @@ namespace pl.middleware
                 return;
             }
 
-            // Set the response content type and status code
             context.Response.ContentType = MediaTypeNames.Text.Html;
             context.Response.StatusCode = statusCode;
 
-            // Create the ViewData and TempData
-            var viewData = new ViewDataDictionary<pl.dto.ErrDTO>(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+            var viewData = new ViewDataDictionary<dto.ErrDTO>(new EmptyModelMetadataProvider(), new ModelStateDictionary())
             {
-                Model = new pl.dto.ErrDTO
+                Model = new dto.ErrDTO
                 {
                     status = statusCode,
                     message = message
@@ -113,8 +109,6 @@ namespace pl.middleware
             };
 
             var tempData = new TempDataDictionary(context, this._provider.GetRequiredService<ITempDataProvider>());
-
-            // Render the view
             using var writer = new StringWriter();
             var viewContext = new ViewContext(
                 actionContext,
@@ -126,8 +120,6 @@ namespace pl.middleware
             );
 
             await viewResult.View.RenderAsync(viewContext);
-
-            // Write the rendered HTML to the response
             await context.Response.WriteAsync(writer.ToString());
         }
     }

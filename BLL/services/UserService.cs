@@ -1,4 +1,3 @@
-using bll.dto;
 using bll.interfaces;
 using core.entities;
 using dal.dto;
@@ -40,17 +39,16 @@ namespace bll.services
             return token;
         }
 
-        public async Task<Guid?> RegisterUser(User user)
+        public async Task<int?> RegisterUser(User user)
         {
-
-            User? userEmail = await this.repo.GetUserByEmail(user.email);
+            UserDTO? userEmail = await this.repo.GetUserByEmail(user.email);
 
             if (userEmail != null)
             {
                 throw new DataAccessException("User with this email already exists.");
             }
 
-            User? userUsername = await this.repo.GetUserByUsername(user.username);
+            UserDTO? userUsername = await this.repo.GetUserByUsername(user.username);
 
             if (userUsername != null)
             {
@@ -61,9 +59,9 @@ namespace bll.services
 
             user.HashPassword(hash_password);
 
-            Guid? user_id = await this.repo.RegisterUser(user);
+            int? user_id = await this.repo.RegisterUser(user);
 
-            if (Guid.Empty == user_id || user_id == null)
+            if (user_id == null || user_id == -1)
             {
                 throw new DataAccessException("User with this email or username already exists.");
             }
@@ -71,10 +69,6 @@ namespace bll.services
             return user_id;
         }
 
-        public async Task<User?> GetUserById(Guid user_id) => await this.repo.GetUserById(user_id);
-
-        public async Task<User?> GetUserEssentials(Guid user_id) => await this.repo.GetUserEssentials(user_id);
-
-        public VerifyTokenRes AuthUser(string token) => this.auth_service.VerifyTokenAsync(token, isAdmin: false);
+        public async Task<UserDTO?> GetUserById(int user_id) => await this.repo.GetUserById(user_id);
     }
 }

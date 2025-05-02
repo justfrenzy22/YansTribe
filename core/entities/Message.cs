@@ -2,13 +2,13 @@ namespace core.entities
 {
     public class Message
     {
-        private Guid _message_id;
-        private Guid _chat_id;
-        private Guid _sender_id;
+        private int _message_id;
+        private int _chat_id;
+        private int _sender_id;
         private string _content;
         private DateTime _send_at;
 
-        public Message(Guid message_id, Guid chat_id, Guid sender_id, string content, DateTime send_at)
+        public Message(int message_id, int chat_id, int sender_id, string content, DateTime send_at)
         {
             this._message_id = message_id;
             this._chat_id = chat_id;
@@ -18,9 +18,9 @@ namespace core.entities
         }
 
 
-        public Guid message_id => this._message_id;
-        public Guid chat_id => this._chat_id;
-        public Guid sender_id => this._sender_id;
+        public int message_id => this._message_id;
+        public int chat_id => this._chat_id;
+        public int sender_id => this._sender_id;
         public string content => this._content;
         public DateTime send_at => this._send_at;
     }

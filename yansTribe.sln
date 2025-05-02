@@ -5,13 +5,13 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PL", ".\PL\PL.csproj", "{39C59981-4324-1F1A-CEE0-055A5EA739FE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestBackend", ".\TestBackend\TestBackend.csproj", "{65D52EB8-99C3-4814-8BFE-0CFB1B260576}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", ".\DAL\DAL.csproj", "{A7B70E3C-FE0B-4DDD-9931-87AC1B7EA23A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "core", ".\core\core.csproj", "{F957872D-709E-4722-82FB-AC747B3D687F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL", "BLL\BLL.csproj", "{6BADE958-FCB2-4243-8225-76ECBAC23790}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YansTribe.Tests", "YansTribe.Tests\YansTribe.Tests.csproj", "{DD58DE6D-B162-4F36-9709-75EBD83FFDAB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,10 +39,6 @@ Global
 		{6BADE958-FCB2-4243-8225-76ECBAC23790}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BADE958-FCB2-4243-8225-76ECBAC23790}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BADE958-FCB2-4243-8225-76ECBAC23790}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DD58DE6D-B162-4F36-9709-75EBD83FFDAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DD58DE6D-B162-4F36-9709-75EBD83FFDAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DD58DE6D-B162-4F36-9709-75EBD83FFDAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DD58DE6D-B162-4F36-9709-75EBD83FFDAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

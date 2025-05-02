@@ -1,10 +1,14 @@
 "use server";
 import Header from "@/components/auth/header";
+import ToggleTheme from "@/components/custom/toggle-theme";
 import WaitLayout from "@/components/auth/waiting-animation";
 import DeviceProvider from "@/contexts/DeviceContext";
 import { headers } from "next/headers";
+import Link from "next/link";
 import Footer from "@/components/auth/footer";
 import Brand from "@/components/auth/brand";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import RightMenu from "@/components/auth/right-menu";
 
 const Auth = async () => {

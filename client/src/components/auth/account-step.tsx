@@ -13,7 +13,7 @@ const AccountStep = ({
 	setFormData,
 	isLoading,
 	usernameRef,
-	showPassword,
+	showPassord,
 	showConfirmPassword,
 	setShowPassword,
 	setShowConfirmPassword,
@@ -23,7 +23,7 @@ const AccountStep = ({
 	errors: IRegisterErrors;
 	isLoading: boolean;
 	usernameRef: React.RefObject<HTMLInputElement>;
-	showPassword: boolean;
+	showPassord: boolean;
 	showConfirmPassword: boolean;
 	setShowPassword: React.Dispatch<React.SetStateAction<boolean>>;
 	setShowConfirmPassword: React.Dispatch<React.SetStateAction<boolean>>;
@@ -120,7 +120,7 @@ const AccountStep = ({
 						name="password"
 						placeholder="password"
 						required
-						type={showPassword ? `text` : `password`}
+						type={showPassord ? `text` : `password`}
 						tabIndex={1}
 						className={`pl-10 border outline shadow-md rounded-lg bg-secondary ${
 							errors.password ? `border-red-500 focus-visible:ring-red-500` : ``
@@ -133,11 +133,11 @@ const AccountStep = ({
 					/>
 					<Button
 						type="button"
-						onClick={() => setShowPassword(!showPassword)}
+						onClick={() => setShowPassword(!showPassord)}
 						className="absolute right-2 bottom-0 cursor-pointer rounded-full p-2 border-none bg-transparent hover:bg-transparent"
 						variant={`ghost`}
 					>
-						{showPassword ? <Eye /> : <EyeOff />}
+						{showPassord ? <Eye /> : <EyeOff />}
 					</Button>
 				</div>
 				{errors.password && (
