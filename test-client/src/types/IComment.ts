@@ -8,4 +8,5 @@ export type IComment = {
     liked: boolean;
     liked_count: number;
     reply_count: number;
+    edited: boolean;
 }

@@ -20,6 +20,7 @@ const CommentPage = async () => {
 		liked: false,
 		liked_count: 12,
 		reply_count: 3,
+		edited: false,
 	};
 
 	const dummyComment2: IComment = {
@@ -33,6 +34,21 @@ const CommentPage = async () => {
 		liked: true,
 		liked_count: 84,
 		reply_count: 5,
+		edited: false,
+	};
+
+	const dummyComment3: IComment = {
+		comment_id: "cmt_453",
+		user_id: "user_2",
+		username: "maria_ilieva",
+		pfp_src: "https://api.dicebear.com/7.x/thumbs/svg?seed=Maria",
+		created_at: "17m ago",
+		content:
+			"Honestly, I'd think this is one of the best discussions I’ve seen here!",
+		liked: true,
+		liked_count: 84,
+		reply_count: 5,
+		edited: true,
 	};
 
 	return (
@@ -41,6 +57,7 @@ const CommentPage = async () => {
 				<Card className="w-[600px] m-auto p-4">
 					<Comment comment={dummyComment} currentUserId={currentUserId} />
 					<Comment comment={dummyComment2} currentUserId={currentUserId} />
+					<Comment comment={dummyComment3} currentUserId={currentUserId} />
 				</Card>
 			</div>
 		</DeviceProvider>

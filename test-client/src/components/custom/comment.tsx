@@ -2,10 +2,8 @@
 
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
 import { Badge } from "../ui/badge";
 import {
-	Bookmark,
 	CircleMinus,
 	CirclePlus,
 	Delete,
@@ -15,19 +13,13 @@ import {
 	Pencil,
 	Reply,
 	Trash,
-	UserRoundPlus,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import {
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-} from "../ui/dropdown-menu";
+import { DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu";
 import { IComment } from "@/types/IComment";
 import { useState } from "react";
 
@@ -84,6 +76,12 @@ const Comment: React.FC<CommentProps> = ({ comment, currentUserId }) => {
 						<p className="text-muted-foreground text-sm">
 							{comment.created_at}
 						</p>
+						{comment.edited && (
+							<>
+								<p>•</p>
+								<p className="text-muted-foreground text-sm">Edited</p>
+							</>
+						)}
 					</div>
 					<div className="text-muted-foreground">{comment.content}</div>
 				</div>
@@ -165,7 +163,10 @@ const Comment: React.FC<CommentProps> = ({ comment, currentUserId }) => {
 										<CircleMinus className="h-4 w-4" />
 									</DropdownMenuItem>
 									<DropdownMenuItem className="text-red-500 dark:text-red-400 p-2 flex justify-between cursor-pointer">
-										<p>Report comment</p>
+										<div className="flex flex-col">
+											<p>Report comment</p>
+											<p>(coming soon)</p>
+										</div>
 										<Delete className="h-4 w-4" />
 									</DropdownMenuItem>
 								</>
