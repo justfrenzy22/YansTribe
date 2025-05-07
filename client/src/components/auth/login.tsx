@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { ILoginForm } from "@/types/ILoginForm";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
@@ -11,11 +11,9 @@ import { Button } from "../ui/button";
 // import Error from "next/error";
 import { ILoginErrors } from "@/types/ILoginErrors";
 import { toast } from "sonner";
-import { Toaster } from "../ui/sonner";
 import login from "@/api/auth/login";
 
 const Login = ({ isLogin }: { isLogin: boolean }) => {
-	const router = useRouter();
 	const [isLoading, setLoading] = useState<boolean>(false);
 	const [formData, setFormData] = useState<ILoginForm>({
 		email: "",
@@ -68,14 +66,17 @@ const Login = ({ isLogin }: { isLogin: boolean }) => {
 			const res = await login(formData.email, formData.password);
 			console.log(res);
 			if (res.status === 200) {
-				return toast.success(res.message, {
+				toast.success(res.message, {
 					action: {
 						label: "Ok",
 						onClick: () => {
-							router.push("/");
+							redirect(`/`);
 						},
 					},
 				});
+				setTimeout(() => {
+					redirect(`/`);
+				}, 2000);
 			} else {
 				return toast.error(res.message, {
 					action: {

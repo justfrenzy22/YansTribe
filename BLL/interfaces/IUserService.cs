@@ -10,6 +10,7 @@ namespace bll.interfaces
         Task<Guid?> RegisterUser(User user);
         Task<User?> GetUserById(Guid user_id);
         Task<User?> GetUserEssentials(Guid user_id);
+        Task<User?> FetchUserProfile(string username);
         VerifyTokenRes AuthUser(string token);
     }
 }

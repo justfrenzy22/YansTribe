@@ -3,7 +3,7 @@ using core.entities;
 using Microsoft.AspNetCore.Mvc;
 using pl.dto;
 using pl.middleware;
-using server.views;
+using bll.views;
 using Microsoft.Extensions.Logging;
 
 namespace pl.controllers

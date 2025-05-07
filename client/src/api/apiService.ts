@@ -1,6 +1,6 @@
+import { saveCookie } from "@/app/actions";
 import { IHeaders } from "@/types/IHeaders";
 import { IRequestOptions } from "@/types/IRequestOptions";
-import Cookie from "js-cookie";
 
 export class ApiService {
 	private baseUrl: string;
@@ -98,19 +98,35 @@ export class ApiService {
 		return opt;
 	}
 
-	private handleToken(res: Response): void {
+	private async handleToken(res: Response) {
 		console.log(`handle token headers`, res.headers);
 		const auth_token = res.headers.get("auth_token");
 		console.log(`handle token auth_token`, auth_token);
 
 		if (auth_token) {
-			const expirationDate = new Date(Date.now() + 1000 * 60 * 60 * 24);
-			Cookie.set(`auth_token`, auth_token, {
-				expires: expirationDate,
-				crossSite: true,
-				secure: true,
-				path: "/",
-			});
+			await saveCookie(auth_token);
+			// const expirationDate = new Date(Date.now() + 1000 * 60 * 60 * 24);
+			// // Cookie.set(`auth_token`, auth_token, {
+			// // 	expires: expirationDate,
+			// // 	crossSite: true,
+			// // 	secure: true,
+			// // 	path: "/",
+			// // });
+			// // const cookieStore = cookies();
+			// const cookieStore = await cookies();
+			// cookieStore.set({
+			// 	name: "auth_token",
+			// 	value: auth_token,
+			// 	expires: expirationDate,
+			// 	secure: true,
+			// 	path: "/",
+			// });
+			// cookieStore.set("auth_token", auth_token, {
+			// 	expires: expirationDate,
+			// 	crossSite: true,
+			// 	secure: true,
+			// 	path: "/",
+			// })
 		} else {
 			console.warn("auth_token header not found in the response.");
 		}

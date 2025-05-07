@@ -1,8 +1,8 @@
 "use client";
 
 import useIsMobile from "@/hooks/useIsMobile";
-import { DeviceContextValue } from "@/types/DeviceContextValue";
-import { createContext, useContext, useEffect } from "react";
+import { DeviceContextValue } from "@/types/AppContextValue";
+import { createContext } from "react";
 
 export const DeviceContext = createContext<DeviceContextValue | null>(null);
 
@@ -21,9 +21,4 @@ const DeviceProvider = ({
 		</DeviceContext.Provider>
 	);
 };
-
-export const useDevice = () => {
-	return useContext(DeviceContext);
-};
-
 export default DeviceProvider;

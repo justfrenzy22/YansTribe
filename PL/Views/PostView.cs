@@ -3,7 +3,7 @@ using core.entities;
 using dal.dto;
 using System.Collections.Generic;
 
-namespace server.views
+namespace bll.views
 {
     public class PostView : ViewComponent
     {

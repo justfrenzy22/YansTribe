@@ -1,12 +1,6 @@
 "use client";
 
-import { AvatarImage } from "@radix-ui/react-avatar";
 import { MotionButton, MotionCard } from "../animations/motion-wrapper";
-import { Avatar, AvatarFallback } from "../ui/avatar";
-import { Card, CardContent, CardHeader } from "../ui/card";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import Image from "next/image";
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
 import { formatDistanceToNow } from "date-fns";
@@ -18,11 +12,9 @@ import {
 	Heart,
 	MessageCircle,
 	Pencil,
-	Send,
 	Share,
 	Trash,
 	UserRoundPlus,
-	X,
 } from "lucide-react";
 import {
 	DropdownMenu,
@@ -38,6 +30,11 @@ import {
 	DialogContent,
 	DialogTitle,
 } from "../ui/dialog";
+import { CustomAvatar } from "./custom-avatar";
+import { useUser } from "@/hooks/useUser";
+import { useAppContext } from "@/hooks/useAppContext";
+import { useRouter } from "next/navigation";
+import { CardContent, CardHeader } from "../ui/card";
 
 const Post = ({
 	post,
@@ -47,34 +44,40 @@ const Post = ({
 	isViewMode?: boolean;
 }) => {
 	const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
+	const user = useUser();
+	const context = useAppContext();
+	const router = useRouter();
 
 	return (
 		<div>
-			{/* Dialog for enlarged media */}
-
 			<Separator orientation="horizontal" className="w-full border-1 " />
 			<MotionCard className="space-y-4">
 				{/* bg-secondary border-none border-0 */}
 				<div className="">
 					<CardHeader className="flex flex-row items-center justify-between p-4 px-0 md:px-4 ">
 						<div className="flex flex-row gap-2 items-center">
-							<Avatar className="w-9 h-9">
-								<AvatarImage src={`../${post.user.pfp_src}`} alt="User pic" />
-								<AvatarFallback>
-									YT
-									{
-										// alternative name
-									}
-								</AvatarFallback>
-							</Avatar>
+							<CustomAvatar
+								username={user?.username ?? ``}
+								pfp_src={user?.pfp_src ?? ``}
+								size={`h-9 w-9`}
+							/>
 							<div>
 								<div className="flex flex-row items-center gap-2">
-									<Link
-										href={`/profile/${post.user.user_id}`}
-										className="font-semibold hover:underline items-center"
+									<Button
+										variant={`link`}
+										onClick={() => {
+											if (context?.page !== `profile`) {
+												context?.setCurrPage({
+													page: `profile`,
+													username: post.user.username,
+												});
+												router.push(`/@${post.user.username}`);
+											}
+										}}
+										className="font-semibold items-center cursor-pointer"
 									>
 										{post.user.username}
-									</Link>
+									</Button>
 									<p className="text-sm text-muted-foreground items-center">
 										{formatDistanceToNow(new Date(post.created_at), {
 											addSuffix: true,

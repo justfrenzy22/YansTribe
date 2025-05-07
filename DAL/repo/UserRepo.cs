@@ -200,6 +200,33 @@ namespace dal.repo
             }
         }
 
+        public async Task<Guid?> GetUserIdByUsername(string username)
+        {
+            try
+            {
+                DataTable? res = await this.db_repo.reader(userQuery.check_user_by_username(), new Dictionary<string, object> {
+                { "@username", username }
+            });
+
+                if (res.Rows.Count == 0)
+                {
+                    return null;
+                }
+
+                var row = res.Rows[0];
+
+                return Guid.Parse(row["user_id"]?.ToString() ?? "");
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseOperationException($"Database error during user retrieval by email: {sqlEx.Message}", sqlEx);
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException($"An unexpected error occurred during user retrieval by email: {ex.Message}", ex);
+            }
+        }
+
         public async Task<User?> ValidateUserByEmail(string email)
         {
             try
@@ -331,20 +358,22 @@ namespace dal.repo
             }
         }
 
-
-
         public async Task<bool> ChangeRole(Guid user_id, string role)
         {
-
-
-            // string roleStr = ParseStringRole(role);
-
             int result = await db_repo.nonQuery(userQuery.update_user_role(), new Dictionary<string, object> {
                 { "@user_id", Guid.Parse(user_id.ToString() ?? "") },
                 { "@role", role }
             });
 
-            return result > 0;
+            // return result > 0;
+            if (result > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         // public async Task<int> ValidateUser(string email, string password)

@@ -3,7 +3,7 @@ using core.entities;
 using dal.dto;
 using pl.dto;
 
-namespace server.views
+namespace bll.views
 {
     public class UserView : ViewComponent
     {
@@ -40,6 +40,18 @@ namespace server.views
                 message = "user retrieved successfully!",
                 user = userDto
             };
+            return new ObjectResult(data) { StatusCode = 200 };
+        }
+
+        public IActionResult get_profile_user(ProfileUserDTO userDTO)
+        {
+            var data = new
+            {
+                status = 200,
+                message = "Profile user retrieved successfully!",
+                user = userDTO
+            };
+
             return new ObjectResult(data) { StatusCode = 200 };
         }
 

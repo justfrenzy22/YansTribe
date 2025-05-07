@@ -12,7 +12,7 @@ namespace dal.interfaces.repo
         Task<User?> ValidateUserByEmail(string email);
         Task<bool> ChangeRole(Guid user_id, string role);
         Task<User?> GetUserEssentials(Guid user_id);
-
+        Task<Guid?> GetUserIdByUsername(string username);
         Task<User?> GetUserByUsername(string username);
     }
 }

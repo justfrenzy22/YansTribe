@@ -1,12 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, Home, Menu, MessageCircle, Search, User, X } from "lucide-react";
+import {
+	Home,
+	LogOut,
+	Menu,
+	MessageCircle,
+	Search,
+	Settings,
+	User,
+	X,
+} from "lucide-react";
 import { useState } from "react";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuItem,
@@ -16,17 +23,22 @@ import {
 	DropdownMenuContent,
 } from "../ui/dropdown-menu";
 import ToggleTheme from "./toggle-theme";
-import { useDevice } from "@/contexts/DeviceContext";
 import BottomNav from "./bottom-nav";
-import { Drawer, DrawerTrigger, DrawerContent } from "../ui/drawer";
+import { Drawer, DrawerTrigger } from "../ui/drawer";
 import MobileNav from "./mobile-nav";
-import { useUser } from "@/contexts/UserContext";
-import { IBaseUser } from "@/types/IEssentialsUser";
+import { logout } from "@/app/actions";
+import { useUser } from "@/hooks/useUser";
+import { useAppContext } from "@/hooks/useAppContext";
+import { AppContextValue } from "@/types/AppContextValue";
+import { useRouter } from "next/navigation";
+import { CustomAvatar } from "./custom-avatar";
 
 export const Navbar = (): React.ReactElement => {
 	const [searchOpen, isSearchOpen] = useState<boolean>(false);
-	const isMobile = useDevice();
+	const context: AppContextValue | null = useAppContext();
 	const user = useUser();
+	const router = useRouter();
+	const signOut = async () => await logout();
 
 	return (
 		<>
@@ -56,14 +68,22 @@ export const Navbar = (): React.ReactElement => {
 							</div>
 						</Drawer>
 
-						<Link href="/" className="flex items-center gap-2">
+						<div
+							onClick={() => {
+								if (context?.page !== `home`) {
+									context?.setCurrPage({ page: `home`, username: `` });
+									router.push(`/`);
+								}
+							}}
+							className="flex items-center gap-2 cursor-pointer"
+						>
 							<div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 flex items-center justify-center text-white font-bold text-lg select-none">
 								Y
 							</div>
 							<span className="hidden font-bold text-xl md:inline-block select-none">
 								YansTribe
 							</span>
-						</Link>
+						</div>
 					</div>
 
 					<div className="hidden md:flex flex-1 items-center justify-center px-4">
@@ -100,7 +120,7 @@ export const Navbar = (): React.ReactElement => {
 									<Input
 										type="search"
 										placeholder="Search..."
-										size={isMobile ? "sm" : "md"}
+										size={context?.isMobile ? "sm" : "md"}
 										className="w-full pl-8 rounded-full"
 										autoFocus
 									/>
@@ -115,46 +135,96 @@ export const Navbar = (): React.ReactElement => {
 									<span className="sr-only">Home</span>
 								</Link>
 							</Button>
-							<Button variant="ghost" size="icon" asChild>
-								<Link href="/messages">
-									<MessageCircle className="h-5 w-5" />
-									<span className="sr-only">Messages</span>
-								</Link>
+							<Button
+								onClick={() => {
+									if (context?.page !== `messages`) {
+										context?.setCurrPage({
+											page: `messages`,
+											username: ``,
+										});
+										router.push(`/messages`);
+									}
+								}}
+								variant="ghost"
+								size="icon"
+								// asChild
+							>
+								<MessageCircle className="h-5 w-5" />
+								<span className="sr-only">Messages</span>
 							</Button>
 							<ToggleTheme />
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
 									<Button variant="ghost" size="icon" className="rounded-full">
-										<Avatar className="h-8 w-8">
-											<AvatarImage
-												src="/placeholder.svg?height=32&width=32"
-												alt="@user"
-											/>
-											<AvatarFallback>
-												{user?.username.charAt(0)}
-											</AvatarFallback>
-										</Avatar>
+										<CustomAvatar
+											username={user?.username || ``}
+											pfp_src={user?.pfp_src || ``}
+											size={`h-8 w-8`}
+										/>
 									</Button>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent align="end">
-									<DropdownMenuLabel>My Account</DropdownMenuLabel>
+									<DropdownMenuLabel className="flex flex-row items-center gap-2 px-2">
+										<CustomAvatar
+											username={user?.username || ``}
+											pfp_src={user?.pfp_src || ``}
+											size={`h-8 w-8`}
+										/>{" "}
+										{user?.username}
+									</DropdownMenuLabel>
 									<DropdownMenuSeparator />
-									<DropdownMenuItem>
-										<Link href="/profile" className="flex items-center">
-											<User className="mr-2 h-4 w-4" />
-											<span>Profile</span>
-										</Link>
+									<DropdownMenuItem
+										className="flex justify-between items-center w-full cursor-pointer"
+										onClick={() => {
+											if (context?.page !== `profile`) {
+												context?.setCurrPage({
+													page: `profile`,
+													username: user?.username || ``,
+												});
+												router.push(`/@${user?.username}`);
+											}
+										}}
+									>
+										Profile
+										<User className="h-4 w-4" />
 									</DropdownMenuItem>
-									<DropdownMenuItem>Settings</DropdownMenuItem>
-									<DropdownMenuSeparator />
-									<DropdownMenuItem>Log out</DropdownMenuItem>
+									<DropdownMenuItem
+										className="flex justify-between items-center w-full cursor-pointer"
+										onClick={() => {
+											if (context?.page !== `settings`) {
+												context?.setCurrPage({
+													page: `settings`,
+													username: ``,
+												});
+												router.push(`/settings`);
+											}
+										}}
+									>
+										{/* <Link href="/settings" className="flex items-center"> */}
+										<span>Settings</span>
+										<Settings className="h-4 w-4" />
+										{/* </Link> */}
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										className="flex justify-between items-center w-full cursor-pointer"
+										onClick={async () => {
+											try {
+												await signOut();
+											} catch (error) {
+												console.error("Error during sign out:", error);
+											}
+										}}
+									>
+										Log out
+										<LogOut className="h-4 w-4" />
+									</DropdownMenuItem>
 								</DropdownMenuContent>
 							</DropdownMenu>
 						</nav>
 					</div>
 				</div>
 			</header>
-			{isMobile && <BottomNav selected="home" />}
+			{context?.isMobile && <BottomNav selected="home" />}
 		</>
 	);
 };

@@ -14,10 +14,24 @@ const register = async (
 	message: string;
 	status: number;
 }> =>
-	apiService.request<{ message: string; status: number }>(
-		`/user/register`,
-		`POST`,
-		{ body: { username, email, password, full_name, bio, location, website } } // Updated to use options object
-	);
+	apiService.request<{ message: string; status: number }>({
+		endpoint: `/user/register`,
+		method: `POST`,
+		options: {
+			body: {
+				username,
+				email,
+				password,
+				full_name,
+				bio,
+				location,
+				website,
+			},
+			requiresAuth: false,
+		},
+	});
 
 export default register;
+
+// `POST`,
+// { body: { username, email, password, full_name, bio, location, website } }

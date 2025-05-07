@@ -1,3 +1,4 @@
+using System.Data;
 using core.entities;
 using dal.exceptions;
 using dal.interfaces.db;
@@ -19,7 +20,7 @@ namespace dal.repo
         {
             try
             {
-                var result = await this.db_repo.scalar(postQuery.add_post(), new Dictionary<string, object> {
+                var result = await this.db_repo.scalar(this.postQuery.add_post(), new Dictionary<string, object> {
                     { "@post_id", post.post_id },
                     { "@user_id", post.user_id },
                     { "@content", post.content },
@@ -62,5 +63,42 @@ namespace dal.repo
                 throw new DataAccessException($"An unexpected error occurred during post creation");
             }
         }
+        // public async Task<List<Post>?> GetInitPostsById(Guid user_id)
+        // {
+        //     try
+        //     {
+        //         var result = await this.db_repo.reader(this.postQuery.get_first_10_posts_by_user_id(), new Dictionary<string, object> {
+        //             { "@user_id", user_id }
+        //         });
+
+        //         if (result.Rows.Count == 0)
+        //         {
+        //             return null;
+        //         }
+
+        //         List<Post> posts = new List<Post>();
+
+        //         foreach (DataRow row in result.Rows) {
+        //             Post post = new Post(
+        //                 post_id: Guid.Parse(row["post_id"].ToString() ?? string.Empty),
+        //                 user_id: Guid.Parse(row["user_id"].ToString() ?? string.Empty),
+        //                 content: row["content"]?.ToString() ?? string.Empty,
+        //                 created_at: Convert.ToDateTime(row["created_at"]),
+        //                 edited: Convert.ToBoolean(row["edited"]),
+        //                 edited_at: Convert.ToDateTime(row["edited_at"])
+        //             );
+
+
+        //         }
+        //     }
+        //     catch (SqlException sqlEx)
+        //     {
+        //         throw new DatabaseOperationException($"Database error during post retrieval: {sqlEx.Message}", sqlEx);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         throw new DataAccessException($"An unexpected error occurred during post retrieval: {ex.Message}", ex);
+        //     }
+        // }
     }
 }

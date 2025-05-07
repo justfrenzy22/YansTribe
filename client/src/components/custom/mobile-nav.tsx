@@ -1,35 +1,24 @@
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-	Bookmark,
-	Calendar,
-	Clock,
-	Compass,
-	Flag,
-	Heart,
-	Home,
-	MessageCircle,
-	Settings,
-	Store,
-	User,
-	Users,
-} from "lucide-react";
+import { Home, MessageCircle, Settings, User, Users } from "lucide-react";
 import { useState } from "react";
-import {
-	DrawerHeader,
-	DrawerTitle,
-	DrawerContent,
-	DrawerFooter,
-} from "../ui/drawer";
+import { DrawerTitle, DrawerContent, DrawerFooter } from "../ui/drawer";
+import { useUser } from "@/hooks/useUser";
+import { Button } from "../ui/button";
+import { useAppContext } from "@/hooks/useAppContext";
+import { redirect } from "next/navigation";
 
 type linksType = {
 	label: "home" | "profile" | "messages" | "friends" | "settings";
-	href: "/" | "/profile" | "/messages" | "/friends" | "/settings";
+	href: "/" | string | "/messages" | "/friends" | "/settings";
 	icon: React.ReactNode;
 };
 
 const MobileNav = () => {
 	const [isSelected, setSelected] = useState<linksType["label"] | null>(null);
+
+	const user = useUser();
+	const context = useAppContext();
 
 	const btns: linksType[] = [
 		{
@@ -39,7 +28,7 @@ const MobileNav = () => {
 		},
 		{
 			label: "profile",
-			href: "/profile",
+			href: `/@${user?.username}`,
 			icon: <User className="h-5 w-5" />,
 		},
 		{
@@ -85,60 +74,25 @@ const MobileNav = () => {
 					<ul className="grid gap-1">
 						{btns.map((btn) => (
 							<li key={btn.label}>
-								<Link
-									href={btn.href}
+								<Button
+									variant={`link`}
+									onClick={() => {
+										if (context && context.page !== btn.label) {
+											context.setCurrPage({
+												page: btn.label,
+												username:
+													btn.label === `profile` ? user?.username ?? `` : ``,
+											});
+											redirect(btn.href);
+										}
+									}}
 									className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent cursor-pointer"
 								>
 									{btn.icon}
 									<span>{btn.label}</span>
-								</Link>
+								</Button>
 							</li>
 						))}
-						{/* <li>
-						<Link
-							href="/"
-							className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent"
-						>
-							<Home className="h-5 w-5" />
-							<span>Home</span>
-						</Link>
-					</li>
-					<li>
-						<Link
-							href="/profile"
-							className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent"
-						>
-							<User className="h-5 w-5" />
-							<span>Profile</span>
-						</Link>
-					</li>
-					<li>
-						<Link
-							href="/messages"
-							className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent"
-						>
-							<MessageCircle className="h-5 w-5" />
-							<span>Messages</span>
-						</Link>
-					</li>
-					<li>
-						<Link
-							href="/friends"
-							className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent"
-						>
-							<Users className="h-5 w-5" />
-							<span>Friends</span>
-						</Link>
-					</li>
-					<li>
-						<Link
-							href="/settings"
-							className="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-accent"
-						>
-							<Bookmark className="h-5 w-5" />
-							<span>settings</span>
-						</Link>
-					</li> */}
 					</ul>
 				</nav>
 				<DrawerFooter>
@@ -177,6 +131,6 @@ const MobileNav = () => {
 			</div>
 		</DrawerContent>
 	);
-}
+};
 
 export default MobileNav;

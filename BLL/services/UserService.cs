@@ -1,7 +1,6 @@
 using bll.dto;
 using bll.interfaces;
 using core.entities;
-using dal.dto;
 using dal.exceptions;
 using dal.interfaces.repo;
 
@@ -69,6 +68,27 @@ namespace bll.services
             }
 
             return user_id;
+        }
+
+        public async Task<User?> FetchUserProfile(string username)
+        {
+            Guid? reqUserId = await this.repo.GetUserIdByUsername(username);
+
+            if (reqUserId == null)
+            {
+                return null;
+            }
+
+            User? user = await this.repo.GetUserById(reqUserId ?? Guid.Empty);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+
+
+            return user;
         }
 
         public async Task<User?> GetUserById(Guid user_id) => await this.repo.GetUserById(user_id);

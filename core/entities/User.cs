@@ -71,6 +71,13 @@ namespace core.entities
             this._role = role;
         }
 
+        // Unit tests validate User constructor
+        public User(Guid user_id, Role role)
+        {
+            this._user_id = user_id;
+            this._role = role;
+        }
+
         // essentials constructor
         public User(Guid user_id, string username, string pfp_src)
         {
@@ -94,7 +101,7 @@ namespace core.entities
 
         // public Role ParseRole<Role>(string value) => (Role)Enum.Parse(typeof(Role), value, true);
 
-
+        public string RoleToString(Role role) => role.ToString();
 
 
         public void HashPassword(string hash_password) => this._password = hash_password;

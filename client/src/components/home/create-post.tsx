@@ -7,10 +7,10 @@ import { useEffect } from "react";
 import { Dialog, DialogTrigger, DialogTitle } from "../ui/dialog";
 import { DialogContent } from "@radix-ui/react-dialog";
 import Post from "../custom/post";
-import { useUser } from "@/contexts/UserContext";
 import { PostActionTypeEnum as ActionType } from "@/enums/ICreatePostActionSetType";
 import useCreatePost from "@/hooks/useCreatePost";
 import { IMediaPreview } from "@/types/IMediaPreview";
+import { useUser } from "@/hooks/useUser";
 
 const CreatePost = () => {
 	const {
@@ -129,13 +129,13 @@ const CreatePost = () => {
 						</div>
 					)}
 				</div>
-				<div className="flex flex-row sm:justify-between justify-start items-center px-0 sm:px-6">
+				<div className="flex flex-row sm:justify-between justify-between items-center px-1 sm:px-6">
 					<div className="flex items-center gap-0 sm:gap-2">
 						<Button
 							type="button"
 							disabled={state.isLoading}
 							onClick={() => fileInputRef.current?.click()}
-							className="no-underline flex items-center gap-1 sm:gap-2 cursor-pointer rounded-full p-4 outline shadow-md"
+							className="no-underline flex items-center gap-1 sm:gap-2 cursor-pointer rounded-full outline shadow-md"
 							variant={`link`}
 						>
 							<Upload className="w-5 h-5" />

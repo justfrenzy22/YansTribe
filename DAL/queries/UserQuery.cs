@@ -20,6 +20,7 @@ namespace dal.queries
         WHERE username = @username";
 
         public string get_user_by_email() => "SELECT * FROM [user] WHERE email = @email";
+        public string check_user_by_username() => "SELECT user_id FROM [user] WHERE username = @username";
         public string get_user_by_email_and_password() => @"
             SELECT * FROM [user]
             WHERE email = @email AND password_hash = @password_hash";

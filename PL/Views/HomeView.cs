@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace server.views
+namespace bll.views
 {
     public class HomeView() : ViewComponent
     {

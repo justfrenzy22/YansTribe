@@ -17,7 +17,7 @@ const getUserById = async (
 	}>({
 		endpoint: `/user/get_user`,
 		method: `GET`,
-		options: { requiresAuth: true, cookie }, // Pass cookie in options
+		options: { requiresAuth: true, cookie: cookie }, // Pass cookie in options
 	});
 
 export default getUserById;

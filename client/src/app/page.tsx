@@ -3,11 +3,9 @@ import getUserById from "@/api/auth/getUserById";
 import { Navbar } from "@/components/custom/navbar";
 import PostFeed from "@/components/home/post-feed";
 import WaitLayout from "@/components/home/waiting-animation";
-import DeviceProvider from "@/contexts/DeviceContext";
 import { UserProvider } from "@/contexts/UserContext";
 import UseTokenHook from "@/hooks/useTokenHook";
 import { IBaseUser } from "@/types/IEssentialsUser";
-import { headers } from "next/headers";
 
 const Home = async () => {
 	// const cookieStore = await cookies();
@@ -20,10 +18,7 @@ const Home = async () => {
 
 	console.log("data", data);
 
-	const userAgent = (await headers()).get("user-agent") || "";
-
 	return (
-		<DeviceProvider userAgent={userAgent}>
 			<WaitLayout data={data}>
 				<UserProvider user={data.user}>
 					<Navbar />
@@ -39,9 +34,6 @@ const Home = async () => {
 
 							{/* Main Content */}
 							<div className="w-full md:w-2/4 lg:w-3/5 space-y-0">
-								{/* md:space-y-4  */}
-								{/* <StoriesBar /> */}
-
 								<PostFeed />
 							</div>
 
@@ -56,7 +48,6 @@ const Home = async () => {
 					</main>
 				</UserProvider>
 			</WaitLayout>
-		</DeviceProvider>
 	);
 };
 

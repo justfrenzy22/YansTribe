@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Data;
 using System.Security.Cryptography.X509Certificates;
-using server.views;
+using bll.views;
 using bll.interfaces;
 using core.entities;
 using dal.dto;
@@ -16,9 +16,7 @@ namespace pl.controllers
     [Route("user")]
     public class UserController : Controller
     {
-        // private bool isAdmin;
         private UserView view;
-        // private UserManager userManager;
         private IUserService service;
 
         private readonly ILogger<UserController> _logger;
@@ -38,15 +36,9 @@ namespace pl.controllers
         }
 
         [HttpGet("get_user")]
-        // [ServiceFilter(typeof(AdminAuth))]
         [ServiceFilter(typeof(UserAuth))]
         public async Task<IActionResult> GetUserById()
         {
-            if (!ModelState.IsValid)
-            {
-                return view.bad_credentials();
-            }
-
             string? user_id = HttpContext.Items["user_id"]?.ToString();
 
             if (user_id == null)
@@ -69,6 +61,44 @@ namespace pl.controllers
 
             return view.get_base_user(userDTO);
         }
+
+        [HttpGet("get_user_profile/{username}")]
+        [ServiceFilter(typeof(UserAuth))]
+        public async Task<IActionResult> GetUserProfile(string username)
+        {
+            string? user_id = HttpContext.Items["user_id"]?.ToString();
+
+            if (user_id == null)
+            {
+                return view.bad_credentials();
+            }
+
+            User? getUser = await this.service.FetchUserProfile(username);
+
+            if (getUser == null)
+            {
+                return view.not_found();
+            }
+
+            ProfileUserDTO profileUserDto = new ProfileUserDTO
+            {
+                user_id = getUser.user_id,
+                username = getUser.username,
+                email = getUser.email,
+                full_name = getUser.full_name,
+                bio = getUser.bio,
+                pfp_src = getUser.pfp_src,
+                location = getUser.location,
+                website = getUser.website,
+                is_private = getUser.is_private,
+                created_at = getUser.created_at,
+                role = getUser.role,
+                is_own_profile = getUser.user_id.ToString() == user_id
+            };
+
+            return view.get_profile_user(profileUserDto);
+        }
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] dto.UserLoginDTO model)

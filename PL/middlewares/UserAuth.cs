@@ -1,7 +1,7 @@
 using bll.dto;
 using bll.interfaces;
 using Microsoft.AspNetCore.Mvc.Filters;
-using server.views;
+using bll.views;
 
 namespace pl.middleware
 {

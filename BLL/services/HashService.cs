@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using bll.interfaces;
 
-namespace server.services
+namespace bll.services
 {
     public class HashService : IHashService
     {

@@ -3,10 +3,6 @@ namespace dal.queries
     public class PostQuery
     {
         public string get_post_by_id() => @"SELECT * FROM [post] WHERE post_id = @post_id;";
-        public string get_first_10_posts_by_user_id() => @"
-        SELECT TOP 10 * FROM [post]
-        WHERE user_id = @user_id
-        ORDER BY created_at DESC;";
 
         public string add_post() => @"
         INSERT INTO post (post_id, user_id, content, created_at)
@@ -100,7 +96,63 @@ namespace dal.queries
                 lfp.post_created_at DESC;
         ";
 
-
+        public string get_first_10_posts_by_user_id() => @"
+            WITH UserPostsCTE AS (
+                SELECT 
+                    p.post_id,
+                    p.user_id,
+                    p.content AS post_content,
+                    p.created_at AS post_created_at,
+                    ROW_NUMBER() OVER (ORDER BY p.created_at DESC) AS rn
+                FROM post p
+                WHERE p.user_id = @user_id
+            ),
+            PostLikesCTE AS (
+                SELECT 
+                    pl.post_id,
+                    COUNT(*) AS post_like_count
+                FROM post_like pl
+                GROUP BY pl.post_id
+            ),
+            CommentCountCTE AS (
+                SELECT 
+                    c.post_id,
+                    COUNT(*) AS comment_count
+                FROM comment c
+                WHERE c.parent_id IS NULL
+                GROUP BY c.post_id
+            ),
+            MediaCTE AS (
+                SELECT 
+                    pm.post_id,
+                    (
+                        SELECT 
+                            pm_inner.media_id,
+                            pm_inner.media_type,
+                            pm_inner.media_src,
+                            pm_inner.[order]
+                        FROM post_media pm_inner
+                        WHERE pm_inner.post_id = pm.post_id
+                        ORDER BY pm_inner.[order]
+                        FOR JSON PATH
+                    ) AS media_json
+                FROM post_media pm
+                GROUP BY pm.post_id
+            )
+            SELECT 
+                up.post_id,
+                up.post_content,
+                up.post_created_at,
+                COALESCE(plc.post_like_count, 0) AS post_like_count,
+                COALESCE(cc.comment_count, 0) AS comment_count,
+                COALESCE(m.media_json, '[]') AS media_json
+            FROM UserPostsCTE up
+            LEFT JOIN PostLikesCTE plc ON up.post_id = plc.post_id
+            LEFT JOIN CommentCountCTE cc ON up.post_id = cc.post_id
+            LEFT JOIN MediaCTE m ON up.post_id = m.post_id
+            WHERE up.rn <= 10
+            ORDER BY up.post_created_at DESC;
+        ";
 
         // public string update_post_by_id() => @"UPDATE [post] SET title = @title, content = @content WHERE post_id = @post_id;";
     }

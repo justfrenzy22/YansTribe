@@ -1,28 +1,18 @@
 using System.Text;
 using bll.interfaces;
 using bll.services;
+using bll.views;
 using dal.interfaces.db;
 using dal.interfaces.repo;
 using dal.mapper;
 using dal.queries;
 using dal.repo;
-
-
-// using dal.interfaces.db;
-// using dal.interfaces.repo;
-// using dal.interfaces.service;
-// using dal.queries;
-// using dal.repo;
-// using dal.services.admin;
-// using dal.services.user;
+using pl.middleware;
 
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.IdentityModel.Tokens;
-using pl.middleware;
-using server.services;
-using server.views;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,7 +89,7 @@ builder.Services.AddScoped<SuperAdminAuthFilter>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("allow_frontend", policy =>
-        policy.WithOrigins("http://192.168.0.101:3002", "http://localhost:3000")
+        policy.WithOrigins("http://192.168.0.101:3002", "http://localhost:3000", "http://192.168.1.100:3000")
             .AllowCredentials() // Allows cookies to be sent
             .AllowAnyHeader()
             .AllowAnyMethod()
@@ -140,6 +130,7 @@ if (vpnOn)
 else
 {
     builder.WebHost.UseUrls("http://localhost:5114");
+    //  "http://192.168.1.100:5114"
 }
 // Build application
 var app = builder.Build();
