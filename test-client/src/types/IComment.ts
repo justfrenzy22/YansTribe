@@ -1,12 +1,10 @@
-export type IComment = {
+export interface IComment {
     comment_id: string;
-    user_id: string;
-    username: string;
-    pfp_src: string;
-    created_at: string;
+    post_id: string;
+    commenter_id: string;
+    parent_id?: string;
     content: string;
-    liked: boolean;
-    liked_count: number;
-    reply_count: number;
-    edited: boolean;
+    created_at: Date;
+    is_hidden: boolean;
+    
 }
