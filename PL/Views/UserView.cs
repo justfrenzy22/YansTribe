@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using core.entities;
 using dal.dto;
-using pl.dto;
+using pl.viewModel;
+using bll.dto;
 
-namespace server.views
+namespace pl.views
 {
     public class UserView : ViewComponent
     {
@@ -42,8 +43,34 @@ namespace server.views
             };
             return new ObjectResult(data) { StatusCode = 200 };
         }
+        
+        public IActionResult get_private_profile_user(PrivateProfileViewModel userDTO)
+        {
+            var data = new
+            {
+                status = 200,
+                message = "Private Profile user retrieved successfully!",
+                user = userDTO.user,
+                posts = userDTO.posts
+            };
 
-        public ActionResult get_base_user(BaseUserDTO userDTO)
+            return new ObjectResult(data) { StatusCode = 200 };
+        }
+
+        public IActionResult get_public_profile_user(ProfileUser profileUser, BaseUser user, Notifications notifications)
+        {
+            var data = new
+            {
+                status = 200,
+                message = "Public Profile user retrieved successfully!",
+                user = user,
+                profile = profileUser,
+            };
+
+            return new ObjectResult(data) { StatusCode = 200 };
+        }
+
+        public ActionResult get_base_user(BaseUser? userDTO)
         {
             var data = new
             {
@@ -54,7 +81,7 @@ namespace server.views
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
-        public ActionResult get_users(List<User> users)
+        public ActionResult get_users(List<FullUser> users)
         {
             var data = new { status = 200, message = "users retrieved successfully!", users };
             return new ObjectResult(data) { StatusCode = 200 };
@@ -88,6 +115,11 @@ namespace server.views
         {
             var data = new { status = 500, message = msg };
             return new ObjectResult(data) { StatusCode = 500 };
+        }
+
+        internal IActionResult get_profile_user(object profileViewModel)
+        {
+            throw new NotImplementedException();
         }
     }
 }

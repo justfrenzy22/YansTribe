@@ -1,0 +1,210 @@
+@startuml
+
+package "BLL" {
+    interface IAdminService
+    interface IAuthService
+    interface IFileService
+    interface IHashService
+    interface IPostService
+    interface IUserService
+
+    class AdminService {
+        +ValidateLogin(email: string, password: string): Task<string?>
+        +AuthAdmin(string: token) : VerifyTokenRes
+        +AuthSuperAdmin(string: token): Task<VerifySuperAdminDTO>
+        +GetUsersAsync(string: admin_id) : Task<List<User>?>
+        +ChangeRole(string: user_id, string: role) Task<string>
+    }
+    class AuthService {
+        +VerifyTokenAsync(token: string, isAdmin: bool): VerifyTokenRes
+        +GenerateJwtToken(string: user_id, bool: isAdmin): string
+    }
+    class FileService {
+        +Upload(post_id: Guid, file: IFormFile): Task<PostMedia>
+    }
+    class HashService {
+        +hash(pass: string): string
+    }
+    class PostService {
+        +CreatePost(post: Post, files: List<IFormFile>?): Task<int?>
+    }
+    class UserService {
+        +ValidateUser(email: string, password: string): Task<string>
+        +RegisterUser(user: User): Task<Guid?>
+        +GetUserById(Guid: user_id): Task<User?>
+        +FetchUserProfile(string username): Task<UserProfileDto?>
+        AuthUser(string token): VerifyTokenRes
+    }
+
+    class UserProfileDto {
+    }
+
+     class VerifySuperAdminDTO
+    {
+    }
+
+    class VerifyTokenRes
+    {
+    }
+
+    AdminService ..|> IAdminService
+    AdminService ..> IUserRepo
+    AdminService ..> IAdminRepo
+    AdminService ..> IHashService
+    AdminService ..> IAuthService
+    AdminService ..> VerifySuperAdminDTO
+
+    AuthService ..|> IAuthService
+    AuthService ..> IConfiguration
+    AuthService ..> VerifyTokenRes
+
+    FileService ..|> IFileService
+
+    HashService ..|> IHashService
+
+    PostService ..|> IPostService
+    PostService ..> IPostRepo
+    PostService ..> IFileService
+
+    UserService ..|> IUserService
+    UserService ..> IUserRepo
+    UserService ..> IPostRepo
+    UserService ..> IHashService
+    UserService ..> IAuthService
+    UserService ..> UserProfileDto
+    UserService ..> VerifyTokenRes
+
+}
+
+package "DAL" {
+    interface IDBRepo
+    interface IAdminRepo
+    interface IUserRepo
+
+    class AdminRepo {
+        +GetAllUsersAsync(admin_id: Guid): Task<List<User>?>
+    }
+    class UserRepo {
+        +RegisterUser(user: User): Task<Guid>
+    }
+    class DBRepo {
+        +nonQuery(query: string, parameters: Dictionary<string, object>?): Task<int>
+        +scalar(query: string, parameters: Dictionary<string, object>?): Task<object?>
+    }
+    class AdminQuery {
+        +get_admin_login(): string
+        +get_all_users(): string
+    }
+    class UserQuery {
+        +add_user(): string
+        +get_user_by_id(): string
+        +get_user_profile_by_id(): string
+        +get_user_essentials_by_id(): string
+        +get_user_by_username(): string
+        +get_user_by_email(): string
+        +check_user_by_username(): string
+        +get_user_by_email_and_password(): string
+    }
+    class UserMapper
+    class BaseUserRepo
+
+    AdminRepo --|> BaseUserRepo
+    AdminRepo ..|> IAdminRepo
+    AdminRepo ..> IDBRepo
+    AdminRepo ..> AdminQuery
+    AdminRepo ..> UserQuery
+    AdminRepo ..> UserMapper
+
+    UserRepo --|> BaseUserRepo
+    UserRepo ..|> IUserRepo
+    UserRepo ..> IDBRepo
+    UserRepo ..> UserQuery
+    UserRepo ..> UserMapper
+
+    DBRepo ..|> IDBRepo
+}
+
+package "PL" {
+    class UserController {
+        +Index(): IActionResult
+        +GetUserById(): Task<IActionResult>
+    }
+    class AdminController
+    class UserAuth {
+        +OnAuthorizationAsync(context: AuthorizationFilterContext): Task
+    }
+    class ExceptionMiddleware {
+        +InvokeAsync(context: HttpContext): Task
+        +HandleExceptionAsync(context: HttpContext, ex: Exception): Task
+    }
+    class AdminLoginViewModel {
+        +email: string
+        +password: string
+    }
+    class UserView
+    class Controller
+    interface ILogger<T>
+    interface IAsyncAuthorizationFilter
+    interface ICompositeViewEngine
+    interface IServiceProvider
+    class RequestDelegate
+
+    UserController --|> Controller
+    UserController ..> ILogger<UserController>
+    UserController ..> IUserService
+    UserController ..> UserView
+
+    AdminController --|> Controller
+    AdminController ..> ILogger<AdminController>
+    AdminController ..> IAdminService
+
+    UserAuth ..|> IAsyncAuthorizationFilter
+    UserAuth ..> UserView
+    UserAuth ..> IUserService
+
+    ExceptionMiddleware ..> RequestDelegate
+    ExceptionMiddleware ..> ICompositeViewEngine
+    ExceptionMiddleware ..> IServiceProvider
+}
+
+package "YansTribe.Tests" {
+    class ValidateLoginTest {
+        +NonExistentUser_ReturnsException(): Task
+        +InvalidPassword_ReturnsException(): Task
+        +ValidLogin_ReturnsToken(): Task
+    }
+    class VerifyTokenTest {
+        +ValidTokenAdmin_ReturnsTrue()
+        +InvalidTokenAdmin_ReturnsFalse()
+        +EmptyToken_ReturnsFalse()
+        +NullToken_ReturnsFalse()
+        +InvalidTokenUser_ReturnsFalse()
+    }
+    class FileServiceTest {
+        +Upload_ValidFile_ReturnsPostMedia(): Task
+    }
+    class ValidateLoginTest_AdminService {
+        +InvalidUser_ReturnsNull()
+        +NonExistentUser_ReturnsNull(): Task
+        +InvalidRole_ReturnsNull(): Task
+        +InvalidPassword_ThrowsException(): Task
+    }
+    class CreateTest {
+        +ValidPostWithContentOnly_ReturnsPostId(): Task
+        +InvalidPostWithFiles_ReturnsPostId(): Task
+        +ValidPostWithFiles_ReturnsPostId(): Task
+    }
+    class UserServiceTestBase
+    class AuthServiceTestBase
+    class FileServiceTestBase
+    class PostServiceTestBase
+    class AdminServiceTestBase
+
+    ValidateLoginTest --|> UserServiceTestBase
+    VerifyTokenTest --|> AuthServiceTestBase
+    FileServiceTest --|> FileServiceTestBase
+    CreateTest --|> PostServiceTestBase
+    ValidateLoginTest_AdminService --|> AdminServiceTestBase
+}
+
+@enduml

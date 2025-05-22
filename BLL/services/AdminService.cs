@@ -1,3 +1,4 @@
+
 using System.Reflection.Metadata.Ecma335;
 using bll.dto;
 using bll.interfaces;
@@ -29,7 +30,7 @@ namespace bll.services
 
         public async Task<string?> ValidateLogin(string email, string password)
         {
-            User? user = await this.user_repo.ValidateUserByEmail(email);
+            FullUser? user = await this.user_repo.ValidateUserByEmail(email);
 
             if (user == null)
             {
@@ -38,8 +39,6 @@ namespace bll.services
 
             if (user.role != Role.Admin && user.role != Role.SuperAdmin)
             {
-                // throw new DataAccessException("User or password is incorrect.");
-                // throw new DataAccessException("User role is incorrect.");
                 return null;
             }
 
@@ -70,7 +69,18 @@ namespace bll.services
                 };
             }
 
-            User? admin = await this.user_repo.GetUserById(Guid.Parse(res.user_id?.ToString() ?? ""));
+            Guid user_id = res.user_id ?? Guid.Empty;
+
+            if (user_id == Guid.Empty)
+            {
+                return new VerifySuperAdminDTO
+                {
+                    check = false,
+                    exception = "User not found"
+                };
+            }
+
+            SafeUser? admin = await this.user_repo.GetUserById(user_id);
 
             if (admin != null && admin.role == Role.Admin)
             {
@@ -96,15 +106,20 @@ namespace bll.services
         }
 
 
-        public async Task<List<User>?> GetUsersAsync(string admin_id)
+        public async Task<List<FullUser>?> GetUsersAsync(string admin_id)
         {
-            List<User>? users = await this.repo.GetAllUsersAsync(Guid.Parse(admin_id));
+            List<FullUser>? users = await this.repo.GetAllUsersAsync(Guid.Parse(admin_id));
             return users;
         }
 
         public async Task<string> ChangeRole(string user_id, string role)
         {
-            // int conv_user_id = Convert.ToInt32(user_id);
+            SafeUser? admin = await this.user_repo.GetUserById(Guid.Parse(user_id));
+
+            if (admin == null)
+            {
+                throw new DataAccessException("User not found.");
+            }
 
             bool check = await this.user_repo.ChangeRole(Guid.Parse(user_id), role);
 

@@ -1,4 +1,4 @@
-import { IRegisterForm } from "@/types/IRegisterForm";
+import { IRegisterForm } from "@/types/form/IRegisterForm";
 import { step } from "@/types/stepType";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";

@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Label } from "../ui/label";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { Input } from "../ui/input";
-import { IRegisterForm } from "@/types/IRegisterForm";
+import { IRegisterForm } from "@/types/form/IRegisterForm";
 import { IRegisterErrors } from "@/types/IRegisterErrors";
 import { Button } from "../ui/button";
 import { step } from "@/types/stepType";

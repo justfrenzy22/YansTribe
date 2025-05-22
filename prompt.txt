@@ -1,0 +1,649 @@
+example {
+React Contexts as DTO-Like Structures 
+Just like DTOs in backend architecture, React Contexts serve as a way to pass structured and decoupled data across different components in a frontend application, especially in deeply nested component trees. They help:
+
+Encapsulate UI state and user data
+
+Prevent prop drilling
+
+Maintain clean component boundaries
+
+Centralize logic and data shaping
+
+Ensure consistency across the app
+
+1. AppContext for Application State Management:
+Example:
+// AppContext.tsx
+"use client";
+
+import useIsMobile from "@/hooks/useIsMobile";
+import { AppContextValue } from "@/types/AppContextValue";
+import { usePathname } from "next/navigation";
+import { createContext, useEffect, useState } from "react";
+
+export const AppContext = createContext<AppContextValue | null>(null);
+
+export const AppProvider = ({
+	userAgent,
+	children,
+	pathname,
+}: {
+	userAgent: string;
+	children: React.ReactNode;
+	pathname?: string;
+}) => {
+	const { isMobile } = useIsMobile(userAgent);
+	const [currPage, setCurrPage] = useState<{
+		page: string;
+		username: string;
+	} | null>({
+		page: home,
+		username: ,
+	});
+
+	const clientPath = usePathname();
+	const path = pathname ?? clientPath;
+
+	useEffect(() => {
+		const segment = path.split(/)[1];
+
+		if (segment?.startsWith(@)) {
+			setCurrPage({
+				page: profile,
+				username: segment.slice(1),
+			});
+		} else {
+			setCurrPage({
+				page: segment ?? home,
+				username: ,
+			});
+		}
+	}, [path]);
+
+	return (
+		<AppContext.Provider
+			value={{
+				isMobile: isMobile,
+				page: currPage?.page ?? "home",
+				username: currPage?.username,
+				setCurrPage: setCurrPage,
+			}}
+		>
+			{children}
+		</AppContext.Provider>
+	);
+};
+Where it's used:
+// Example: useAppContext.ts (Custom Hook)
+import { AppContext } from "@/contexts/AppContext";
+import { AppContextValue } from "@/types/AppContextValue";
+import { useContext } from "react";
+
+export const useAppContext = (): AppContextValue | null =>
+	useContext(AppContext);
+// Example in JSX Component 
+const context: AppContextValue | null = useAppContext();
+{ context?.isMobile && <BottomNav selected="home" /> }
+2. UserContext - for Authenticated User Data
+Context:
+/UserContext.tsx
+
+import { IBaseUser } from "@/types/IEssentialsUser";
+import { IUser } from "@/types/IUser";
+import React, { createContext } from "react";
+
+export const UserContext = createContext<IBaseUser | null>(null);
+
+export const UserProvider = ({
+	children,
+	user,
+}: {
+	children: React.ReactNode;
+	user: IUser | IBaseUser | null;
+}) => {
+	return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
+};
+Where it's used:
+// Example: useUser.ts (Custom Hook)
+import { UserContext } from "@/contexts/UserContext";
+import { IBaseUser } from "@/types/IEssentialsUser";
+import { useContext } from "react";
+
+export const useUser = (): IBaseUser | null => useContext<IBaseUser | null>(UserContext);
+// Example: In a component
+const { username, email } = useUser();
+
+<CustomAvatar
+    username={user?.username || }
+    pfp_src={user?.pfp_src || }
+    size={h-8 w-8}
+/>
+Summary
+Just as DTOs help structure and control data flow in backend layers, React Contexts serve a similar role in frontend applications:
+
+AppContext acts like a presentation DTO, holding dynamic UI state such as current page, username, and whether the app is being accessed on mobile.
+
+UserContext acts like a user session DTO, exposing user identity details (e.g., email, username, role) across components.
+
+You access both using custom hooks (useAppContext, useUser), which cleanly abstract data retrieval and maintain a separation of concerns in the frontend.
+
+
+Evidence description
+What did you implement?
+In YansTribe Next.js Frontend, I implemented AppContext and UserContext using React Contexts API to manage application-wide state in a clean, reusable way.
+
+AppContext tracks device type (isMobile) and current page information (page and username) based on the route. It uses a custom hook (useIsMobile) and Next.js’s usePathname() to dynamically update its state.
+
+UserContext manages authenticated user data (based on IUser or IBaseUser), allowing nested components to access essential user info like username or email without prop drilling.
+
+Both contexts are provided at the root level and consumed via custom hooks (useApp, useUser) throughout the app.
+
+Where is it used?
+These contexts are used across the entire frontend through custom hooks. For example:
+
+AppContext is used to determine which page is being viewed (home, profile, etc.) based on the current URL, which helps components conditionally render content.
+
+UserContext is used to access logged-in user information in features such as personalized dashboards, navigation bars, and protected pages.
+
+How does this help achieve LO3 (Implementation)?
+
+Secure and maintainable applications: The use of contexts with TypeScript improves maintainability by reducing duplicated logic and enforcing consistent state management.
+
+Relevant software principles: I applied principles like separation of concerns (layout state vs. user data), modular architecture, and strong typing.
+
+Iterative development: Contexts are scalable and easy to evolve—new properties or behaviors can be added without breaking existing logic.
+
+Security (when tied to backend auth): UserContext helps enforce secure access to user data and can be extended to support role-based rendering, which improves client-side security.
+
+} end_example
+
+Having this example, create one for this Post Creation Feature:
+"use client";
+import { ScanEye, Send, Upload, X } from "lucide-react";
+import { Button } from "../ui/button";
+import { Textarea } from "../ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useEffect } from "react";
+import { Dialog, DialogTrigger, DialogTitle } from "../ui/dialog";
+import { DialogContent } from "@radix-ui/react-dialog";
+import Post from "../custom/post";
+import { PostActionTypeEnum as ActionType } from "@/enums/ICreatePostActionSetType";
+import useCreatePost from "@/hooks/useCreatePost";
+import { IMediaPreview } from "@/types/IMediaPreview";
+import { useUser } from "@/hooks/useUser";
+
+const CreatePost = () => {
+	const {
+		state,
+		dispatch,
+		handleFileInput,
+		handleSubmit,
+		fileInputRef,
+		textareaRef,
+	} = useCreatePost();
+	const user = useUser();
+
+	useEffect(() => {
+		if (state.isExpanded && textareaRef.current) textareaRef.current.focus();
+	}, [state.isExpanded, textareaRef]);
+
+	return (
+		<div
+			onDragOver={(e) => {
+				e.preventDefault();
+				dispatch({ type: ActionType.SET_DRAG, payload: true });
+			}}
+			onDrop={(e) => {
+				e.preventDefault();
+				dispatch({ type: ActionType.SET_DRAG, payload: false });
+				if (e.dataTransfer.files.length) handleFileInput(e.dataTransfer.files);
+			}}
+		>
+			<form onSubmit={handleSubmit} className="py-4 flex flex-col gap-2">
+				<div className="flex flex-row gap-2 w-full px-4 pt-2.5">
+					{/* Avatar */}
+					<Avatar className="w-9 h-9">
+						<AvatarImage src={user?.pfp_src ?? ""} alt="User pic" />
+						<AvatarFallback>{user?.username.charAt(0)}</AvatarFallback>
+					</Avatar>
+					<Textarea
+						placeholder="What's on your mind?"
+						className="w-full h-15 outline border shadow-md resize-none"
+						value={state.formData.content}
+						disabled={state.isLoading}
+						ref={textareaRef}
+						onChange={(e) =>
+							dispatch({
+								type: ActionType.SET_CONTENT,
+								payload: e.target.value,
+							})
+						}
+						onFocus={() =>
+							dispatch({ type: ActionType.SET_EXPANDED, payload: true })
+						}
+					/>
+				</div>
+				<div className="w-full px-4">
+					{state.isExpanded && (
+						<div className="mt-4 border-2 border-dashed border-blue-400 dark:border-blue-500 rounded-lg p-8 text-center cursor-pointer">
+							{state.formData.files.length > 0 ? (
+								<div className="grid grid-cols-2 gap-4">
+									{state.formData.files.map(
+										(media: IMediaPreview, index: number) => (
+											<div key={index} className="relative">
+												{media.type === "image" ? (
+													<img
+														src={media.url}
+														alt={Uploaded media ${index + 1}}
+														className="w-full h-auto rounded-lg"
+													/>
+												) : (
+													<video
+														src={media.url}
+														controls
+														className="w-full h-auto rounded-lg"
+													/>
+												)}
+												<Button
+													size={icon}
+													variant={destructive}
+													className="absolute top-2 right-2 rounded-full p-1 cursor-pointer"
+													onClick={() => {
+														dispatch({
+															type: ActionType.SET_FILES,
+															payload: state.formData.files.filter(
+																(_: IMediaPreview, i: number) => i !== index
+															),
+														});
+													}}
+												>
+													<X />
+												</Button>
+											</div>
+										)
+									)}
+								</div>
+							) : (
+								<>
+									<p
+										className="text-blue-500 dark:text-blue-400"
+										onClick={() => fileInputRef.current?.click()}
+									>
+										Drop or add media files here
+									</p>
+									<input
+										type="file"
+										ref={fileInputRef}
+										className="hidden"
+										disabled={state.isLoading}
+										multiple
+										onChange={(e) => {
+											if (e.target.files) {
+												handleFileInput(e.target.files);
+												e.target.value = "";
+											}
+										}}
+									/>
+								</>
+							)}
+						</div>
+					)}
+				</div>
+				<div className="flex flex-row sm:justify-between justify-between items-center px-1 sm:px-6">
+					<div className="flex items-center gap-0 sm:gap-2">
+						<Button
+							type="button"
+							disabled={state.isLoading}
+							onClick={() => fileInputRef.current?.click()}
+							className="no-underline flex items-center gap-1 sm:gap-2 cursor-pointer rounded-full outline shadow-md"
+							variant={link}
+						>
+							<Upload className="w-5 h-5" />
+							<span>Add Media</span>
+						</Button>
+					</div>
+					<div className="flex flex-row gap-2">
+						{state.isExpanded && (
+							<div className="flex flex-row gap-2">
+								<Button
+									variant={secondary}
+									disabled={state.isLoading}
+									className="cursor-pointer rounded-full p-4 outline shadow-md"
+									onClick={() => {
+										dispatch({ type: ActionType.RESET_FORM });
+										dispatch({ type: ActionType.SET_EXPANDED, payload: false });
+									}}
+								>
+									Cancel
+								</Button>
+								<Dialog>
+									<DialogTrigger asChild>
+										<Button
+											variant={secondary}
+											className="cursor-pointer rounded-full p-4 outline shadow-md"
+											disabled={
+												state.formData.content.trim() === "" &&
+												state.formData.files.length === 0
+											}
+											onClick={() => {
+												console.log(View media files, state.formData.files);
+											}}
+										>
+											<ScanEye />
+											View
+										</Button>
+									</DialogTrigger>
+									<DialogContent className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-transparent bg-opacity-50 z-50 md:space-y-4 space-y-0  ">
+										<div className="max-w-screen  mx-auto rounded-lg shadow-lg p-4 max-h-[90vh] bg-background overflow-y-auto">
+											<div className="rounded-lg">
+												<div className="flex justify-between items-center mb-2">
+													<DialogTitle className="text-lg font-semibold">
+														Post Preview
+													</DialogTitle>
+													<Button
+														variant="ghost"
+														size="icon"
+														className="rounded-full cursor-pointer"
+														onClick={() => {
+															document.dispatchEvent(
+																new KeyboardEvent("keydown", { key: "Escape" })
+															);
+														}}
+													>
+														<X className="w-5 h-5" />
+													</Button>
+												</div>
+												<Post
+													post={{
+														post_id: 1,
+														user: {
+															user_id: user?.user_id,
+															username: user?.username,
+															pfp_src: user?.pfp_src,
+														},
+														content: state.formData.content,
+														media: state.formData.files.map(
+															(media: IMediaPreview) => ({
+																type: media.type,
+																url: media.url,
+															})
+														),
+														likes: 1,
+														comments: 1,
+														created_at: new Date().toISOString(),
+													}}
+													isViewMode={true}
+												/>
+											</div>
+										</div>
+									</DialogContent>
+								</Dialog>
+							</div>
+						)}
+						<Button
+							variant={default}
+							type="submit"
+							disabled={state.isLoading}
+							className="cursor-pointer rounded-full p-4 outline shadow-md"
+						>
+							<Send />
+							Post
+						</Button>
+					</div>
+				</div>
+			</form>
+		</div>
+	);
+};
+
+export default CreatePost;
+
+import { useReducer, useRef } from "react";
+import { toast } from "sonner";
+import createPost from "@/api/post/create-post";
+import UseTokenHook from "@/hooks/useTokenHook";
+import { ICreatePostState as State } from "@/types/post/CreatePost/ICreateFormState";
+import { CreatePostActionType as Action } from "@/types/post/CreatePost/ICreatePostActionType";
+import { IMediaPreview } from "@/types/IMediaPreview";
+import { PostActionTypeEnum as ActionType } from "@/enums/ICreatePostActionSetType";
+
+const initState: State = {
+	isDrag: false,
+	isLoading: false,
+	isExpanded: false,
+	formData: { content: "", files: [] },
+};
+
+const reducer = (state: State, action: Action): State => {
+	switch (action.type) {
+		case ActionType.SET_DRAG:
+			return {
+				...state,
+				isDrag: action.payload,
+			};
+		case ActionType.SET_LOADING:
+			return {
+				...state,
+				isLoading: action.payload,
+			};
+		case ActionType.SET_EXPANDED:
+			return {
+				...state,
+				isExpanded: action.payload,
+			};
+		case ActionType.SET_FILES:
+			return {
+				...state,
+				formData: { ...state.formData, files: action.payload },
+			};
+		case ActionType.SET_CONTENT:
+			return {
+				...state,
+				formData: { ...state.formData, content: action.payload },
+			};
+		case ActionType.RESET_FORM:
+			return { ...state, formData: initState.formData, isExpanded: false };
+		default:
+			return state;
+	}
+};
+
+const createMediaPreview = (files: FileList): IMediaPreview[] =>
+	Array.from(files).map((file) => ({
+		type: file.type.startsWith("image/") ? "image" : "video",
+		url: URL.createObjectURL(file),
+		file,
+	}));
+
+const convertToFormData = (
+	content: string,
+	files: IMediaPreview[]
+): FormData => {
+	const formData = new FormData();
+	formData.append("content", content);
+	files.forEach((media) => formData.append("files", media.file));
+	return formData;
+};
+
+const useCreatePost = () => {
+	const [state, dispatch] = useReducer(reducer, initState);
+	const fileInputRef = useRef<HTMLInputElement>(null);
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+	const handleFileInput = (files: FileList) => {
+		const newFiles = createMediaPreview(files);
+		dispatch({
+			type: ActionType.SET_FILES,
+			payload: [...state.formData.files, ...newFiles],
+		});
+	};
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!state.formData.content.trim() && !state.formData.files.length) return;
+
+		dispatch({ type: ActionType.SET_LOADING, payload: true });
+		try {
+			const token = await UseTokenHook();
+			const res = await createPost(
+				token,
+				convertToFormData(state.formData.content, state.formData.files)
+			);
+
+			if (res.status === 200)
+				toast.success(res.message, {
+					action: {
+						label: "Ok",
+						onClick: () => dispatch({ type: ActionType.RESET_FORM }),
+					},
+				});
+			else toast.error(res.message);
+		} catch (err) {
+			toast.error(err instanceof Error ? err.message : "Something went wrong.");
+		} finally {
+			dispatch({ type: ActionType.SET_LOADING, payload: false });
+		}
+	};
+
+	return {
+		state,
+		dispatch,
+		handleFileInput,
+		handleSubmit,
+		fileInputRef,
+		textareaRef,
+	};
+};
+
+export default useCreatePost;
+
+import { ApiService } from "../apiService";
+
+const apiService = new ApiService();
+
+const createPost = async (
+	cookie: string | null,
+	form: FormData
+): Promise<{
+	message: string;
+	status: number;
+}> => {
+	return await apiService.request<{ message: string; status: number }>({
+		endpoint: /post/create_post,
+		method: POST,
+		options: {
+			form: form,
+			files: form.getAll("files").length > 0,
+			requiresAuth: true,
+			cookie: cookie,
+		},
+	});
+};
+
+export default createPost;
+
+// @apiService I already have,
+[HttpPost("create_post")]
+        [Consumes("multipart/form-data")]
+        [ServiceFilter(typeof(UserAuth))]
+        public async Task<IActionResult> CreatePost([FromForm] CreatePostViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return view.wrong_credentials();
+            }
+
+            if (string.IsNullOrEmpty(model.content))
+            {
+                return view.wrong_credentials();
+            }
+
+            string? user_id = this.HttpContext.Items["user_id"]?.ToString();
+
+            Post post = new Post(
+                post_id: Guid.NewGuid(),
+                user_id: Guid.Parse(user_id ?? ""),
+                content: model.content,
+                created_at: DateTime.Now
+            );
+
+            int? check = await this._postService.CreatePost(post, files: model.files);
+
+            if (check != null && check > 0)
+            {
+                return view.created();
+            }
+
+            return view.bad_credentials();
+        }
+bll service method:
+public async Task<int?> CreatePost(Post post, List<IFormFile>? files)
+        {
+            try
+            {
+                if (files != null && files.Count > 0)
+                {
+                    foreach (var file in files)
+                    {
+                        PostMedia media = await this.file_service.Upload(post.post_id, file);
+                        post.AddMedia(media: media);
+                    }
+                }
+                return await this.post_repo.CreatePost(post);
+            }
+            catch (Exception ex)
+            {
+                throw new BaseException($"Error uploading file: {ex.Message}", 500, ex);
+            }
+        }
+dal.postrepo
+public async Task<int> CreatePost(Post post)
+        {
+            try
+            {
+                var result = await this.db_repo.scalar(this.postQuery.add_post(), new Dictionary<string, object> {
+                    { "@post_id", post.post_id },
+                    { "@user_id", post.user_id },
+                    { "@content", post.content },
+                    { "@created_at", post.created_at }
+                });
+
+                if (result == null || result == DBNull.Value)
+                {
+                    throw new DatabaseOperationException("Post creation query executed but did not return a valid post_id");
+                }
+
+                Guid post_id = (Guid)result;
+
+                if (
+                    post.media == null || post.media.Count == 0
+                )
+                {
+                    return 1;
+                }
+
+
+                foreach (PostMedia media in post.media)
+                {
+                    await this.db_repo.nonQuery(postQuery.add_post_media(), new Dictionary<string, object> {
+                        { "@media_id", media.media_id },
+                        { "@post_id", post_id },
+                        { "@media_type", media.media_type.ToString() },
+                        { "@media_src", media.media_src }
+                    });
+                }
+
+                return 1;
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseOperationException($"Database error during post creation: {sqlEx.Message}", sqlEx);
+            }
+            catch (Exception)
+            {
+                throw new DataAccessException($"An unexpected error occurred during post creation");
+            }
+        }
+
+it is just an example, don't write anything about DTO, the thing wrapped in example {} is used only as example for the data used after

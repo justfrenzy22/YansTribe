@@ -7,5 +7,6 @@ namespace dal.dto
         public required Guid user_id { get; set; }
         public required string username { get; set; }
         public required string pfp_src { get; set; }
+        public required bool is_private { get; set; }
     }
 }

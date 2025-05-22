@@ -1,5 +1,6 @@
 using bll.interfaces;
 using core.entities;
+using core.enums;
 using dal.exceptions;
 using Microsoft.AspNetCore.Http;
 
@@ -7,44 +8,54 @@ namespace bll.services
 {
     public class FileService : IFileService
     {
-        private string uploadsFolder;
+        private readonly string _baseUploadFolder;
+        private readonly Dictionary<FileCategory, string> _categoryFolderPaths;
 
         public FileService()
         {
-            this.uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+            _baseUploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "cdn");
+
+            _categoryFolderPaths = new Dictionary<FileCategory, string>
+            {
+                { FileCategory.PostImage, Path.Combine(_baseUploadFolder, "images", "posts") },
+                { FileCategory.ProfileImage, Path.Combine(_baseUploadFolder, "images", "profile_pics") },
+                { FileCategory.StoryImage, Path.Combine(_baseUploadFolder, "images", "stories") },
+                { FileCategory.PostVideo, Path.Combine(_baseUploadFolder, "videos", "posts") },
+                { FileCategory.StoryVideo, Path.Combine(_baseUploadFolder, "videos", "stories") }
+            };
+
+            EnsureFoldersExist();
         }
 
-        public async Task<PostMedia> Upload(Guid post_id, IFormFile file)
+        public async Task<PostMedia> Upload(Guid entityId, IFormFile file, FileCategory category)
         {
-            Guid guid = Guid.NewGuid();
+            if (!_categoryFolderPaths.TryGetValue(category, out var targetFolder))
+                throw new BaseException($"No path defined for category '{category}'.", 500);
 
-            this.CheckOrCreateFolder();
+            var mediaId = Guid.NewGuid();
+            var fileExtension = Path.GetExtension(file.FileName);
+            var fileName = $"{mediaId}{fileExtension}";
+            var filePath = Path.Combine(targetFolder, fileName);
 
-            string fileName = guid + Path.GetExtension(file.FileName);
-            string filePath = Path.Combine(this.uploadsFolder, fileName);
+            await SaveFileAsync(file, filePath);
 
-            await this.SaveFile(file, filePath);
+            var mediaType = DetermineMediaType(file, category);
+            var (typeSegment, categorySegment) = GetPathSegments(category);
 
             return new PostMedia(
-                post_id: post_id,
-                media_id: guid,
-                media_type: file.ContentType.StartsWith("image/")
-                        ? core.enums.MediaType.image
-                        : core.enums.MediaType.video,
-                media_src: fileName
+                post_id: entityId,
+                media_id: mediaId,
+                media_type: mediaType,
+                media_src: $"/cdn/{typeSegment}/{categorySegment}/{fileName}"
             );
         }
 
-        private async Task SaveFile(IFormFile file, string filePath)
+        private static async Task SaveFileAsync(IFormFile file, string path)
         {
             try
             {
-
-                using (var stream = new MemoryStream())
-                {
-                    await file.CopyToAsync(stream);
-                    await File.WriteAllBytesAsync(filePath, stream.ToArray());
-                }
+                using var stream = new FileStream(path, FileMode.Create);
+                await file.CopyToAsync(stream);
             }
             catch (Exception ex)
             {
@@ -52,14 +63,37 @@ namespace bll.services
             }
         }
 
-        private void CheckOrCreateFolder()
+        private static MediaType DetermineMediaType(IFormFile file, FileCategory category)
+        {
+            if (category == FileCategory.PostVideo || category == FileCategory.StoryVideo)
+                return MediaType.video;
+
+            if (file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+                return MediaType.image;
+
+            if (file.ContentType.StartsWith("video/", StringComparison.OrdinalIgnoreCase))
+                return MediaType.video;
+
+            throw new BaseException($"Unsupported file ContentType: {file.ContentType}", 400);
+        }
+
+        private static (string typeSegment, string categorySegment) GetPathSegments(FileCategory category) => category switch
+        {
+            FileCategory.PostImage => ("images", "posts"),
+            FileCategory.ProfileImage => ("images", "profile_pics"),
+            FileCategory.StoryImage => ("images", "stories"),
+            FileCategory.PostVideo => ("videos", "posts"),
+            FileCategory.StoryVideo => ("videos", "stories"),
+            _ => throw new BaseException($"Unsupported category: {category}", 400)
+        };
+
+        private void EnsureFoldersExist()
         {
             try
             {
-
-                if (!Directory.Exists(this.uploadsFolder))
+                foreach (var folder in _categoryFolderPaths.Values)
                 {
-                    Directory.CreateDirectory(this.uploadsFolder);
+                    Directory.CreateDirectory(folder);
                 }
             }
             catch (Exception ex)

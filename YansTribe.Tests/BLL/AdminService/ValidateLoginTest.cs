@@ -1,4 +1,5 @@
 using core.entities;
+using dal.exceptions;
 using Moq;
 
 namespace YansTribe.Tests.BLL.AdminService
@@ -7,49 +8,102 @@ namespace YansTribe.Tests.BLL.AdminService
     public class ValidateLoginTest : AdminServiceTestBase
     {
         [TestMethod]
-        public void InvalidLogin_ReturnsNull()
+        public void InvalidUser_ReturnsNull()
         {
-            string email = "a@b.com";
-            string password = "password";
-
-            string? token = this._service.ValidateLogin(email, password).Result;
+            string? token = this.service.ValidateLogin(this.test_email, this.test_password).Result;
 
             Assert.IsNull(token);
         }
-        /* TODO : Add more test cases and make them work with Mock data */
 
         [TestMethod]
-        public void ValidLogin_ReturnsToken()
+        public async Task NonExistentUser_ReturnsNull()
         {
-            string email = "just.frenzy22@gmail.com";
-            string password = "asdasd12";
-            string hashedPassword = "hashedPassword";
-            string token = "validToken";
+            this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(this.test_email)).ReturnsAsync((FullUser?)null);
 
-            var user = new User
+            string? result = await this.service.ValidateLogin(this.test_email, this.test_password);
+
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public async Task InvalidRole_ReturnsNull()
+        {
+            var user = new FullUser
             (
-                user_id: Guid.NewGuid(),
-                email: email,
-                password: hashedPassword,
-                role: core.enums.Role.Admin
+                user_id: this.test_user_id,
+                username: this.test_username,
+                pfp_src: "",
+                email: this.test_email,
+                full_name: this.test_full_name,
+                bio: this.test_bio,
+                location: this.test_location,
+                website: this.test_website,
+                is_private: false,
+                created_at: DateTime.Now,
+                role: core.enums.Role.User,
+                password: this.test_hashed_password
             );
 
-            this._userRepoMock
-                .Setup(repo => repo.ValidateUserByEmail(email))
-                .ReturnsAsync(user);
+            this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(this.test_email)).ReturnsAsync(user);
 
-            this._hashServiceMock
-                .Setup(hashService => hashService.hash(password))
-                .Returns(hashedPassword);
+            string? result = await this.service.ValidateLogin(this.test_email, this.test_password);
 
-            this._authServiceMock
-                .Setup(authService => authService.GenerateJwtToken(user.user_id.ToString(), true))
-                .Returns(token);
+            Assert.IsNull(result);
+        }
 
-            string? result = this._service.ValidateLogin(email, password).Result;
+        [TestMethod]
+        [ExpectedException(typeof(DataAccessException))]
+        public async Task InvalidPassword_ThrowsException()
+        {
+            var user = new FullUser
+            (
+                user_id: this.test_user_id,
+                username: this.test_username,
+                pfp_src: "",
+                email: this.test_email,
+                full_name: this.test_full_name,
+                bio: this.test_bio,
+                location: this.test_location,
+                website: this.test_website,
+                is_private: false,
+                created_at: DateTime.Now,
+                role: core.enums.Role.User,
+                password: this.test_hashed_password
+            );
 
-            Assert.IsNotNull(result); // Ensure the result is not null
-            Assert.AreEqual(token, result); // Ensure the result matches the expected token
+            this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(this.test_email)).ReturnsAsync(user);
+            this.hashServiceMock.Setup(hashService => hashService.hash(this.test_password)).Returns("differentHash");
+
+            await this.service.ValidateLogin(this.test_email, this.test_password);
+        }
+
+        [TestMethod]
+        public async Task ValidLogin_ReturnsToken()
+        {
+            var user = new FullUser
+            (
+                user_id: this.test_user_id,
+                username: this.test_username,
+                pfp_src: "",
+                email: this.test_email,
+                full_name: this.test_full_name,
+                bio: this.test_bio,
+                location: this.test_location,
+                website: this.test_website,
+                is_private: false,
+                created_at: DateTime.Now,
+                role: core.enums.Role.User,
+                password: this.test_hashed_password
+            );
+
+            this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(this.test_email)).ReturnsAsync(user);
+            this.hashServiceMock.Setup(hashService => hashService.hash(this.test_password)).Returns(this.test_hashed_password);
+            this.authServiceMock.Setup(authService => authService.GenerateJwtToken(user.user_id.ToString(), true)).Returns(this.test_token);
+
+            string? result = await this.service.ValidateLogin(this.test_email, this.test_password);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(this.test_token, result);
         }
     }
 }

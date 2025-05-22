@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using core.models;
-using server.views;
+using bll.views;
 
 namespace server.controllers;
 

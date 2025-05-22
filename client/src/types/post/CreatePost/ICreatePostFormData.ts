@@ -1,4 +1,4 @@
-import { IMediaPreview } from "../../IMediaPreview";
+import { IMediaPreview } from "./IMediaPreview";
 
 export interface ICreatePostFormData {
 	content: string;

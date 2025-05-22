@@ -7,10 +7,10 @@ import { useEffect } from "react";
 import { Dialog, DialogTrigger, DialogTitle } from "../ui/dialog";
 import { DialogContent } from "@radix-ui/react-dialog";
 import Post from "../custom/post";
-import { useUser } from "@/contexts/UserContext";
 import { PostActionTypeEnum as ActionType } from "@/enums/ICreatePostActionSetType";
-import useCreatePost from "@/hooks/useCreatePost";
-import { IMediaPreview } from "@/types/IMediaPreview";
+import useCreatePost from "@/hooks/actions/useCreatePost";
+import { IMediaPreview } from "@/types/post/CreatePost/IMediaPreview";
+import { useUser } from "@/hooks/contexts/useUser";
 
 const CreatePost = () => {
 	const {
@@ -21,7 +21,7 @@ const CreatePost = () => {
 		fileInputRef,
 		textareaRef,
 	} = useCreatePost();
-	const user = useUser();
+	const { user } = useUser();
 
 	useEffect(() => {
 		if (state.isExpanded && textareaRef.current) textareaRef.current.focus();
@@ -129,13 +129,13 @@ const CreatePost = () => {
 						</div>
 					)}
 				</div>
-				<div className="flex flex-row sm:justify-between justify-start items-center px-0 sm:px-6">
+				<div className="flex flex-row sm:justify-between justify-between items-center px-1 sm:px-6">
 					<div className="flex items-center gap-0 sm:gap-2">
 						<Button
 							type="button"
 							disabled={state.isLoading}
 							onClick={() => fileInputRef.current?.click()}
-							className="no-underline flex items-center gap-1 sm:gap-2 cursor-pointer rounded-full p-4 outline shadow-md"
+							className="no-underline flex items-center gap-1 sm:gap-2 cursor-pointer rounded-full outline shadow-md"
 							variant={`link`}
 						>
 							<Upload className="w-5 h-5" />
@@ -194,23 +194,27 @@ const CreatePost = () => {
 													</Button>
 												</div>
 												<Post
-													post={{
-														post_id: 1,
+													initPost={{
+														post_id: `asdf`,
 														user: {
-															user_id: user?.user_id,
-															username: user?.username,
-															pfp_src: user?.pfp_src,
+															user_id: user?.user_id ?? "",
+															username: user?.username ?? "",
+															pfp_src: user?.pfp_src ?? "",
+															notifications: { friendNotifications: [] },
+															is_private: user?.is_private ?? false,
 														},
 														content: state.formData.content,
-														media: state.formData.files.map(
-															(media: IMediaPreview) => ({
-																type: media.type,
-																url: media.url,
-															})
-														),
-														likes: 1,
-														comments: 1,
-														created_at: new Date().toISOString(),
+														media: state.formData.files.map((file) => ({
+															media_id: "",
+															media_src: file.url,
+															media_type: file.type === "image" ? 0 : 1,
+															post_id: "",
+														})),
+														like_count: 1,
+														comment_count: 1,
+														created_at: new Date(),
+														edited: false,
+														edited_at: new Date(),
 													}}
 													isViewMode={true}
 												/>

@@ -6,6 +6,7 @@ namespace dal.dto
     {
         public required Guid user_id { get; set; }
         public required string username { get; set; }
+        public required string password { get; set; }
         public required string email { get; set; }
         public required string full_name { get; set; }
         public required string bio { get; set; }

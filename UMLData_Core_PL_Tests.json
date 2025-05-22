@@ -1,0 +1,32 @@
+{
+  "core": {
+    "Class1": {
+      "type": "class",
+      "methods": []
+    }
+  },
+  "PL": {
+    "Program": {
+      "type": "entry_point",
+      "services": [
+        "UserView",
+        "PostView",
+        "AdminQuery",
+        "UserQuery",
+        "PostQuery",
+        "UserMapper",
+        "IDBRepo",
+        "IAdminRepo",
+        "IUserRepo"
+      ]
+    }
+  },
+  "YansTribe.Tests": {
+    "Test1": {
+      "type": "test_class",
+      "methods": [
+        {"name": "TestMethod1", "parameters": [], "returnType": "void"}
+      ]
+    }
+  }
+}

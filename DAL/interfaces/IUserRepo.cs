@@ -6,13 +6,16 @@ namespace dal.interfaces.repo
 {
     public interface IUserRepo
     {
-        Task<Guid> RegisterUser(User user);
-        Task<User?> GetUserById(Guid user_id);
-        Task<User?> GetUserByEmail(string email);
-        Task<User?> ValidateUserByEmail(string email);
+        Task<Guid> RegisterUser(FullUser user);
+        Task<SafeUser?> GetUserById(Guid user_id);
+        Task<ProfileUser?> GetUserProfileById(Guid req_user_id, Guid profile_user_id);
+        Task<BaseUser?> GetUserEssentials(Guid user_id);
+        Task<FullUser?> GetUserByEmail(string email);
+        Task<Guid?> GetUserIdByUsername(string username);
+        Task<FullUser?> ValidateUserByEmail(string email);
         Task<bool> ChangeRole(Guid user_id, string role);
-        Task<User?> GetUserEssentials(Guid user_id);
+        Task<FullUser?> GetUserByUsername(string username);
+        Task<List<FriendNotification>?> GetFriendNotifications(Guid user_id);
 
-        Task<User?> GetUserByUsername(string username);
     }
 }

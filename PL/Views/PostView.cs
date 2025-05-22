@@ -3,7 +3,7 @@ using core.entities;
 using dal.dto;
 using System.Collections.Generic;
 
-namespace server.views
+namespace pl.views
 {
     public class PostView : ViewComponent
     {
@@ -71,6 +71,18 @@ namespace server.views
         {
             var data = new { status = 400, message = msg };
             return new ObjectResult(data) { StatusCode = 400 };
+        }
+
+        public ActionResult liked()
+        {
+            var data = new { status = 200, message = "Post liked successfully!" };
+            return new ObjectResult(data) { StatusCode = 200 };
+        }
+
+        public ActionResult disliked()
+        {
+            var data = new { status = 200, message = "Post disliked successfully!" };
+            return new ObjectResult(data) { StatusCode = 200 };
         }
     }
 }

@@ -1,0 +1,80 @@
+@startuml
+
+
+package "BLL" {
+    interface IAdminService
+    interface IAuthService
+    interface IFileService
+    interface IHashService
+    interface IPostService
+    interface IUserService
+
+    class AdminService {
+        +ValidateLogin(email: string, password: string): Task<string?>
+        +AuthAdmin(string: token) : VerifyTokenRes
+        +AuthSuperAdmin(string: token): Task<VerifySuperAdminDTO>
+        +GetUsersAsync(string: admin_id) : Task<List<User>?>
+        +ChangeRole(string: user_id, string: role) Task<string>
+    }
+    class AuthService {
+        +VerifyTokenAsync(token: string, isAdmin: bool): VerifyTokenRes
+        +GenerateJwtToken(string: user_id, bool: isAdmin): string
+    }
+    class FileService {
+        +Upload(post_id: Guid, file: IFormFile): Task<PostMedia>
+    }
+    class HashService {
+        +hash(pass: string): string
+    }
+    class PostService {
+        +CreatePost(post: Post, files: List<IFormFile>?): Task<int?>
+    }
+    class UserService {
+        +ValidateUser(email: string, password: string): Task<string>
+        +RegisterUser(user: User): Task<Guid?>
+        +GetUserById(Guid: user_id): Task<User?>
+        +FetchUserProfile(string username): Task<UserProfileDto?>
+        AuthUser(string token): VerifyTokenRes
+    }
+
+    class UserProfileDto {
+    }
+
+     class VerifySuperAdminDTO
+    {
+    }
+
+    class VerifyTokenRes
+    {
+    }
+
+    AdminService ..|> IAdminService
+    AdminService ..> IUserRepo
+    AdminService ..> IAdminRepo
+    AdminService ..> IHashService
+    AdminService ..> IAuthService
+    AdminService ..> VerifySuperAdminDTO
+
+    AuthService ..|> IAuthService
+    AuthService ..> IConfiguration
+    AuthService ..> VerifyTokenRes
+
+    FileService ..|> IFileService
+
+    HashService ..|> IHashService
+
+    PostService ..|> IPostService
+    PostService ..> IPostRepo
+    PostService ..> IFileService
+
+    UserService ..|> IUserService
+    UserService ..> IUserRepo
+    UserService ..> IPostRepo
+    UserService ..> IHashService
+    UserService ..> IAuthService
+    UserService ..> UserProfileDto
+    UserService ..> VerifyTokenRes
+
+}
+
+@enduml

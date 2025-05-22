@@ -1,9 +1,9 @@
 using System.Data;
+using System.Text.Json;
 using core.entities;
 using core.enums;
 using dal.dto;
 using dal.exceptions;
-using dal.interfaces;
 using dal.interfaces.db;
 using dal.interfaces.repo;
 using dal.mapper;
@@ -16,18 +16,16 @@ namespace dal.repo
 
     public class UserRepo : BaseUserRepo, IUserRepo
     {
-        // private readonly IDBRepo db_repo;
         private readonly UserQuery userQuery;
         private readonly UserMapper mapper;
 
         public UserRepo(IDBRepo db_repo, UserQuery userQuery, UserMapper mapper) : base(db_repo)
         {
-            // this.db_repo = db_repo;
             this.userQuery = userQuery;
             this.mapper = mapper;
         }
 
-        public async Task<Guid> RegisterUser(User user)
+        public async Task<Guid> RegisterUser(FullUser user)
         {
             try
             {
@@ -88,7 +86,7 @@ namespace dal.repo
             }
         }
 
-        public async Task<User?> GetUserById(Guid user_id)
+        public async Task<SafeUser?> GetUserById(Guid user_id)
         {
             try
             {
@@ -101,7 +99,7 @@ namespace dal.repo
                     return null;
                 }
                 var row = res.Rows[0];
-                return this.mapper.MapTo(new UserDTO
+                return this.mapper.MapTo(new SafeUserDTO
                 {
                     user_id = Guid.Parse(row["user_id"].ToString() ?? ""),
                     username = row["username"]?.ToString() ?? string.Empty,
@@ -113,7 +111,7 @@ namespace dal.repo
                     website = row["website"]?.ToString() ?? string.Empty,
                     is_private = Convert.ToBoolean(row["is_private"]),
                     created_at = Convert.ToDateTime(row["created_at"]),
-                    role = ParseRole(row["role"].ToString() ?? "")
+                    role = ParseRole(row["role"].ToString() ?? ""),
                 });
             }
 
@@ -127,7 +125,133 @@ namespace dal.repo
             }
         }
 
-        public async Task<User?> GetUserEssentials(Guid user_id)
+        public async Task<ProfileUser?> GetUserProfileById(Guid req_user_id, Guid profile_user_id)
+        {
+            try
+            {
+                DataTable? res = await this.db_repo.reader(userQuery.get_user_profile_by_id(), new Dictionary<string, object> {
+                    { "@profile_user_id", Guid.Parse(profile_user_id.ToString() ?? "") },
+                    { "@req_user_id", Guid.Parse(req_user_id.ToString() ?? "") }
+                });
+
+                if (res.Rows.Count == 0)
+                {
+                    return null;
+                }
+                var row = res.Rows[0];
+
+                bool is_private = Convert.ToBoolean(row["is_private"]);
+
+                if (is_private)
+                {
+                    return (ProfileUser)this.mapper.MapTo(new EssentialsUserDTO
+                    {
+                        user_id = Guid.Parse(row["user_id"].ToString() ?? ""),
+                        username = row["username"]?.ToString() ?? string.Empty,
+                        pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
+                        is_private = is_private
+                    });
+                }
+                else
+                {
+                    ProfileUser user = this.mapper.MapTo(new ProfileUserDTO
+                    {
+                        user_id = Guid.Parse(row["user_id"].ToString() ?? ""),
+                        username = row["username"]?.ToString() ?? string.Empty,
+                        pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
+                        email = row["email"]?.ToString() ?? string.Empty,
+                        full_name = row["full_name"]?.ToString() ?? string.Empty,
+                        bio = row["bio"]?.ToString() ?? string.Empty,
+                        location = row["location"]?.ToString() ?? string.Empty,
+                        website = row["website"]?.ToString() ?? string.Empty,
+                        is_private = Convert.ToBoolean(row["is_private"]),
+                        created_at = Convert.ToDateTime(row["created_at"]),
+                        role = ParseRole(row["role"].ToString() ?? ""),
+                        is_self = Convert.ToBoolean(row["is_self"]),
+                        is_friend = Convert.ToBoolean(row["is_friend"]),
+                        friends_num = Convert.ToInt32(row["friends_num"]),
+                        friendship_status = row["friendship_status"] != DBNull.Value ? ParseFriendStatus(row["friendship_status"].ToString() ?? "") : null,
+                        request_direction = row["request_direction"]?.ToString() ?? string.Empty
+                    });
+
+                    if (row["friends_json"] != DBNull.Value)
+                    {
+                        string rawJson = row["friends_json"].ToString() ?? "[]";
+
+                        List<FriendUserDTO> friendsJson = JsonSerializer.Deserialize<List<FriendUserDTO>>(rawJson) ?? new List<FriendUserDTO>();
+
+                        foreach (var friendDto in friendsJson)
+                        {
+                            if (!Enum.TryParse(friendDto.status, true, out FriendStatus status))
+                                continue;
+                            FriendUser friendUser = new FriendUser(
+                                status,
+                                friendDto.user_id,
+                                friendDto.username,
+                                friendDto.pfp_src,
+                                friendDto.is_private
+                            );
+                            user.AddFriend(friendUser);
+                        }
+                    }
+                    return user;
+                }
+            }
+
+            catch (Exception ex) when (ex.InnerException is SqlException sqlEx)
+            {
+                throw new DatabaseOperationException($"Database error during user retrieval: {sqlEx.Message}", sqlEx);
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException($"An unexpected error occurred during user retrieval: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<List<FriendNotification>?> GetFriendNotifications(Guid user_id)
+        {
+            try
+            {
+                DataTable? res = await this.db_repo.reader(userQuery.get_friend_notifications(), new Dictionary<string, object>
+                {
+                    { "@user_id", Guid.Parse(user_id.ToString() ?? "") }
+                });
+
+                if (res.Rows.Count == 0)
+                {
+                    return null;
+                }
+
+                List<FriendNotification> frNot = new List<FriendNotification>();
+
+                foreach (DataRow row in res.Rows)
+                {
+                    string sender_id = row["sender_id"].ToString() ?? string.Empty;
+                    string username = row["username"].ToString() ?? string.Empty;
+                    string pfp_src = row["pfp_src"].ToString() ?? string.Empty;
+                    DateTime request_sent_at = Convert.ToDateTime(row["request_sent_at"]);
+
+                    frNot.Add(new FriendNotification(
+                        sender_id: Guid.Parse(sender_id),
+                        username: username,
+                        pfp_src: pfp_src,
+                        request_sent_at: request_sent_at
+                    ));
+                }
+
+                return frNot;
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseOperationException($"Database error during user retrieval: {sqlEx.Message}", sqlEx);
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException($"An unexpected error occurred during user retrieval: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<BaseUser?> GetUserEssentials(Guid user_id)
         {
             try
             {
@@ -147,6 +271,7 @@ namespace dal.repo
                     user_id = Guid.Parse(row["user_id"]?.ToString() ?? ""),
                     username = row["username"]?.ToString() ?? string.Empty,
                     pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
+                    is_private = row["is_private"] == DBNull.Value ? false : Convert.ToBoolean(row["is_private"])
                 });
             }
             catch (Exception ex) when (ex.InnerException is SqlException sqlEx)
@@ -159,8 +284,7 @@ namespace dal.repo
             }
         }
 
-
-        public async Task<User?> GetUserByEmail(string email)
+        public async Task<FullUser?> GetUserByEmail(string email)
         {
             try
             {
@@ -180,6 +304,7 @@ namespace dal.repo
                     user_id = Guid.Parse(row["user_id"]?.ToString() ?? ""),
                     username = row["username"]?.ToString() ?? string.Empty,
                     email = row["email"]?.ToString() ?? string.Empty,
+                    password = row["password_hash"]?.ToString() ?? string.Empty,
                     full_name = row["full_name"]?.ToString() ?? string.Empty,
                     bio = row["bio"]?.ToString() ?? string.Empty,
                     pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
@@ -200,7 +325,34 @@ namespace dal.repo
             }
         }
 
-        public async Task<User?> ValidateUserByEmail(string email)
+        public async Task<Guid?> GetUserIdByUsername(string username)
+        {
+            try
+            {
+                DataTable? res = await this.db_repo.reader(userQuery.check_user_by_username(), new Dictionary<string, object> {
+                { "@username", username }
+            });
+
+                if (res.Rows.Count == 0)
+                {
+                    return null;
+                }
+
+                var row = res.Rows[0];
+
+                return Guid.Parse(row["user_id"]?.ToString() ?? "");
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new DatabaseOperationException($"Database error during user retrieval by email: {sqlEx.Message}", sqlEx);
+            }
+            catch (Exception ex)
+            {
+                throw new DataAccessException($"An unexpected error occurred during user retrieval by email: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<FullUser?> ValidateUserByEmail(string email)
         {
             try
             {
@@ -216,22 +368,21 @@ namespace dal.repo
 
                 var row = res.Rows[0];
 
-                return new User
-                (
-                    user_id: Guid.Parse(row["user_id"]?.ToString() ?? ""),
-                    username: row["username"]?.ToString() ?? string.Empty,
-                    email: row["email"]?.ToString() ?? string.Empty,
-                    password: row["password_hash"]?.ToString() ?? string.Empty,
-                    full_name: row["full_name"]?.ToString() ?? string.Empty,
-                    bio: row["bio"]?.ToString() ?? string.Empty,
-                    pfp_src: row["pfp_src"]?.ToString() ?? string.Empty,
-                    location: row["location"]?.ToString() ?? string.Empty,
-                    website: row["website"]?.ToString() ?? string.Empty,
-                    is_private: Convert.ToBoolean(row["is_private"]),
-                    created_at: Convert.ToDateTime(row["created_at"]),
-                    role: ParseRole(row["role"].ToString() ?? "")
-                );
-
+                return this.mapper.MapTo(new UserDTO
+                {
+                    user_id = Guid.Parse(row["user_id"]?.ToString() ?? ""),
+                    username = row["username"]?.ToString() ?? string.Empty,
+                    email = row["email"]?.ToString() ?? string.Empty,
+                    password = row["password_hash"]?.ToString() ?? string.Empty,
+                    full_name = row["full_name"]?.ToString() ?? string.Empty,
+                    bio = row["bio"]?.ToString() ?? string.Empty,
+                    pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
+                    location = row["location"]?.ToString() ?? string.Empty,
+                    website = row["website"]?.ToString() ?? string.Empty,
+                    is_private = Convert.ToBoolean(row["is_private"]),
+                    created_at = Convert.ToDateTime(row["created_at"]),
+                    role = ParseRole(row["role"].ToString() ?? "")
+                });
             }
             catch (SqlException sqlEx)
             {
@@ -243,7 +394,7 @@ namespace dal.repo
             }
         }
 
-        public async Task<User?> GetUserByUsername(string username)
+        public async Task<FullUser?> GetUserByUsername(string username)
         {
             try
             {
@@ -264,6 +415,7 @@ namespace dal.repo
                     {
                         user_id = Guid.Parse(row["user_id"]?.ToString() ?? ""),
                         username = row["username"]?.ToString() ?? string.Empty,
+                        password = row["password_hash"]?.ToString() ?? string.Empty,
                         email = row["email"]?.ToString() ?? string.Empty,
                         full_name = row["full_name"]?.ToString() ?? string.Empty,
                         bio = row["bio"]?.ToString() ?? string.Empty,
@@ -275,51 +427,6 @@ namespace dal.repo
                         role = ParseRole(row["role"].ToString() ?? "")
                     }
                 );
-
-                // UserDTO userDto = new UserDTO
-                // {
-                //     user_id = Convert.ToInt32(row["user_id"]),
-                //     username = row["username"]?.ToString() ?? string.Empty,
-                //     email = row["email"]?.ToString() ?? string.Empty,
-                //     full_name = row["full_name"]?.ToString() ?? string.Empty,
-                //     bio = row["bio"]?.ToString() ?? string.Empty,
-                //     pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
-                //     location = row["location"]?.ToString() ?? string.Empty,
-                //     website = row["website"]?.ToString() ?? string.Empty,
-                //     is_private = Convert.ToBoolean(row["is_private"]),
-                //     created_at = Convert.ToDateTime(row["created_at"]),
-                //     role = ParseRole(row["role"].ToString() ?? "")
-                // };
-
-                // return new User
-                // (
-                //     user_id: userDto.user_id,
-                //     username: userDto.username,
-                //     email: userDto.email,
-                //     full_name: userDto.full_name,
-                //     bio: userDto.bio,
-                //     pfp_src: userDto.pfp_src,
-                //     location: userDto.location,
-                //     website: userDto.website,
-                //     is_private: userDto.is_private,
-                //     created_at: userDto.created_at,
-                //     role: userDto.role
-                // );
-
-                // return new UserDTO
-                // {
-                //     user_id = Convert.ToInt32(row["user_id"]),
-                //     username = row["username"]?.ToString() ?? string.Empty,
-                //     email = row["email"]?.ToString() ?? string.Empty,
-                //     full_name = row["full_name"]?.ToString() ?? string.Empty,
-                //     bio = row["bio"]?.ToString() ?? string.Empty,
-                //     pfp_src = row["pfp_src"]?.ToString() ?? string.Empty,
-                //     location = row["location"]?.ToString() ?? string.Empty,
-                //     website = row["website"]?.ToString() ?? string.Empty,
-                //     is_private = Convert.ToBoolean(row["is_private"]),
-                //     created_at = Convert.ToDateTime(row["created_at"]),
-                //     role = ParseRole(row["role"].ToString() ?? "")
-                // };
             }
             catch (SqlException sqlEx)
             {
@@ -331,55 +438,21 @@ namespace dal.repo
             }
         }
 
-
-
         public async Task<bool> ChangeRole(Guid user_id, string role)
         {
-
-
-            // string roleStr = ParseStringRole(role);
-
             int result = await db_repo.nonQuery(userQuery.update_user_role(), new Dictionary<string, object> {
                 { "@user_id", Guid.Parse(user_id.ToString() ?? "") },
                 { "@role", role }
             });
 
-            return result > 0;
+            if (result > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-
-        // public async Task<int> ValidateUser(string email, string password)
-        // {
-        //     try
-        //     {
-        //         // var parameters = new Dictionary<string, object> {
-        //         //     { "@email", email },
-        //         //     { "@password_hash", password }
-        //         // };
-
-        //         DataTable? res = await dBRepo.reader(userQuery.get_user_by_email_and_password(), new Dictionary<string, object> {
-        //             { "@email", email },
-        //         });
-
-        //         if (res.Rows.Count == 0)
-        //         {
-        //             throw new DataAccessException("User or password is incorrect.");
-        //         }
-
-        //         var row = res.Rows[0];
-
-        //         return Convert.ToInt32(row["user_id"]);
-        //     }
-        //     catch (Exception ex) when (ex.InnerException is SqlException sqlEx)
-        //     {
-        //         throw new DatabaseOperationException($"Database error during user validation: {sqlEx.Message}", sqlEx);
-        //     }
-        //     catch (Exception)
-        //     {
-        //         throw new DataAccessException("User or password is incorrect.");
-        //     }
-        // }
-
-
     }
-
 }

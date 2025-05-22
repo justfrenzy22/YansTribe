@@ -2,19 +2,24 @@
 
 import { useState } from "react";
 import { Button } from "../ui/button";
-import Link from "next/link";
 import { Home, MessageCircle, Search, ShieldUser, User } from "lucide-react";
+import { useUser } from "@/hooks/contexts/useUser";
+import { useAppContext } from "@/hooks/contexts/useAppContext";
+import { redirect } from "next/navigation";
 
 type btnType = {
 	label: "home" | "search" | "messages" | "admin" | "profile";
-	href: "/" | "/search" | "/messages" | "/admin" | "/profile";
+	href: "/" | "/search" | "/messages" | "/admin" | string;
 	icon: React.ReactNode;
 };
 
 const BottomNav = ({ selected }: { selected: btnType["label"] }) => {
 	const [isSelected, setSelected] = useState<btnType["label"] | null>(selected);
-    // const isAdmin = useUser();
-    
+	// const isAdmin = useUser();
+
+	const user = useUser();
+	const context = useAppContext();
+
 	const btns: btnType[] = [
 		{
 			label: "home",
@@ -38,7 +43,7 @@ const BottomNav = ({ selected }: { selected: btnType["label"] }) => {
 		},
 		{
 			label: "profile",
-			href: "/profile",
+			href: `/@${user?.username}`,
 			icon: <User className="h-5 w-5" />,
 		},
 	];
@@ -65,21 +70,25 @@ const BottomNav = ({ selected }: { selected: btnType["label"] }) => {
 				{/* <div onClick={handleClick}> */}
 				{btns.map((btn) => (
 					<Button
-						key={btn.href}
-						variant={isSelected === btn.label ? "secondary" : "ghost"}
-						data-label={btn.label}
-						size={isSelected === btn.label ? `lg` : "icon"}
-						className={`h-12 rounded-full ${
-							isSelected === btn.label ? `w-auto px-4` : "w-12"
-						}`}
-						asChild
+						key={btn.label}
+						variant={`link`}
+						onClick={() => {
+							if (context && context.page !== btn.label) {
+								context.setCurrPage({
+									page: btn.label,
+									username: btn.label === `profile` ? user?.username ?? `` : ``,
+								});
+								redirect(btn.href);
+							}
+						}}
+						className="flex items-center gap-3 rounded-lg px-3 py-2 cursor-pointer"
 					>
-						<Link href={btn.href}>
-							{btn.icon}
-							{isSelected === btn.label && (
-								<span className="ml-1 text-sm">{btn.label}</span>
-							)}
-						</Link>
+						{/* {btn.icon}
+						<span>{btn.label}</span> */}
+						{btn.icon}
+						{isSelected === btn.label && (
+							<span className="ml-1 text-sm">{btn.label}</span>
+						)}
 					</Button>
 				))}
 				{/* </div> */}

@@ -1,45 +1,35 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
+// redirect
 import { useEffect, useState } from "react";
 import LoadingComponent from "../custom/loading-component";
-import { useTheme } from "next-themes";
-import { IBaseUser } from "@/types/IEssentialsUser";
+import ErrorComponent from "../error/error-component";
+import { IUserResponse } from "@/types/IResponse";
 
 export default function WaitLayout({
 	children,
 	data,
 }: {
 	children: React.ReactNode;
-	data: {
-		message: string;
-		status: number;
-		user: IBaseUser;
-	};
+	data: IUserResponse;
 }) {
-	const { theme } = useTheme();
 	const pathname = usePathname();
 	const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (data) {
 			setTimeout(() => {
+				if (data.status !== 200) {
+					if (data.status === 400) redirect(`/auth`);
+					return <ErrorComponent message={data.message} />;
+					// TODO : Create Error page to indicate when user is not found
+				}
 				setIsLoaded(true);
 			}, 200);
 		}
 	}, [data]);
-
-	if (data.status !== 200) {
-		redirect("/auth");
-	}
-
-	// useEffect(() => {
-	// 	setTimeout(() => {
-	// 		setIsLoaded(true);
-	// 	}, 10000);
-	// }, []);
 
 	return (
 		<AnimatePresence mode="wait">
@@ -53,7 +43,6 @@ export default function WaitLayout({
 					exit={{ opacity: 0 }}
 					transition={{ duration: 1 }}
 				>
-					{/* // dark:bg-[#111827] bg-[#F3F4F6] */}
 					{children}
 				</motion.div>
 			)}

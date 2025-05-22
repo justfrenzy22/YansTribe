@@ -17,7 +17,11 @@ namespace bll.services
             this.file_service = file_service;
         }
 
-        public async Task<int?> CreatePost(Post post, List<IFormFile>? files)
+        public async Task<List<Post>?> GetHomePosts(Guid user_id)
+            => await this.post_repo.GetHomeInitPosts(user_id);
+
+
+        public async Task<int?> CreatePost(PostCreateEntity post, List<IFormFile>? files)
         {
             try
             {
@@ -25,8 +29,17 @@ namespace bll.services
                 {
                     foreach (var file in files)
                     {
-                        PostMedia media = await this.file_service.Upload(post.post_id, file);
-                        post.AddMedia(media: media);
+
+                        if (file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+                        {
+                            PostMedia media = await this.file_service.Upload(post.post_id, file, core.enums.FileCategory.PostImage);
+                            post.AddMedia(media: media);
+                        }
+                        else
+                        {
+                            PostMedia media = await this.file_service.Upload(post.post_id, file, core.enums.FileCategory.PostVideo);
+                            post.AddMedia(media: media);
+                        }
                     }
                 }
                 return await this.post_repo.CreatePost(post);
@@ -36,5 +49,11 @@ namespace bll.services
                 throw new BaseException($"Error uploading file: {ex.Message}", 500, ex);
             }
         }
+
+        public async Task LikePost(Guid post_id, Guid user_id) =>
+            await this.post_repo.LikePost(post_id, user_id);
+
+        public async Task DislikePost(Guid post_id, Guid user_id) =>
+            await this.post_repo.DislikePost(post_id, user_id);
     }
 }
