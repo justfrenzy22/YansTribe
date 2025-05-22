@@ -1,0 +1,36 @@
+{
+  "core": {
+    "BaseRes": {
+      "type": "class",
+      "properties": [
+        {"name": "exception", "type": "string?"},
+        {"name": "check", "type": "bool"},
+        {"name": "status", "type": "int"}
+      ],
+      "constructors": [
+        {"parameters": []},
+        {"parameters": ["bool check", "int status", "string? exception"]}
+      ]
+    }
+  },
+  "PL": {
+    "UserView": {
+      "type": "class",
+      "inherits": "ViewComponent",
+      "methods": [
+        {"name": "success", "parameters": [], "returnType": "ActionResult"},
+        {"name": "register_success", "parameters": [], "returnType": "ActionResult"},
+        {"name": "login_success", "parameters": ["string token"], "returnType": "ActionResult"},
+        {"name": "logout_success", "parameters": [], "returnType": "ActionResult"},
+        {"name": "get_user", "parameters": ["object userDto"], "returnType": "ActionResult"},
+        {"name": "get_private_profile_user", "parameters": ["PrivateProfileViewModel userDTO"], "returnType": "IActionResult"}
+      ]
+    }
+  },
+  "YansTribe.Tests": {
+    "TestData": {
+      "type": "class",
+      "methods": []
+    }
+  }
+}

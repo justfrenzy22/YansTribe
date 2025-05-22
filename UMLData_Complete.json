@@ -1,0 +1,330 @@
+{
+	"BLL": {
+		"AdminService": {
+			"type": "class",
+			"implements": ["IAdminService"],
+			"dependencies": [
+				"IUserRepo",
+				"IAdminRepo",
+				"IHashService",
+				"IAuthService"
+			],
+			"methods": [
+				{
+					"name": "ValidateLogin",
+					"parameters": ["string email", "string password"],
+					"returnType": "Task<string?>"
+				}
+			]
+		},
+		"AuthService": {
+			"type": "class",
+			"implements": ["IAuthService"],
+			"dependencies": ["IConfiguration"],
+			"methods": [
+				{
+					"name": "VerifyTokenAsync",
+					"parameters": ["string token", "bool isAdmin"],
+					"returnType": "VerifyTokenRes"
+				}
+			]
+		},
+		"FileService": {
+			"type": "class",
+			"implements": ["IFileService"],
+			"methods": [
+				{
+					"name": "Upload",
+					"parameters": ["Guid post_id", "IFormFile file"],
+					"returnType": "Task<PostMedia>"
+				}
+			]
+		},
+		"HashService": {
+			"type": "class",
+			"implements": ["IHashService"],
+			"methods": [
+				{
+					"name": "hash",
+					"parameters": ["string pass"],
+					"returnType": "string"
+				}
+			]
+		},
+		"PostService": {
+			"type": "class",
+			"implements": ["IPostService"],
+			"dependencies": ["IPostRepo", "IFileService"],
+			"methods": [
+				{
+					"name": "CreatePost",
+					"parameters": ["Post post", "List<IFormFile>? files"],
+					"returnType": "Task<int?>"
+				}
+			]
+		},
+		"UserService": {
+			"type": "class",
+			"implements": ["IUserService"],
+			"dependencies": [
+				"IUserRepo",
+				"IPostRepo",
+				"IHashService",
+				"IAuthService"
+			],
+			"methods": [
+				{
+					"name": "ValidateUser",
+					"parameters": ["string email", "string password"],
+					"returnType": "Task<string>"
+				},
+				{
+					"name": "RegisterUser",
+					"parameters": ["User user"],
+					"returnType": "Task<Guid?>"
+				}
+			]
+		}
+	},
+	"DAL": {
+		"AdminRepo": {
+			"type": "class",
+			"inherits": "BaseUserRepo",
+			"implements": ["IAdminRepo"],
+			"dependencies": ["IDBRepo", "AdminQuery", "UserQuery", "UserMapper"],
+			"methods": [
+				{
+					"name": "GetAllUsersAsync",
+					"parameters": ["Guid admin_id"],
+					"returnType": "Task<List<User>?>"
+				}
+			]
+		},
+		"UserRepo": {
+			"type": "class",
+			"inherits": "BaseUserRepo",
+			"implements": ["IUserRepo"],
+			"dependencies": ["IDBRepo", "UserQuery", "UserMapper"],
+			"methods": [
+				{
+					"name": "RegisterUser",
+					"parameters": ["User user"],
+					"returnType": "Task<Guid>"
+				}
+			]
+		},
+		"DBRepo": {
+			"type": "class",
+			"implements": ["IDBRepo"],
+			"methods": [
+				{
+					"name": "nonQuery",
+					"parameters": [
+						"string query",
+						"Dictionary<string, object>? parameters"
+					],
+					"returnType": "Task<int>"
+				},
+				{
+					"name": "scalar",
+					"parameters": [
+						"string query",
+						"Dictionary<string, object>? parameters"
+					],
+					"returnType": "Task<object?>"
+				}
+			]
+		},
+		"AdminQuery": {
+			"type": "class",
+			"methods": [
+				{ "name": "get_admin_login", "parameters": [], "returnType": "string" },
+				{ "name": "get_all_users", "parameters": [], "returnType": "string" }
+			]
+		},
+		"UserQuery": {
+			"type": "class",
+			"methods": [
+				{ "name": "add_user", "parameters": [], "returnType": "string" },
+				{ "name": "get_user_by_id", "parameters": [], "returnType": "string" },
+				{
+					"name": "get_user_profile_by_id",
+					"parameters": [],
+					"returnType": "string"
+				},
+				{
+					"name": "get_user_essentials_by_id",
+					"parameters": [],
+					"returnType": "string"
+				},
+				{
+					"name": "get_user_by_username",
+					"parameters": [],
+					"returnType": "string"
+				},
+				{
+					"name": "get_user_by_email",
+					"parameters": [],
+					"returnType": "string"
+				},
+				{
+					"name": "check_user_by_username",
+					"parameters": [],
+					"returnType": "string"
+				},
+				{
+					"name": "get_user_by_email_and_password",
+					"parameters": [],
+					"returnType": "string"
+				}
+			]
+		}
+	},
+	"PL": {
+		"UserController": {
+			"type": "class",
+			"inherits": "Controller",
+			"dependencies": ["ILogger<UserController>", "IUserService", "UserView"],
+			"methods": [
+				{ "name": "Index", "parameters": [], "returnType": "IActionResult" },
+				{
+					"name": "GetUserById",
+					"parameters": [],
+					"returnType": "Task<IActionResult>"
+				}
+			]
+		},
+		"AdminController": {
+			"type": "class",
+			"inherits": "Controller",
+			"dependencies": ["ILogger<AdminController>", "IAdminService"]
+		},
+		"UserAuth": {
+			"type": "class",
+			"implements": ["IAsyncAuthorizationFilter"],
+			"dependencies": ["UserView", "IUserService"],
+			"methods": [
+				{
+					"name": "OnAuthorizationAsync",
+					"parameters": ["AuthorizationFilterContext context"],
+					"returnType": "Task"
+				}
+			]
+		},
+		"ExceptionMiddleware": {
+			"type": "class",
+			"dependencies": [
+				"RequestDelegate",
+				"ICompositeViewEngine",
+				"IServiceProvider"
+			],
+			"methods": [
+				{
+					"name": "InvokeAsync",
+					"parameters": ["HttpContext context"],
+					"returnType": "Task"
+				},
+				{
+					"name": "HandleExceptionAsync",
+					"parameters": ["HttpContext context", "Exception ex"],
+					"returnType": "Task"
+				}
+			]
+		},
+		"AdminLoginViewModel": {
+			"type": "class",
+			"properties": [
+				{ "name": "email", "type": "string" },
+				{ "name": "password", "type": "string" }
+			]
+		}
+	},
+	"YansTribe.Tests": {
+		"ValidateLoginTest": {
+			"type": "class",
+			"inherits": "UserServiceTestBase",
+			"methods": [
+				{
+					"name": "NonExistentUser_ReturnsException",
+					"parameters": [],
+					"returnType": "Task"
+				},
+				{
+					"name": "InvalidPassword_ReturnsException",
+					"parameters": [],
+					"returnType": "Task"
+				},
+				{
+					"name": "ValidLogin_ReturnsToken",
+					"parameters": [],
+					"returnType": "Task"
+				}
+			]
+		},
+		"VerifyTokenTest": {
+			"type": "class",
+			"inherits": "AuthServiceTestBase",
+			"methods": [
+				{ "name": "ValidTokenAdmin_ReturnsTrue", "parameters": [] },
+				{ "name": "InvalidTokenAdmin_ReturnsFalse", "parameters": [] },
+				{ "name": "EmptyToken_ReturnsFalse", "parameters": [] },
+				{ "name": "NullToken_ReturnsFalse", "parameters": [] },
+				{ "name": "InvalidTokenUser_ReturnsFalse", "parameters": [] }
+			]
+		},
+		"FileServiceTest": {
+			"type": "class",
+			"inherits": "FileServiceTestBase",
+			"methods": [
+				{
+					"name": "Upload_ValidFile_ReturnsPostMedia",
+					"parameters": [],
+					"returnType": "Task"
+				}
+			]
+		},
+		"ValidateLoginTest_AdminService": {
+			"type": "class",
+			"inherits": "AdminServiceTestBase",
+			"methods": [
+				{ "name": "InvalidUser_ReturnsNull", "parameters": [] },
+				{
+					"name": "NonExistentUser_ReturnsNull",
+					"parameters": [],
+					"returnType": "Task"
+				},
+				{
+					"name": "InvalidRole_ReturnsNull",
+					"parameters": [],
+					"returnType": "Task"
+				},
+				{
+					"name": "InvalidPassword_ThrowsException",
+					"parameters": [],
+					"returnType": "Task"
+				}
+			]
+		},
+		"CreateTest": {
+			"type": "class",
+			"inherits": "PostServiceTestBase",
+			"methods": [
+				{
+					"name": "ValidPostWithContentOnly_ReturnsPostId",
+					"parameters": [],
+					"returnType": "Task"
+				},
+				{
+					"name": "InvalidPostWithFiles_ReturnsPostId",
+					"parameters": [],
+					"returnType": "Task"
+				},
+				{
+					"name": "ValidPostWithFiles_ReturnsPostId",
+					"parameters": [],
+					"returnType": "Task"
+				}
+			]
+		}
+	}
+}

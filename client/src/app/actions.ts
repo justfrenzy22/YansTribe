@@ -17,3 +17,27 @@ export const saveCookie = async (auth_token: string) => {
 		path: "/",
 	});
 };
+
+export const retrieveSessionToken = async (
+	showLoading: () => void,
+	hideLoading: () => void
+): Promise<string | null> => {
+	try {
+		showLoading();
+		const sessionToken = sessionStorage.getItem("session_token");
+		return sessionToken || null;
+	} finally {
+		hideLoading(); // Hide the loading animation
+	}
+};
+export const parseSessionToken = async (
+	sessionToken: string
+): Promise<Response> => {
+	return fetch("/api/parse-token", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ token: sessionToken }),
+	});
+};

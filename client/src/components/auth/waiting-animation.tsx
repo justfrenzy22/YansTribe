@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { redirect, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import LoadingComponent from "../custom/loading-component";
-import { IBaseUser } from "@/types/IEssentialsUser";
+import { IBaseUser } from "@/types/IBaseUser";
 
 export default function WaitLayout({
 	data,

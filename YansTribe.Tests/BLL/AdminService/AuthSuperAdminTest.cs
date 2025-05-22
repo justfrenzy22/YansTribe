@@ -27,7 +27,7 @@ namespace YansTribe.Tests.BLL.AdminService
             this.authServiceMock.Setup(authService => authService.VerifyTokenAsync(this.test_token, true))
                 .Returns(new VerifyTokenRes { check = true, user_id = this.test_user_id });
 
-            this.userRepoMock.Setup(repo => repo.GetUserById(this.test_user_id)).ReturnsAsync((User?)null);
+            this.userRepoMock.Setup(repo => repo.GetUserById(this.test_user_id)).ReturnsAsync((SafeUser?)null);
 
             VerifySuperAdminDTO result = await this.service.AuthSuperAdmin(this.test_token);
 
@@ -41,7 +41,20 @@ namespace YansTribe.Tests.BLL.AdminService
             this.authServiceMock.Setup(authService => authService.VerifyTokenAsync(this.test_token, true))
                 .Returns(new VerifyTokenRes { check = true, user_id = this.test_user_id });
 
-            var admin = new User(user_id: this.test_user_id, role: Role.Admin);
+            var admin = new SafeUser
+            (
+                user_id: this.test_user_id,
+                username: this.test_username,
+                pfp_src: "",
+                email: this.test_email,
+                full_name: this.test_full_name,
+                bio: this.test_bio,
+                location: this.test_location,
+                website: this.test_website,
+                is_private: false,
+                created_at: DateTime.Now,
+                role: core.enums.Role.User
+            );
 
             this.userRepoMock.Setup(repo => repo.GetUserById(this.test_user_id)).ReturnsAsync(admin);
 
@@ -57,9 +70,19 @@ namespace YansTribe.Tests.BLL.AdminService
             this.authServiceMock.Setup(authService => authService.VerifyTokenAsync(this.test_token, true))
                 .Returns(new VerifyTokenRes { check = true, user_id = this.test_user_id });
 
-            var superAdmin = new User(
+            var superAdmin = new SafeUser
+            (
                 user_id: this.test_user_id,
-                role: Role.SuperAdmin
+                username: this.test_username,
+                pfp_src: "",
+                email: this.test_email,
+                full_name: this.test_full_name,
+                bio: this.test_bio,
+                location: this.test_location,
+                website: this.test_website,
+                is_private: false,
+                created_at: DateTime.Now,
+                role: core.enums.Role.User
             );
 
             this.userRepoMock.Setup(repo => repo.GetUserById(this.test_user_id)).ReturnsAsync(() => superAdmin);

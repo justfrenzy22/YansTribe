@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 interface MotionWrapperProps {
 	children: ReactNode;
 	className?: string;
+	onClick?: () => void;
 }
 
 interface MotionWrapperLoading extends MotionWrapperProps {
@@ -68,6 +69,7 @@ export function MotionLoadingButton({
 }: MotionWrapperLoading) {
 	return (
 		<motion.div
+			className={className}
 			whileHover={{ scale: isLoading ? 1 : 1.02 }}
 			whileTap={{ scale: isLoading ? 1 : 0.98 }}
 		>
@@ -76,9 +78,14 @@ export function MotionLoadingButton({
 	);
 }
 
-export function MotionButton({ children, className }: MotionWrapperProps) {
+export function MotionButton({ children, className, onClick }: MotionWrapperProps) {
 	return (
-		<motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+		<motion.div
+			onClick={onClick}
+			className={className}
+			whileHover={{ scale: 1.02 }}
+			whileTap={{ scale: 0.98 }}
+		>
 			{children}
 		</motion.div>
 	);
@@ -95,5 +102,20 @@ export function MotionScale({ children, className }: MotionWrapperProps) {
 		>
 			{children}
 		</motion.div>
+	);
+}
+export function PulsingStatusIndicator() {
+	return (
+		<motion.div
+			className="h-2 w-2 ring-[2px] ring-background rounded-full bg-sky-500 absolute top-0 right-0"
+			whileHover={{
+				scale: [1, 1.2, 1],
+				transition: {
+					duration: 1.2,
+					repeat: Infinity,
+					ease: "easeInOut",
+				},
+			}}
+		/>
 	);
 }

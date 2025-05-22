@@ -1,6 +1,6 @@
 "use client";
 
-import useIsMobile from "@/hooks/useIsMobile";
+import useIsMobile from "@/hooks/contexts/useIsMobile";
 import { AppContextValue } from "@/types/AppContextValue";
 import { usePathname } from "next/navigation";
 import { createContext, useEffect, useState } from "react";

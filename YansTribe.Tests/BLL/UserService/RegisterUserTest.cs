@@ -11,17 +11,20 @@ namespace YansTribe.Tests.BLL.UserService
         [ExpectedException(typeof(DataAccessException))]
         public async Task AlreadyExistingUserEmail_ReturnsException()
         {
-            User user = new User(
+            FullUser user = new FullUser
+            (
+                user_id: this.test_user_id,
                 username: this.test_username,
+                pfp_src: "",
                 email: this.test_email,
-                password: this.test_password,
                 full_name: this.test_full_name,
                 bio: this.test_bio,
                 location: this.test_location,
                 website: this.test_website,
-                role: this.test_role,
-                is_private: this.test_is_private,
-                created_at: this.test_created_at
+                is_private: false,
+                created_at: DateTime.Now,
+                role: core.enums.Role.User,
+                password: this.test_hashed_password
             );
 
             this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(user.email)).ReturnsAsync(user);
@@ -33,17 +36,20 @@ namespace YansTribe.Tests.BLL.UserService
         [ExpectedException(typeof(DataAccessException))]
         public async Task AlreadyExistingUserUsername_ReturnsException()
         {
-            User user = new User(
+            FullUser user = new FullUser
+            (
+                user_id: this.test_user_id,
                 username: this.test_username,
+                pfp_src: "",
                 email: this.test_email,
-                password: this.test_password,
                 full_name: this.test_full_name,
                 bio: this.test_bio,
                 location: this.test_location,
                 website: this.test_website,
-                role: this.test_role,
-                is_private: this.test_is_private,
-                created_at: this.test_created_at
+                is_private: false,
+                created_at: DateTime.Now,
+                role: core.enums.Role.User,
+                password: this.test_hashed_password
             );
 
             this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(user.email)).ReturnsAsync(user);
@@ -56,23 +62,24 @@ namespace YansTribe.Tests.BLL.UserService
         [TestMethod]
         public async Task ValidUser_ReturnsUserId()
         {
-            User user = new User(
+            FullUser user = new FullUser
+            (
                 user_id: this.test_user_id,
                 username: this.test_username,
+                pfp_src: "",
                 email: this.test_email,
-                password: this.test_password,
                 full_name: this.test_full_name,
                 bio: this.test_bio,
-                pfp_src: this.test_pfp_src,
                 location: this.test_location,
                 website: this.test_website,
-                is_private: this.test_is_private,
-                created_at: this.test_created_at,
-                role: this.test_role
+                is_private: false,
+                created_at: DateTime.Now,
+                role: core.enums.Role.User,
+                password: this.test_hashed_password
             );
 
-            this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(user.email)).ReturnsAsync((User?)null);
-            this.userRepoMock.Setup(repo => repo.GetUserByUsername(user.username)).ReturnsAsync((User?)null);
+            this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(user.email)).ReturnsAsync((FullUser?)null);
+            this.userRepoMock.Setup(repo => repo.GetUserByUsername(user.username)).ReturnsAsync((FullUser?)null);
             this.userRepoMock.Setup(repo => repo.RegisterUser(user)).ReturnsAsync(user.user_id);
             this.hashServiceMock.Setup(service => service.hash(user.password)).Returns(user.password);
 

@@ -98,14 +98,12 @@ namespace pl.middleware
                 return;
             }
 
-            // Set the response content type and status code
             context.Response.ContentType = MediaTypeNames.Text.Html;
             context.Response.StatusCode = statusCode;
 
-            // Create the ViewData and TempData
-            var viewData = new ViewDataDictionary<pl.dto.ErrDTO>(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+            var viewData = new ViewDataDictionary<pl.viewModel.ErrViewModel>(new EmptyModelMetadataProvider(), new ModelStateDictionary())
             {
-                Model = new pl.dto.ErrDTO
+                Model = new viewModel.ErrViewModel
                 {
                     status = statusCode,
                     message = message

@@ -18,7 +18,7 @@ namespace YansTribe.Tests.BLL.AdminService
         [TestMethod]
         public async Task NonExistentUser_ReturnsNull()
         {
-            this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(this.test_email)).ReturnsAsync((User?)null);
+            this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(this.test_email)).ReturnsAsync((FullUser?)null);
 
             string? result = await this.service.ValidateLogin(this.test_email, this.test_password);
 
@@ -28,12 +28,20 @@ namespace YansTribe.Tests.BLL.AdminService
         [TestMethod]
         public async Task InvalidRole_ReturnsNull()
         {
-            var user = new User
+            var user = new FullUser
             (
                 user_id: this.test_user_id,
+                username: this.test_username,
+                pfp_src: "",
                 email: this.test_email,
-                password: this.test_hashed_password,
-                role: core.enums.Role.User
+                full_name: this.test_full_name,
+                bio: this.test_bio,
+                location: this.test_location,
+                website: this.test_website,
+                is_private: false,
+                created_at: DateTime.Now,
+                role: core.enums.Role.User,
+                password: this.test_hashed_password
             );
 
             this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(this.test_email)).ReturnsAsync(user);
@@ -47,12 +55,20 @@ namespace YansTribe.Tests.BLL.AdminService
         [ExpectedException(typeof(DataAccessException))]
         public async Task InvalidPassword_ThrowsException()
         {
-            var user = new User
+            var user = new FullUser
             (
                 user_id: this.test_user_id,
+                username: this.test_username,
+                pfp_src: "",
                 email: this.test_email,
-                password: this.test_hashed_password,
-                role: core.enums.Role.Admin
+                full_name: this.test_full_name,
+                bio: this.test_bio,
+                location: this.test_location,
+                website: this.test_website,
+                is_private: false,
+                created_at: DateTime.Now,
+                role: core.enums.Role.User,
+                password: this.test_hashed_password
             );
 
             this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(this.test_email)).ReturnsAsync(user);
@@ -64,12 +80,20 @@ namespace YansTribe.Tests.BLL.AdminService
         [TestMethod]
         public async Task ValidLogin_ReturnsToken()
         {
-            var user = new User
+            var user = new FullUser
             (
                 user_id: this.test_user_id,
+                username: this.test_username,
+                pfp_src: "",
                 email: this.test_email,
-                password: this.test_hashed_password,
-                role: core.enums.Role.Admin
+                full_name: this.test_full_name,
+                bio: this.test_bio,
+                location: this.test_location,
+                website: this.test_website,
+                is_private: false,
+                created_at: DateTime.Now,
+                role: core.enums.Role.User,
+                password: this.test_hashed_password
             );
 
             this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(this.test_email)).ReturnsAsync(user);

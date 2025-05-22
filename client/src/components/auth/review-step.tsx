@@ -1,4 +1,4 @@
-import { IRegisterForm } from "@/types/IRegisterForm";
+import { IRegisterForm } from "@/types/form/IRegisterForm";
 import { motion } from "framer-motion";
 import { Label } from "../ui/label";
 import Link from "next/link";

@@ -9,6 +9,7 @@ namespace YansTribe.Tests.BLL.UserService
     public class UserServiceTestBase
     {
         protected Mock<IUserRepo> userRepoMock = null!;
+        protected Mock<IPostRepo> postRepoMock = null!;
         protected Mock<IHashService> hashServiceMock = null!;
         protected Mock<IAuthService> authServiceMock = null!;
         public bll.services.UserService service = null!;
@@ -17,11 +18,13 @@ namespace YansTribe.Tests.BLL.UserService
         public void Init()
         {
             this.userRepoMock = new Mock<IUserRepo>();
+            this.postRepoMock = new Mock<IPostRepo>();
             this.hashServiceMock = new Mock<IHashService>();
             this.authServiceMock = new Mock<IAuthService>();
 
             this.service = new bll.services.UserService(
                 this.userRepoMock.Object,
+                this.postRepoMock.Object,
                 this.hashServiceMock.Object,
                 this.authServiceMock.Object
             );
@@ -31,6 +34,7 @@ namespace YansTribe.Tests.BLL.UserService
         protected string test_username = "User";
         protected string test_email = "@example.com";
         protected string test_password = "Password";
+        protected string test_hashed_password = "HashedPassword";
         protected string test_full_name = "User";
         protected string test_bio = "This is a user for testing purposes.";
         protected string test_pfp_src = "https://example.com";

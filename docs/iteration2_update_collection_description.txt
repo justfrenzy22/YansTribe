@@ -1,0 +1,445 @@
+Introduction
+
+This collection represents the development of YansTribe, created as part of my Individual Project. The goal of this project is to build a secure and maintainable application with a structured architecture, leveraging UML and ER diagrams to define the system before implementation. The key challenge addressed is ensuring data integrity, scalability, and maintainability while adhering to software development best practices.
+
+The stakeholders involved include:
+
+
+
+
+
+End users, who will interact with the system and benefit from its features.
+
+
+
+Project reviewers, who need clear documentation to understand the system’s structure and functionality.
+
+
+
+Iteration 1
+
+Project Progress
+
+The project started with creating a @Project Plan , outlining the key features, requirements, and development roadmap. This step helped me organize my thoughts and understand the project’s scope.
+
+After defining the plan, I proceeded with designing the @Use Cases to identify the interactions between users and the system. This provided a foundation for understanding user requirements and system behavior.
+
+Following the use case analysis, I worked on the @UML_diagram.png , structuring the application into controllers, managers, and entities. The UML diagram helped establish the logical relationships and responsibilities of each component, ensuring modularity and maintainability.
+
+To further refine the database structure, I designed the @ER diagram , ensuring that all entities, attributes, and relationships were properly defined. This helped improve data organization and prevented inconsistencies.
+
+Once the database design was finalized, I moved on to writing the @Initial database creation query , implementing the schema with necessary constraints, relationships, and security measures. This ensured a well-structured and normalized database.
+
+With a solid foundation in place, I have now begun implementing the application, focusing on the backend logic, security measures, and database integration.
+
+Notes on Evidence
+
+@Project Plan
+
+
+
+
+
+What is the problem or question to solve?
+
+
+
+
+
+Defining the scope, objectives, and technical approach of the project.
+
+
+
+Why is this a relevant problem?
+
+
+
+
+
+Ensures a structured development process and clear milestones.
+
+
+
+How did I solve this?
+
+
+
+
+
+Created a detailed document outlining features, system requirements, and milestones.
+
+
+
+What are the results?
+
+
+
+
+
+A well-defined plan that serves as a reference throughout the project.
+
+
+
+What is the quality of the result?
+
+
+
+
+
+The plan is clear, detailed, and aligns with project objectives.
+
+@Use Cases
+
+
+
+
+
+What is the problem or question to solve?
+
+
+
+
+
+Understanding user interactions and system behavior.
+
+
+
+Why is this a relevant problem?
+
+
+
+
+
+Helps in designing a user-friendly and functional system.
+
+
+
+How did I solve this?
+
+
+
+
+
+Created use case diagrams and descriptions for different user interactions.
+
+
+
+What are the results?
+
+
+
+
+
+A comprehensive understanding of system requirements.
+
+
+
+What is the quality of the result?
+
+
+
+
+
+Clear, detailed use cases that guide development.
+
+@UML_diagram.png
+
+
+
+
+
+What is the problem or question to solve?
+
+
+
+
+
+Structuring the system components and their interactions.
+
+
+
+Why is this a relevant problem?
+
+
+
+
+
+Ensures maintainability and modularity of the system.
+
+
+
+How did I solve this?
+
+
+
+
+
+Designed class diagrams following an MVC-inspired architecture.
+
+
+
+What are the results?
+
+
+
+
+
+A structured and scalable system architecture.
+
+
+
+What is the quality of the result?
+
+
+
+
+
+The UML diagram is detailed, consistent, and supports future scalability.
+
+@ER diagram
+
+
+
+
+
+What is the problem or question to solve?
+
+
+
+
+
+Designing a relational database structure.
+
+
+
+Why is this a relevant problem?
+
+
+
+
+
+Ensures data integrity and optimized queries.
+
+
+
+How did I solve this?
+
+
+
+
+
+Created an entity-relationship diagram covering all tables and relationships.
+
+
+
+What are the results?
+
+
+
+
+
+A well-defined database schema that supports efficient data management.
+
+
+
+What is the quality of the result?
+
+
+
+
+
+The ER diagram is normalized and aligns with best practices.
+
+@Initial database creation query
+
+
+
+
+
+What is the problem or question to solve?
+
+
+
+
+
+Implementing a secure and structured relational database.
+
+
+
+Why is this a relevant problem?
+
+
+
+
+
+Ensures correct data storage, security, and integrity.
+
+
+
+How did I solve this?
+
+
+
+
+
+Wrote SQL queries with foreign keys, constraints, and security checks.
+
+
+
+What are the results?
+
+
+
+
+
+A fully functional database ready for application integration.
+
+
+
+What is the quality of the result?
+
+
+
+
+
+The database schema follows best practices and maintains efficiency.
+
+Next Steps
+
+With the foundational work completed, the next steps include:
+
+
+
+
+
+Implementing backend logic, ensuring security and scalability.
+
+
+
+Developing the frontend, integrating user-friendly interfaces.
+
+
+
+Testing and refining the system, ensuring a smooth user experience.
+
+Summary
+
+Iteration 1 successfully established the foundational elements of the YansTribe project. This included defining the project plan and scope, detailing user interactions through use cases, designing the system architecture with a UML diagram, structuring the database via an ER diagram, and implementing the initial database schema. This comprehensive groundwork has laid a solid foundation for subsequent development phases, particularly for backend implementation.
+
+
+
+Iteration 2
+
+Project Progress
+
+In the second iteration of my YansTribe project, significant progress has been made in both the architectural design and the implementation of core features. Here's an update on how the project evolved during this phase:
+
+Backend Development:
+In the second iteration, I focused on implementing the MVC architecture in ASP.NET, which helped to structure the application and improved maintainability. I ensured that the backend logic was modular and scalable, following best practices for API design and security.
+
+I successfully implemented several user and admin routes, ensuring proper error handling for each one. This strengthened the robustness of the system and ensured smooth interactions with the database and API.
+
+I applied @DTOs correctly across routes, improving data flow between the layers and enhancing separation of concerns. This structure allows easier management of data and simplifies maintenance.
+
+For authorization, I integrated token-based authorization to secure routes making sure that only authenticated users could access certain endpoints. To ensure better security for user data, I implemented password hashing for all stored credentials, protecting sensitive information.
+
+Additionally, I utilized @Service Filters to manage authorization and applied @Exception Middleware to handle global error handling efficiently. These measures helped in standardizing error responses and making the application more reliable by capturing and logging unexpected errors.
+
+Frontend Development:
+I dedicated considerable effort to designing a clean and intuitive admin panel and user frontend. I ensured the design was visually appealing while being functional, with user experience in mind. Tailwind CSS, Next.JS and CSHTML were used to create a responsive and modern design.
+
+Project Structure:
+Throughout this iteration, I refined the folder structure of the project multiple times, iterating on the design until I arrived at an organization that supports maintainability and scalability. This step has streamlined my workflow and made it easier to manage the growing complexity of the application.
+
+Notes on Evidence
+
+Backend Development
+
+
+
+
+
+What is the problem or question to solve?
+
+
+
+
+
+Structuring the backend to ensure scalability, maintainability, and secure access control.
+
+
+
+Why is this a relevant problem?
+
+
+
+
+
+Proper structure ensures the application is easy to extend, maintain, and secure, reducing technical debt and improving long-term performance.
+
+
+
+How did I solve this?
+
+
+
+
+
+Implemented the MVC architecture for better organization and modularity.
+
+
+
+Developed user and admin routes with error handling to ensure robustness.
+
+
+
+Applied @DTOs to improve data flow and separate concerns between layers.
+
+
+
+Integrated token-based authentication for secured endpoints and password hashing for user credentials.
+
+
+
+Used @Service Filters for managing authorization and @Exception Middleware for global error handling.
+
+
+
+What are the results?
+
+
+
+
+
+A more structured and maintainable backend that ensures secure access control and smooth data flow between layers.
+
+
+
+Error handling is standardized across the application, improving system reliability.
+
+
+
+What is the quality of the result?
+
+
+
+
+
+The backend architecture is modular, scalable, and secure. The implementation of token-based authentication and hashing increases security, while error handling ensures a reliable user experience.
+
+Next Steps
+
+With the core architecture and backend functionality in place, the next step is to focus on the "Post content" feature. This will be the next major component of the project, building on the solid foundation established in this iteration.
+
+Summary
+
+This iteration focused on refining both the backend architecture and the frontend user experience, improving system security with token authorization and password hashing, and optimizing the project structure for future growth. I also ensured that the @DTOs and @Service Filters were implemented correctly to improve maintainability and ease of access. As the project progresses, I will continue to focus on delivering the next feature, maintaining a balanced approach between functionality, security, and user experience.
+
+
+
+
+
+
+
+
+

@@ -13,6 +13,8 @@ using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.IdentityModel.Tokens;
+using pl.views;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,11 +30,13 @@ builder.Services.AddControllersWithViews();
 // Register views
 builder.Services.AddTransient<UserView>();
 builder.Services.AddTransient<PostView>();
+builder.Services.AddTransient<FriendView>();
 
 // Register queries
 builder.Services.AddTransient<AdminQuery>();
 builder.Services.AddTransient<UserQuery>();
 builder.Services.AddTransient<PostQuery>();
+builder.Services.AddTransient<FriendQuery>();
 
 // Mapper
 builder.Services.AddTransient<UserMapper>();
@@ -63,6 +67,13 @@ builder.Services.AddTransient<IPostRepo>(provider =>
 
     return new PostRepo(dbRepo, postQuery);
 });
+builder.Services.AddTransient<IFriendRepo>(provider =>
+{
+    var dbRepo = provider.GetRequiredService<IDBRepo>();
+    var friendQuery = provider.GetRequiredService<FriendQuery>();
+
+    return new FriendRepo(dbRepo, friendQuery);
+});
 
 
 // Register services
@@ -72,6 +83,8 @@ builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IHashService, HashService>();
 builder.Services.AddTransient<IPostService, PostService>();
 builder.Services.AddTransient<IFileService, FileService>();
+builder.Services.AddTransient<IFriendService, FriendService>();
+builder.Services.AddTransient<INotificationsService, NotificationService>();
 
 builder.Services.Configure<FormOptions>(options =>
 {
@@ -141,6 +154,43 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts(); // Use HTTP Strict Transport Security for non-development environments
 }
+
+// cdn configuration
+string contentRoot = app.Environment.ContentRootPath;
+string cdnFolderName = app.Configuration.GetValue<string>("StaticFiles:CdnFolderName") ?? "cdn";
+int cacheMaxAge = app.Configuration.GetValue<int?>("StaticFiles:CacheMaxAgeSeconds") ?? 604800;
+
+string cdnRootPath = Path.Combine(contentRoot, cdnFolderName);
+
+StaticFileOptions CreateStaticFileOpts(string physicalPathSegment, string requestPathSegment)
+{
+    return new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(Path.Combine(cdnRootPath, physicalPathSegment)),
+        RequestPath = $"/{cdnFolderName}/{requestPathSegment}",
+        OnPrepareResponse = ctx =>
+        {
+            ctx.Context.Response.Headers.Append("Cache-Control", $"public, max-age={cacheMaxAge}, immutable");
+        }
+    };
+}
+
+// cdn/images/posts
+app.UseStaticFiles(CreateStaticFileOpts(Path.Combine("images", "posts"), "images/posts"));
+
+// cdn/images/profile_pics
+app.UseStaticFiles(CreateStaticFileOpts(Path.Combine("images", "profile_pics"), "images/profile_pics"));
+
+// cdn/images/stories
+app.UseStaticFiles(CreateStaticFileOpts(Path.Combine("images", "stories"), "images/stories"));
+
+// cdn/videos/posts
+app.UseStaticFiles(CreateStaticFileOpts(Path.Combine("videos", "posts"), "videos/posts"));
+
+// cdn/videos/stories
+app.UseStaticFiles(CreateStaticFileOpts(Path.Combine("videos", "stories"), "videos/stories"));
+// --- End Static Files Configuration ---
+
 
 app.UseRouting(); // Enable routing
 app.UseMiddleware<ExceptionMiddleware>();

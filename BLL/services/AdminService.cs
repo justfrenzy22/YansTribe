@@ -30,7 +30,7 @@ namespace bll.services
 
         public async Task<string?> ValidateLogin(string email, string password)
         {
-            User? user = await this.user_repo.ValidateUserByEmail(email);
+            FullUser? user = await this.user_repo.ValidateUserByEmail(email);
 
             if (user == null)
             {
@@ -80,7 +80,7 @@ namespace bll.services
                 };
             }
 
-            User? admin = await this.user_repo.GetUserById(user_id);
+            SafeUser? admin = await this.user_repo.GetUserById(user_id);
 
             if (admin != null && admin.role == Role.Admin)
             {
@@ -106,17 +106,18 @@ namespace bll.services
         }
 
 
-        public async Task<List<User>?> GetUsersAsync(string admin_id)
+        public async Task<List<FullUser>?> GetUsersAsync(string admin_id)
         {
-            List<User>? users = await this.repo.GetAllUsersAsync(Guid.Parse(admin_id));
+            List<FullUser>? users = await this.repo.GetAllUsersAsync(Guid.Parse(admin_id));
             return users;
         }
 
         public async Task<string> ChangeRole(string user_id, string role)
         {
-            User? admin = await this.user_repo.GetUserById(Guid.Parse(user_id));
+            SafeUser? admin = await this.user_repo.GetUserById(Guid.Parse(user_id));
 
-            if (admin == null) {
+            if (admin == null)
+            {
                 throw new DataAccessException("User not found.");
             }
 

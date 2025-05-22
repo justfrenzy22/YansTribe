@@ -1,62 +1,30 @@
 namespace core.entities
 {
-    public class Post
+    public class Post : BasePost
     {
-        private Guid _post_id;
-        private Guid _user_id;
-
-        private List<PostMedia> _media;
-        // private string _media_src;
-        private string _content;
-
         private bool _edited;
         private DateTime _edited_at;
+        private int _like_count;
+        private int _comment_count;
+        private BaseUser _user;
+        private bool _is_liked_requester;
 
-        private DateTime _created_at;
-
-        public Post(Guid post_id, Guid user_id, string content, DateTime created_at)
+        public Post(Guid post_id, string content, bool edited, DateTime edited_at, DateTime created_at, int like_count, int comment_count, bool is_liked_requester, BaseUser user) : base(post_id, content, created_at)
         {
-            this._post_id = post_id;
-            this._user_id = user_id;
-            this._content = content;
-            this._created_at = created_at;
-        }
-
-        public Post(Guid post_id, Guid user_id, string content, DateTime created_at, bool edited, DateTime edited_at)
-        {
-            this._post_id = post_id;
-            this._user_id = user_id;
-            this._content = content;
-            this._created_at = created_at;
             this._edited = edited;
             this._edited_at = edited_at;
+            this._like_count = like_count;
+            this._comment_count = comment_count;
+            this._is_liked_requester = is_liked_requester;
+            this._user = user;
         }
 
-        public Post(Guid user_id, string content, DateTime created_at)
-        {
-            this._user_id = user_id;
-            this._content = content;
-            this._created_at = created_at;
-        }
-
-        public Guid post_id => this._post_id;
-        public Guid user_id => this._user_id;
-        public List<PostMedia> media => this._media;
-        public string content => this._content;
-        public DateTime created_at => this._created_at;
         public DateTime edited_at => this._edited_at;
-
         public bool edited => this._edited;
-
-        public void AddMedia(PostMedia media)
-        {
-            if (this._media == null)
-            {
-                this._media = new List<PostMedia>();
-            }
-            this._media.Add(media);
-        }
-
+        public int like_count => this._like_count;
+        public int comment_count => this._comment_count;
+        public bool is_liked_requester => this._is_liked_requester;
+        public BaseUser user => this._user;
 
     }
 }

@@ -10,7 +10,7 @@ namespace bll.interfaces
         Task<string?> ValidateLogin(string email, string password);
         VerifyTokenRes AuthAdmin(string token);
         Task<VerifySuperAdminDTO> AuthSuperAdmin(string token);
-        Task<List<User>?> GetUsersAsync(string admin_id);
+        Task<List<FullUser>?> GetUsersAsync(string admin_id);
         Task<string> ChangeRole(string user_id, string role);
         // Task<Role?> GetRole(int admin_id);
     }

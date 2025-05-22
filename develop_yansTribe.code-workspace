@@ -5,8 +5,6 @@
 		}
 	],
 	"settings": {
-		"liveServer.settings.port": 5501,
-		"todo-tree.tree.scanMode": "workspace",
-		"todo-tree.tree.disableCompactFolders": true
+		"liveServer.settings.port": 5501
 	}
 }

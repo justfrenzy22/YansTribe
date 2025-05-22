@@ -4,7 +4,7 @@ import { Label } from "../ui/label";
 import { Globe, MapPin, User } from "lucide-react";
 import { Input } from "../ui/input";
 import { IRegisterErrors } from "@/types/IRegisterErrors";
-import { IRegisterForm } from "@/types/IRegisterForm";
+import { IRegisterForm } from "@/types/form/IRegisterForm";
 import { Textarea } from "../ui/textarea";
 
 const ProfileStep = ({

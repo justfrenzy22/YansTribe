@@ -50,5 +50,7 @@ namespace dal.repo
                 return "superadmin";
             }
         }
+
+        public FriendStatus ParseFriendStatus(string value) => (FriendStatus)Enum.Parse(typeof(FriendStatus), value, true);
     }
 }

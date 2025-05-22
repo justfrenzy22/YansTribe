@@ -3,9 +3,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Home, MessageCircle, Settings, User, Users } from "lucide-react";
 import { useState } from "react";
 import { DrawerTitle, DrawerContent, DrawerFooter } from "../ui/drawer";
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/hooks/contexts/useUser";
 import { Button } from "../ui/button";
-import { useAppContext } from "@/hooks/useAppContext";
+import { useAppContext } from "@/hooks/contexts/useAppContext";
 import { redirect } from "next/navigation";
 
 type linksType = {

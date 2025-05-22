@@ -4,7 +4,7 @@ using core.enums;
 using core.mapper;
 using System.Net;
 using bll.interfaces;
-using pl.dto;
+using pl.viewModel;
 using bll.dto;
 using dal.dto;
 using Microsoft.AspNetCore.Authorization;
@@ -32,37 +32,10 @@ namespace pl.controllers
             this.service = service;
         }
 
-        // [HttpGet("/")]
-        // public IActionResult Index()
-        // {
-        //     try
-        //     {
-        //         string token = HttpContext.Request.Cookies["token"] ?? "";
-        //         if (string.IsNullOrEmpty(token))
-        //         {
-        //             return View("Login");
-        //         }
-        //         VerifyTokenRes res = this.service.AuthAdmin(token);
-        //         if (res.check)
-        //         {
-        //             TempData["user_id"] = res.user_id;
-        //             return RedirectToAction("Home");
-        //         }
-        //         else
-        //         {
-        //             return View("Login");
-        //         }
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         return BadRequest(e.Message);
-        //     }
-        // }
-
         [HttpPost]
         [ServiceFilter(typeof(SuperAdminAuthFilter))]
         [Route("/changeRole")]
-        public async Task<IActionResult> ChangeRole([FromForm] AdminChangeRoleDTO model)
+        public async Task<IActionResult> ChangeRole([FromForm] AdminChangeRoleViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -100,7 +73,7 @@ namespace pl.controllers
         }
 
         [HttpPost("/login")]
-        public async Task<IActionResult> Login([FromForm] AdminLoginDTO model)
+        public async Task<IActionResult> Login([FromForm] AdminLoginViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -131,7 +104,7 @@ namespace pl.controllers
         {
             string user_id = HttpContext.Items["user_id"]?.ToString() ?? "";
 
-            List<User>? users = await this.service.GetUsersAsync(user_id);
+            List<FullUser>? users = await this.service.GetUsersAsync(user_id);
 
             return View("Home", users);
         }

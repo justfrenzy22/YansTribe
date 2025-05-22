@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Home, MessageCircle, Search, ShieldUser, User } from "lucide-react";
-import { useUser } from "@/hooks/useUser";
-import { useAppContext } from "@/hooks/useAppContext";
+import { useUser } from "@/hooks/contexts/useUser";
+import { useAppContext } from "@/hooks/contexts/useAppContext";
 import { redirect } from "next/navigation";
 
 type btnType = {

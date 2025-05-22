@@ -8,7 +8,6 @@ namespace YansTribe.Tests.BLL.AdminService
     [TestClass]
     public class AdminServiceTestBase
     {
-
         protected Mock<IUserRepo> userRepoMock = null!;
         protected Mock<IAdminRepo> adminRepoMock = null!;
         protected Mock<IHashService> hashServiceMock = null!;
@@ -34,6 +33,12 @@ namespace YansTribe.Tests.BLL.AdminService
         protected string test_email = "test@example.com";
         protected string test_password = "password";
         protected string test_hashed_password = "hashedPassword";
+        protected string test_username = "testUserName";
+        protected string test_full_name = "testFullName";
+        protected string test_bio = "testBio";
+        protected string test_location = "testLocation";
+        protected string test_website = "testWebsite";
+
         protected string test_token = "validToken";
         protected Guid test_user_id = Guid.NewGuid();
         protected Role test_role = Role.Admin;

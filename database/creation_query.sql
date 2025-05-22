@@ -119,3 +119,10 @@ create table story
     constraint fk_story_user foreign key (user_id) references [user](user_id),
     constraint ck_story_expires check (expires_at > created_at)
 );
+
+-- CREATE TABLE WebsiteSessions (
+-- 	Id UNIQUEIDENTIFIER PRIMARY KEY,
+-- 	UserAgent NVARCHAR(1024),
+-- 	IPAddress NVARCHAR(45),
+-- 	CreatedAt DATETIME
+-- );

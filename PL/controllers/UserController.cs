@@ -7,7 +7,10 @@ using bll.interfaces;
 using core.entities;
 using dal.dto;
 using pl.middleware;
-using pl.dto;
+using pl.viewModel;
+using bll.dto;
+using System.Net.Http.Headers;
+using pl.views;
 
 namespace pl.controllers
 {
@@ -17,16 +20,19 @@ namespace pl.controllers
     public class UserController : Controller
     {
         private UserView view;
+        private FriendView friendView;
         private IUserService service;
+        private INotificationsService notificationsService;
 
         private readonly ILogger<UserController> _logger;
 
-        public UserController(ILogger<UserController> logger, IUserService service, UserView view)
+        public UserController(ILogger<UserController> logger, IUserService service, INotificationsService notificationsService, UserView view, FriendView friendView)
         {
             this._logger = logger;
-            // this.isAdmin = false;
             this.service = service;
+            this.notificationsService = notificationsService;
             this.view = view;
+            this.friendView = friendView;
         }
 
         [HttpGet]
@@ -43,23 +49,21 @@ namespace pl.controllers
 
             if (user_id == null)
             {
-                return view.bad_credentials();
+                return this.view.bad_credentials();
             }
 
-            User? user = await this.service.GetUserEssentials(Guid.Parse(user_id));
+            BaseUser? user = await this.service.GetUserEssentials(Guid.Parse(user_id));
 
             if (user == null)
             {
-                return view.not_found();
+                return this.view.not_found();
             }
 
-            BaseUserDTO userDTO = new BaseUserDTO(
-                user.user_id.ToString(),
-                user.username,
-                user.pfp_src
-            );
+            Notifications notifications = await this.notificationsService.GetNotifications(user.user_id);
 
-            return view.get_base_user(userDTO);
+            user.AddNotifications(notifications);
+
+            return this.view.get_base_user(user);
         }
 
         [HttpGet("get_user_profile/{username}")]
@@ -70,65 +74,82 @@ namespace pl.controllers
 
             if (user_id == null)
             {
-                return view.bad_credentials();
+                return this.view.bad_credentials();
             }
 
-            User? getUser = await this.service.FetchUserProfile(username);
+            BaseUser? baseUser = await this.service.GetUserEssentials(Guid.Parse(user_id));
 
-            if (getUser == null)
+            if (baseUser == null)
             {
-                return view.not_found();
+                return this.view.not_found();
             }
 
-            ProfileUserDTO profileUserDto = new ProfileUserDTO
-            {
-                user_id = getUser.user_id,
-                username = getUser.username,
-                email = getUser.email,
-                full_name = getUser.full_name,
-                bio = getUser.bio,
-                pfp_src = getUser.pfp_src,
-                location = getUser.location,
-                website = getUser.website,
-                is_private = getUser.is_private,
-                created_at = getUser.created_at,
-                role = getUser.role,
-                is_own_profile = getUser.user_id.ToString() == user_id
-            };
+            ProfileUser? profileUser = await this.service.FetchUserProfile(username, Guid.Parse(user_id));
 
-            return view.get_profile_user(profileUserDto);
+            if (profileUser == null)
+            {
+                return this.view.not_found();
+            }
+
+            Notifications notifications = await this.notificationsService.GetNotifications(Guid.Parse(user_id));
+            baseUser.AddNotifications(notifications);
+
+            bool isOwner = profileUser.user_id == baseUser.user_id;
+
+            if (profileUser.is_private)
+            {
+                return this.view.get_private_profile_user(new PrivateProfileViewModel
+                {
+                    user = baseUser,
+                    profile = new BaseUser
+                (
+                        user_id: profileUser.user_id,
+                        username: profileUser.username,
+                        pfp_src: profileUser.pfp_src,
+                        is_private: profileUser.is_private
+                    ),
+                    posts = new List<Post>()
+                });
+            }
+            else
+            {
+                return this.view.get_public_profile_user(profileUser, baseUser, notifications);
+            }
         }
 
 
+
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] dto.UserLoginDTO model)
+        public async Task<IActionResult> Login([FromBody] UserLoginViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return view.bad_credentials();
+                return this.view.bad_credentials();
             }
 
             string token = await this.service.ValidateUser(model.email, model.password);
 
             if (token == "")
             {
-                return view.bad_credentials();
+                return this.view.bad_credentials();
             }
 
             HttpContext.Response.Headers.Append("auth_token", token);
-            return view.login_success(token);
+            return this.view.login_success(token);
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] dto.UserRegisterDTO model)
+        public async Task<IActionResult> Register([FromBody] UserRegisterViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return view.bad_credentials();
+                return this.view.bad_credentials();
             }
-            User user = new User(
+            FullUser user = new FullUser(
+                user_id: Guid.NewGuid(),
                 username: model.username,
                 email: model.email,
+                pfp_src: "",
                 password: model.password,
                 full_name: model.full_name,
                 bio: model.bio,
@@ -143,11 +164,11 @@ namespace pl.controllers
             Guid? user_id = await this.service.RegisterUser(user);
             if (user_id != null && user_id != Guid.Empty)
             {
-                return view.register_success();
+                return this.view.register_success();
             }
             else
             {
-                return view.not_found();
+                return this.view.not_found();
             }
         }
     }

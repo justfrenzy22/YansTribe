@@ -1,5 +1,6 @@
 import { IUser } from "@/types/IUser";
 import { ApiService } from "../apiService";
+import { IBaseUser } from "@/types/IBaseUser";
 
 const apiService = new ApiService();
 
@@ -9,12 +10,14 @@ const GetUserByUsername = async (
 ): Promise<{
 	message: string;
 	status: number;
-	user: IUser;
+	user: IBaseUser;
+	profile: IUser;
 }> => {
 	return apiService.request<{
 		message: string;
 		status: number;
-		user: IUser;
+		user: IBaseUser;
+		profile: IUser;
 	}>({
 		endpoint: `/user/get_user_profile/${username}`,
 		method: `GET`,

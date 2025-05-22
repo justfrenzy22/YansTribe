@@ -1,0 +1,96 @@
+{
+  "AdminService": {
+    "type": "class",
+    "implements": ["IAdminService"],
+    "dependencies": ["IUserRepo", "IAdminRepo", "IHashService", "IAuthService"],
+    "methods": [
+      {"name": "ValidateLogin", "parameters": ["string email", "string password"], "returnType": "Task<string?>"}
+    ]
+  },
+  "AuthService": {
+    "type": "class",
+    "implements": ["IAuthService"],
+    "dependencies": ["IConfiguration"],
+    "methods": [
+      {"name": "VerifyTokenAsync", "parameters": ["string token", "bool isAdmin"], "returnType": "VerifyTokenRes"},
+      {"name": "GenerateJwtToken", "parameters": ["string user_id", "bool isAdmin"], "returnType": "string"}
+    ]
+  },
+  "FileService": {
+    "type": "class",
+    "implements": ["IFileService"],
+    "methods": [
+      {"name": "Upload", "parameters": ["Guid post_id", "IFormFile file"], "returnType": "Task<PostMedia>"}
+    ]
+  },
+  "HashService": {
+    "type": "class",
+    "implements": ["IHashService"],
+    "methods": [
+      {"name": "hash", "parameters": ["string pass"], "returnType": "string"}
+    ]
+  },
+  "PostService": {
+    "type": "class",
+    "implements": ["IPostService"],
+    "dependencies": ["IPostRepo", "IFileService"],
+    "methods": [
+      {"name": "CreatePost", "parameters": ["Post post", "List<IFormFile>? files"], "returnType": "Task<int?>"}
+    ]
+  },
+  "UserService": {
+    "type": "class",
+    "implements": ["IUserService"],
+    "dependencies": ["IUserRepo", "IPostRepo", "IHashService", "IAuthService"],
+    "methods": [
+      {"name": "ValidateUser", "parameters": ["string email", "string password"], "returnType": "Task<string>"},
+      {"name": "RegisterUser", "parameters": ["User user"], "returnType": "Task<Guid?>"}
+    ]
+  },
+  "IAdminService": {
+    "type": "interface",
+    "methods": [
+      {"name": "ValidateLogin", "parameters": ["string email", "string password"], "returnType": "Task<string?>"},
+      {"name": "AuthAdmin", "parameters": ["string token"], "returnType": "VerifyTokenRes"},
+      {"name": "AuthSuperAdmin", "parameters": ["string token"], "returnType": "Task<VerifySuperAdminDTO>"},
+      {"name": "GetUsersAsync", "parameters": ["string admin_id"], "returnType": "Task<List<User>?>"},
+      {"name": "ChangeRole", "parameters": ["string user_id", "string role"], "returnType": "Task<string>"}
+    ]
+  },
+  "IAuthService": {
+    "type": "interface",
+    "methods": [
+      {"name": "VerifyTokenAsync", "parameters": ["string token", "bool isAdmin"], "returnType": "VerifyTokenRes"},
+      {"name": "GenerateJwtToken", "parameters": ["string user_id", "bool isAdmin"], "returnType": "string"}
+    ]
+  },
+  "IFileService": {
+    "type": "interface",
+    "methods": [
+      {"name": "Upload", "parameters": ["Guid post_id", "IFormFile file"], "returnType": "Task<PostMedia>"}
+    ]
+  },
+  "IHashService": {
+    "type": "interface",
+    "methods": [
+      {"name": "hash", "parameters": ["string pass"], "returnType": "string"}
+    ]
+  },
+  "IPostService": {
+    "type": "interface",
+    "methods": [
+      {"name": "CreatePost", "parameters": ["Post post", "List<IFormFile>? files"], "returnType": "Task<int?>"}
+    ]
+  },
+  "IUserService": {
+    "type": "interface",
+    "methods": [
+      {"name": "ValidateUser", "parameters": ["string email", "string password"], "returnType": "Task<string>"},
+      {"name": "RegisterUser", "parameters": ["User user"], "returnType": "Task<Guid?>"},
+      {"name": "GetUserById", "parameters": ["Guid user_id"], "returnType": "Task<User?>"},
+      {"name": "GetUserEssentials", "parameters": ["Guid user_id"], "returnType": "Task<User?>"},
+      {"name": "FetchUserProfile", "parameters": ["string username"], "returnType": "Task<UserProfileDto?>"},
+      {"name": "AuthUser", "parameters": ["string token"], "returnType": "VerifyTokenRes"}
+    ]
+  }
+}

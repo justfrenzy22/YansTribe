@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using core.entities;
 using dal.dto;
-using pl.dto;
+using pl.viewModel;
+using bll.dto;
 
-namespace bll.views
+namespace pl.views
 {
     public class UserView : ViewComponent
     {
@@ -42,20 +43,34 @@ namespace bll.views
             };
             return new ObjectResult(data) { StatusCode = 200 };
         }
-
-        public IActionResult get_profile_user(ProfileUserDTO userDTO)
+        
+        public IActionResult get_private_profile_user(PrivateProfileViewModel userDTO)
         {
             var data = new
             {
                 status = 200,
-                message = "Profile user retrieved successfully!",
-                user = userDTO
+                message = "Private Profile user retrieved successfully!",
+                user = userDTO.user,
+                posts = userDTO.posts
             };
 
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
-        public ActionResult get_base_user(BaseUserDTO userDTO)
+        public IActionResult get_public_profile_user(ProfileUser profileUser, BaseUser user, Notifications notifications)
+        {
+            var data = new
+            {
+                status = 200,
+                message = "Public Profile user retrieved successfully!",
+                user = user,
+                profile = profileUser,
+            };
+
+            return new ObjectResult(data) { StatusCode = 200 };
+        }
+
+        public ActionResult get_base_user(BaseUser? userDTO)
         {
             var data = new
             {
@@ -66,7 +81,7 @@ namespace bll.views
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
-        public ActionResult get_users(List<User> users)
+        public ActionResult get_users(List<FullUser> users)
         {
             var data = new { status = 200, message = "users retrieved successfully!", users };
             return new ObjectResult(data) { StatusCode = 200 };
@@ -100,6 +115,11 @@ namespace bll.views
         {
             var data = new { status = 500, message = msg };
             return new ObjectResult(data) { StatusCode = 500 };
+        }
+
+        internal IActionResult get_profile_user(object profileViewModel)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -15,6 +15,11 @@ namespace dal.dto
         public required bool is_private { get; set; }
         public required DateTime created_at { get; set; }
         public required Role role { get; set; }
-        public required bool is_own_profile { get; set; }
+        public required bool is_self { get; set; }
+        public required bool is_friend { get; set; }
+        public required int friends_num { get; set; }
+        public required FriendStatus? friendship_status { get; set; }
+        public required string request_direction { get; set; }
+
     }
 }

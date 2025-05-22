@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { ILoginForm } from "@/types/ILoginForm";
+import { ILoginForm } from "@/types/form/ILoginForm";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Label } from "../ui/label";

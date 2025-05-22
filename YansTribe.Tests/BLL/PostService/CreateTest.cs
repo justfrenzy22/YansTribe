@@ -10,7 +10,7 @@ namespace YansTribe.Tests.BLL.PostService
         [TestMethod]
         public async Task ValidPostWithContentOnly_ReturnsPostId()
         {
-            var post = new Post(user_id: Guid.NewGuid(), content: this.test_content, created_at: DateTime.Now);
+            PostCreateEntity post = new PostCreateEntity(post_id: Guid.NewGuid(), user_id: Guid.NewGuid(), content: this.test_content, created_at: DateTime.Now);
             this.postRepoMock.Setup(repo => repo.CreatePost(post)).ReturnsAsync(1);
 
             int? result = await this.service.CreatePost(post, null);
@@ -22,9 +22,9 @@ namespace YansTribe.Tests.BLL.PostService
         [ExpectedException(typeof(BaseException))]
         public async Task InvalidPostWithFiles_ReturnsPostId()
         {
-            var post = new Post(user_id: Guid.NewGuid(), content: this.test_content, created_at: DateTime.Now);
-            var files = new List<IFormFile> { Mock.Of<IFormFile>() };
-            this.fileServiceMock.Setup(service => service.Upload(post.post_id, It.IsAny<IFormFile>())).ThrowsAsync(new BaseException("Error uploading file", 500));
+            PostCreateEntity post = new PostCreateEntity(post_id: Guid.NewGuid(), user_id: Guid.NewGuid(), content: this.test_content, created_at: DateTime.Now);
+            List<IFormFile> files = new List<IFormFile> { Mock.Of<IFormFile>() };
+            this.fileServiceMock.Setup(service => service.Upload(post.post_id, It.IsAny<IFormFile>(), core.enums.FileCategory.PostImage)).ThrowsAsync(new BaseException("Error uploading file", 500));
 
             await this.service.CreatePost(post, files);
         }
@@ -32,10 +32,10 @@ namespace YansTribe.Tests.BLL.PostService
         [TestMethod]
         public async Task ValidPostWithFiles_ReturnsPostId()
         {
-            var post = new Post(user_id: Guid.NewGuid(), content: this.test_content, created_at: DateTime.Now);
-            var files = new List<IFormFile> { Mock.Of<IFormFile>() };
-            var media = new PostMedia(post.post_id, Guid.NewGuid(), core.enums.MediaType.image, "media_src");
-            this.fileServiceMock.Setup(service => service.Upload(post.post_id, It.IsAny<IFormFile>())).ReturnsAsync(media);
+            PostCreateEntity post = new PostCreateEntity(post_id: Guid.NewGuid(), user_id: Guid.NewGuid(), content: this.test_content, created_at: DateTime.Now);
+            List<IFormFile> files = new List<IFormFile> { Mock.Of<IFormFile>() };
+            PostMedia media = new PostMedia(post.post_id, Guid.NewGuid(), core.enums.MediaType.image, "media_src");
+            this.fileServiceMock.Setup(service => service.Upload(post.post_id, It.IsAny<IFormFile>(), core.enums.FileCategory.PostVideo)).ReturnsAsync(media);
             this.postRepoMock.Setup(repo => repo.CreatePost(post)).ReturnsAsync(1);
 
             int? result = await this.service.CreatePost(post, files);
