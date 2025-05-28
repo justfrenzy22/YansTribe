@@ -29,17 +29,6 @@ package "core" {
         + Comment(comment_id : Guid, post_id : Guid, commenter_id : Guid, parent_id : Guid, content : string, created_at : DateTime)
     }
 
-    class CommentLike {
-        - user_id : Guid
-        - comment_id : Guid
-        - created_at : DateTime
-
-        + CommentLike(user_id : Guid, comment_id : Guid, created_at : DateTime)
-        + user_id : Guid
-        + comment_id : Guid
-        + created_at : DateTime
-    }
-
     class Friend {
         - friendship_id : Guid
         - user_1_id : Guid
@@ -61,26 +50,43 @@ package "core" {
     }
 
     class Post {
-        - post_id : Guid
-        - user_id : Guid
-        - media : List<PostMedia>
-        - content : string
-        - edited : bool
-        - edited_at : DateTime
-        - created_at : DateTime
-        - like_count : int
-        - comment_count : int
-
-        + Post(...)
+        - _edited : bool
+        - _edited_at : DateTime
+        - _like_count : int
+        - _comment_count : int
+        - _user: BaseUser
+        - _is_liked_requester: bool
+        + Post(post_id: Guid, content: string, edited: bool, edited_at: DateTime, like_count: int, comment_count: int, is_liked_requester: bool, user: BaseUser)
+        + edited_at: DateTime
+        + edited: bool
+        + like_count: int
+        + comment_count: int
+        + is_liked_requester: bool
+        + user: BaseUser
     }
+    Post --|> BasePost
+    Post --|> BaseUser
 
-    class PostLike {
-        - user_id : Guid
-        - post_id : Guid
-        - created_at : DateTime
-
-        + PostLike(user_id : Guid, post_id : Guid, issuer_id : int, created_at : DateTime)
+    class BasePost {
+        - _post_id: Guid
+        - _media: List<Media>
+        - _content: string
+        - _created_at: DateTime
+        + BasePost(post_id: Guid, content: string, created_at: DateTime)
+        + post_id: Guid
+        + media: List<PostMedia>
+        + content: string
+        + created_at: DateTime
+        + AddMedia(media: PostMedia): void
     }
+    BasePost ..> PostMedia
+
+    class PostCreateEntity {
+        - _user_id: Guid
+        + PostCreateEntity(post_id: Guid, user_id: Guid, content: string, created_at: DateTime)
+        user_id: Guid
+    }
+    PostCreateEntity --|> BasePost
 
     class PostMedia {
         - post_id : Guid
@@ -119,13 +125,145 @@ package "core" {
         + User(...)
     }
 
+    class BaseUser {
+        - _user_id: Guid
+        - _username: string
+        - _pfp_src: string
+        - _is_private: bool
+        - _notifications: Notifications
+
+        + BaseUser(user_id: Guid, username: string, pfp_src: string, is_private: bool)
+        + AddNotifications(notifications: Notifications): void
+        + notifications: Notifications { get; }
+        + user_id: Guid { get; }
+        + username: string {get; }
+        + pfp_src: string { get; }
+        + is_private: bool { get; }
+    }
+    BaseUser ..> Notifications
+
+
+    class SafeUser {
+        - _bio: string
+        - _created_at: DateTime
+        - _email: string
+        - _full_name: string
+        - _location: string
+        - _role: Role
+        - _website: string
+
+        + SafeUser(user_id: Guid, username: string, pfp_src: string, email: string, full_name: string, bio: string, location: string, website: string, is_private: bool, created_at: DateTime, role: Role)
+        + bio: string
+        + created_at: DateTime
+        + email: string
+        + full_name: string
+        + location: string
+        + role: Role
+        + website: string
+        + RoleToString(role: Role): string
+    }
+    SafeUser --|> BaseUser
+    SafeUser ..> Role
+
+    class ProfileUser {
+        - _friends: List<FriendUser>
+        - _friends_num: int
+        - _is_friend: bool
+        - _is_self: bool
+        - _posts: List<Post>
+        - _friendship_status: FriendStatus?
+        - _request_direction: string
+        - _stories: string
+
+        + ProfileUser(user_id: Guid, username: string, pfp_src: string, email: string, full_name: string, bio: string, location: string, website: string, is_private: bool, created_at: DateTime, role: Role, is_self: bool, is_friend: bool, friends_num: int, friendship_status?: friendship_status, request_direction: string)
+        + friends: List<FriendUser>
+        + friends_num: int
+        + is_friend: bool
+        + is_self: bool
+        + posts: List<Post>
+        + friendship_status: FriendStatus?
+        + request_direction: string
+        + AddFriend(friend: FriendUser) : void
+        + AddFriends(friends: List<FriendUser>): void
+        + AddPost(post: Post): void
+        + AddPosts(posts: List<Post>): void
+        + AddStories(stories: List<Story>): void
+    }
+    ProfileUser ..> FriendUser
+    ProfileUser --|> SafeUser
+    ProfileUser ..> Post
+    ProfileUser ..> Role
+    ProfileUser ..> Story
+
+    class UserMapper {
+    + map(user: BaseUser) : BaseUser
+    }
+
+    class FriendUser {
+        - _status: FriendStatus
+        + FriendUser(status: FriendStatus, user_id: Guid, username: string, pfp_src: string, email: string, full_name: string, bio: string, location: string, website: string, is_private: bool, created_at: DateTime, role: Role, is_self: bool, is_friend: bool, friends_num: int, friendship_status?: friendship_status, request_direction: string)
+        + status: FriendStatus
+    }
+    FriendUser --|> BaseUser
+    FriendUser ..> FriendStatus
+
+    class FullUser {
+        - _password: string
+        + FullUser (user_id: Guid, username: string, pfp_src: string, email: string, full_name: string, bio: string, location: string, website: string, is_private: bool, created_at: DateTime, role: Role, password: string)
+        + password: string
+        + HashPassword(hash_password: string): void
+    }
+    FullUser --|> SafeUser
+
+    class Notifications {
+        - _friend_notifications: List<FriendNotification>?
+        + Notifications(friend_notifications: List<FriendNotification>?)
+        + FriendNotifications: List<FriendNotification>
+    }
+    Notifications ..> FriendNotification
+
+    class FriendNotification {
+        - _sender_id: Guid
+        - _username: string
+        - _pfp_src: string
+        - _request_sent_at: DateTime
+        + FriendNotification(sender_id: Guid, username: string, pfp_src: string, request_sent_at: DateTime)
+        + sender_id: Guid
+        + username: string
+        + pfp_src: string
+        + request_sent_at: DateTime
+    }
+
+    enum Role {
+        User,
+        Admin,
+        SuperAdmin
+    }
+
+    enum MediaType
+    {
+        image,
+        video
+    }
+
+    enum FriendStatus
+    {
+        pending,
+        accepted,
+        rejected,
+        blocked
+    }
+
     Friend ..> FriendStatus
 
     Post ..> PostMedia
 
     User ..> Role
 
+    BaseUser ..> Notifications
+
     Story ..> MediaType
+
 }
 
 package "DAL" {
@@ -253,13 +391,6 @@ package "DAL" {
     UserRepo ..> PublicUserDTO
     UserRepo ..> UserDTO
     UserRepo ..> core.User
-
-    UserMapper ..> EssentialsUserDTO
-    UserMapper ..> PublicUserDTO
-    UserMapper ..> UserDTO
-    UserMapper ..> core.Mapper
-    UserMapper ..> core.User
-
 }
 
 package "BLL" {
@@ -342,114 +473,6 @@ package "BLL" {
     UserService ..> VerifyTokenRes
     UserService ..> core.User
     UserService ..> core.Post
-
-}
-
-
-package "PL" {
-    class AdminAuth {
-        + AdminAuth(IAdminService service)
-        + OnAuthorizationAsync(AuthorizationFilterContext context): Task
-    }
-
-    class ExceptionMiddleware {
-        + ExceptionMiddleware(RequestDelegate next, ICompositeViewEngine engine, IServiceProvider provider)
-        + InvokeAsync(HttpContext context): Task
-        + HandleExceptionAsync(HttpContext context, Exception ex): Task
-    }
-
-    class SuperAdminAuth {
-        + SuperAdminAuth(RequestDelegate next, IAdminService service)
-        + InvokeAsync(HttpContext context): Task
-    }
-
-    class SuperAdminAuthFilter {
-        + SuperAdminAuthFilter(IAdminService service)
-        + OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next): Task
-    }
-
-    class UserAuth {
-        + UserAuth(UserView view, IUserService service)
-        + OnAuthorizationAsync(AuthorizationFilterContext context): Task
-    }
-
-    class AdminChangeRoleViewModel
-    class AdminLoginViewModel
-    class BaseUserViewModel
-    class CreatePostViewModel
-    class ErrorViewModel
-    class GetUserViewModel
-    class PrivateProfileViewModel
-    class PublicProfileViewModel
-    class PublicUserViewModel
-    class UserLoginViewModel
-    class UserRegisterViewModel
-
-    class AdminController {
-        +ChangeRole(AdminChangeRoleViewModel model) : Task<IActionResult>
-        +getLogin() : IActionResult
-        +Login(AdminLoginViewModel model) : Task<IActionResult>
-        +Index() : Task<IActionResult>
-        +error() : IActionResult
-    }
-
-    class BaseController {
-        +Index(): IActionResult
-    }
-
-    class HomeController {
-        +Index(): IActionResult
-        +Register(): IActionResult
-        +Privacy(): IActionResult
-        +Error(): IActionResult
-    }
-
-    class PostController {
-        +CreatePost(CreatePostViewModel: model): Task<IActionResult>
-    }
-
-
-    class UserController {
-        +Index(): IActionResult
-        +GetUserById(): Task<IActionResult>
-        +GetUserProfile(): Task<IActionResult>
-        +Login(): Task<IActionResult>
-        +Register(): Task<IActionResult>
-    }
-
-    AdminController --|> Controller
-    AdminController ..> BLL.IAdminService
-    AdminController ..> SuperAdminAuthFilter
-    AdminController ..> AdminAuth
-    AdminController ..> AdminChangeRoleViewModel
-    AdminController ..> core.User
-
-    PostController --|> Controller
-    PostController ..> BLL.IPostService
-    PostController ..> PostView
-    PostController ..> core.Post
-
-    UserController --|> Controller
-    UserController ..> UserView
-    UserController ..> BLL.IUserService
-    UserController ..> core.User
-    UserController ..> BaseUserViewModel
-    UserController ..> UserAuth
-    UserController ..> UserProfileDto
-    UserController ..> PrivateProfileViewModel
-    UserControl ..> PublicProfileViewModel
-
-    AdminAuth --|> Attribute
-    AdminAuth ..|> IAsyncAuthorizationFilter
-    AdminAuth ..> BLL.IAdminService
-    AdminAuth ..> BLL.VerifyTokenRes
-
-    SuperAdminAuthFilter --|> IAsyncActionFilter
-    SuperAdminAuthFilter ..> BLL.IAdminService
-
-    UserAuth --|> Attribute
-    UserAuth ..|> IAsyncAuthorizationFilter
-    UserAuth ..> UserView
 
 }
 

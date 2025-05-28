@@ -84,6 +84,7 @@ namespace pl.middleware
         private async Task HandleAdminView(HttpContext context, int statusCode, string message)
         {
             var actionContext = new ActionContext(context, new RouteData(), new ActionDescriptor());
+
             var viewResult = _engine.FindView(actionContext, "../../develop/PL/Views/Admin/Error.cshtml", false);
 
             if (!viewResult.Success)
