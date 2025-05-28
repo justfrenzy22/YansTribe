@@ -31,12 +31,14 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<UserView>();
 builder.Services.AddTransient<PostView>();
 builder.Services.AddTransient<FriendView>();
+builder.Services.AddTransient<CommentView>();
 
 // Register queries
 builder.Services.AddTransient<AdminQuery>();
 builder.Services.AddTransient<UserQuery>();
 builder.Services.AddTransient<PostQuery>();
 builder.Services.AddTransient<FriendQuery>();
+builder.Services.AddTransient<CommentQuery>();
 
 // Mapper
 builder.Services.AddTransient<UserMapper>();
@@ -74,6 +76,13 @@ builder.Services.AddTransient<IFriendRepo>(provider =>
 
     return new FriendRepo(dbRepo, friendQuery);
 });
+builder.Services.AddTransient<ICommentRepo>(provider =>
+{
+    var dbRepo = provider.GetRequiredService<IDBRepo>();
+    var commentQuery = provider.GetRequiredService<CommentQuery>();
+
+    return new CommentRepo(dbRepo, commentQuery);
+});
 
 
 // Register services
@@ -84,6 +93,7 @@ builder.Services.AddTransient<IHashService, HashService>();
 builder.Services.AddTransient<IPostService, PostService>();
 builder.Services.AddTransient<IFileService, FileService>();
 builder.Services.AddTransient<IFriendService, FriendService>();
+builder.Services.AddTransient<ICommentService, CommentService>();
 builder.Services.AddTransient<INotificationsService, NotificationService>();
 
 builder.Services.Configure<FormOptions>(options =>
