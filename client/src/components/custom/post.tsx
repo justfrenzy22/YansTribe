@@ -40,11 +40,9 @@ import usePostActions from "@/hooks/actions/usePostActions";
 const Post = ({
 	initPost,
 	isViewMode = false,
-	setSelectedPost,
 }: {
 	initPost: IPost;
 	isViewMode?: boolean;
-	setSelectedPost: React.Dispatch<React.SetStateAction<IPost>>;
 }) => {
 	const [hidden, setHidden] = useState(
 		localStorage.getItem("hidden_posts")?.includes(initPost.post_id) || false
@@ -61,7 +59,7 @@ const Post = ({
 		}, {} as Record<string, boolean>)
 	);
 
-	const { handleShare, like, dislike, imageHandlers } = usePostActions({
+	const { ImageLoad, ImageError, handleShare, like, dislike } = usePostActions({
 		post: post,
 		setPost: () => setPost,
 	});
@@ -250,16 +248,10 @@ const Post = ({
 																height={500}
 																loading="lazy"
 																onLoad={() =>
-																	imageHandlers.onLoad(
-																		media.media_id,
-																		setLoadingImages
-																	)
+																	ImageLoad(media.media_id, setLoadingImages)
 																}
 																onError={() =>
-																	imageHandlers.onError(
-																		media.media_id,
-																		setLoadingImages
-																	)
+																	ImageError(media.media_id, setLoadingImages)
 																}
 																quality={1}
 																placeholder="empty"
@@ -284,13 +276,13 @@ const Post = ({
 							</CardContent>
 						</div>
 					</MotionCard>
-					<div className="w-full flex flex-row justify-between gap-2 pt-4 pb-2 px-10">
+					<div className="w-full flex flex-row justify-between gap-2 pt-4 px-10">
 						<div className="flex flex-row gap-4">
-							<MotionButton className="flex items-center gap-1">
+							<MotionButton className="flex-1">
 								<Button
 									variant={`ghost`}
 									size={`icon`}
-									className="rounded-full cursor-pointer"
+									className="px-4 rounded-full cursor-pointer"
 									disabled={isViewMode}
 									onClick={() => {
 										if (post.user.user_id !== user?.user_id) {
@@ -320,70 +312,47 @@ const Post = ({
 												post.user.user_id !== user?.user_id
 													? "currentColor"
 													: "none",
-
-											width: "1.2rem",
-											height: "1.2rem",
 										}}
 									/>
+									{post.like_count > 0 && <p>{post.like_count}</p>}
 								</Button>
-								{post.like_count > 0 && <p>{post.like_count}</p>}
 							</MotionButton>
-							<MotionButton className="flex items-center gap-1">
+							<MotionButton className="flex-1">
 								<Button
 									variant={`ghost`}
 									size={`icon`}
 									className="px-4 rounded-full cursor-pointer"
 									disabled={isViewMode}
-									onClick={() => {
-										setSelectedPost(post);
-									}}
 								>
-									<MessageCircle
-										className="w-6 h-6 text-muted-foreground"
-										style={{
-											width: "1.2rem",
-											height: "1.2rem",
-										}}
-									/>
+									<MessageCircle className="w-6 h-6 text-muted-foreground" />
+									{post.comment_count > 0 && (
+										<p className="text-muted-foreground">
+											{post.comment_count}
+										</p>
+									)}
 								</Button>
-								{post.comment_count > 0 && (
-									<p className="text-muted-foreground">{post.comment_count}</p>
-								)}
 							</MotionButton>
-							<MotionButton>
+							<MotionButton className="flex-1">
 								<Button
 									variant={`ghost`}
 									size={`icon`}
-									className=" rounded-full cursor-pointer"
-									disabled={isViewMode}
-									onClick={() => handleShare(post.post_id)}
-								>
-									<Share
-										className="w-6 h-6 text-muted-foreground"
-										style={{
-											width: "1.2rem",
-											height: "1.2rem",
-										}}
-									/>
-								</Button>
-							</MotionButton>
-							<MotionButton>
-								<Button
-									variant={`ghost`}
-									className=" rounded-full cursor-pointer"
-									size={`icon`}
+									className="p-5 rounded-full cursor-pointer"
 									disabled={isViewMode}
 								>
-									<Bookmark
-										className="w-6 h-6 text-muted-foreground"
-										style={{
-											width: "1.2rem",
-											height: "1.2rem",
-										}}
-									/>
+									<Share className="w-6 h-6 text-muted-foreground" />
 								</Button>
 							</MotionButton>
 						</div>
+						<MotionButton className="flex-1">
+							<Button
+								variant={`ghost`}
+								className="px-4 rounded-full cursor-pointer"
+								size={`icon`}
+								disabled={isViewMode}
+							>
+								<Bookmark />
+							</Button>
+						</MotionButton>
 					</div>
 				</div>
 			)}

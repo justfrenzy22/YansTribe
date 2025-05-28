@@ -13,22 +13,23 @@ using Microsoft.Data.SqlClient;
 namespace dal.repo
 {
 
+
     public class UserRepo : BaseUserRepo, IUserRepo
     {
-        private readonly UserQuery _userQuery;
-        private readonly UserMapper _mapper;
+        private readonly UserQuery userQuery;
+        private readonly UserMapper mapper;
 
         public UserRepo(IDBRepo db_repo, UserQuery userQuery, UserMapper mapper) : base(db_repo)
         {
-            this._userQuery = userQuery;
-            this._mapper = mapper;
+            this.userQuery = userQuery;
+            this.mapper = mapper;
         }
 
         public async Task<Guid> RegisterUser(FullUser user)
         {
             try
             {
-                object? result = await this.db_repo.scalar(this._userQuery.add_user(), new Dictionary<string, object> {
+                object? result = await this.db_repo.scalar(userQuery.add_user(), new Dictionary<string, object> {
                     { "@username", user.username },
                     { "@email", user.email },
                     { "@password_hash", user.password },
@@ -89,7 +90,7 @@ namespace dal.repo
         {
             try
             {
-                DataTable? res = await this.db_repo.reader(this._userQuery.get_user_by_id(), new Dictionary<string, object> {
+                DataTable? res = await this.db_repo.reader(userQuery.get_user_by_id(), new Dictionary<string, object> {
                 { "@user_id", Guid.Parse(user_id.ToString() ?? "") }
                 });
 
@@ -98,7 +99,7 @@ namespace dal.repo
                     return null;
                 }
                 var row = res.Rows[0];
-                return this._mapper.MapTo(new SafeUserDTO
+                return this.mapper.MapTo(new SafeUserDTO
                 {
                     user_id = Guid.Parse(row["user_id"].ToString() ?? ""),
                     username = row["username"]?.ToString() ?? string.Empty,
@@ -128,7 +129,7 @@ namespace dal.repo
         {
             try
             {
-                DataTable? res = await this.db_repo.reader(this._userQuery.get_user_profile_by_id(), new Dictionary<string, object> {
+                DataTable? res = await this.db_repo.reader(userQuery.get_user_profile_by_id(), new Dictionary<string, object> {
                     { "@profile_user_id", Guid.Parse(profile_user_id.ToString() ?? "") },
                     { "@req_user_id", Guid.Parse(req_user_id.ToString() ?? "") }
                 });
@@ -143,7 +144,7 @@ namespace dal.repo
 
                 if (is_private)
                 {
-                    return (ProfileUser)this._mapper.MapTo(new EssentialsUserDTO
+                    return (ProfileUser)this.mapper.MapTo(new EssentialsUserDTO
                     {
                         user_id = Guid.Parse(row["user_id"].ToString() ?? ""),
                         username = row["username"]?.ToString() ?? string.Empty,
@@ -153,7 +154,7 @@ namespace dal.repo
                 }
                 else
                 {
-                    ProfileUser user = this._mapper.MapTo(new ProfileUserDTO
+                    ProfileUser user = this.mapper.MapTo(new ProfileUserDTO
                     {
                         user_id = Guid.Parse(row["user_id"].ToString() ?? ""),
                         username = row["username"]?.ToString() ?? string.Empty,
@@ -211,7 +212,7 @@ namespace dal.repo
         {
             try
             {
-                DataTable? res = await this.db_repo.reader(this._userQuery.get_friend_notifications(), new Dictionary<string, object>
+                DataTable? res = await this.db_repo.reader(userQuery.get_friend_notifications(), new Dictionary<string, object>
                 {
                     { "@user_id", Guid.Parse(user_id.ToString() ?? "") }
                 });
@@ -254,7 +255,7 @@ namespace dal.repo
         {
             try
             {
-                DataTable? res = await this.db_repo.reader(this._userQuery.get_user_essentials_by_id(), new Dictionary<string, object> {
+                DataTable? res = await this.db_repo.reader(userQuery.get_user_essentials_by_id(), new Dictionary<string, object> {
                     { "@user_id", Guid.Parse(user_id.ToString() ?? "") }
                 });
 
@@ -265,7 +266,7 @@ namespace dal.repo
 
                 var row = res.Rows[0];
 
-                return this._mapper.MapTo(new EssentialsUserDTO
+                return this.mapper.MapTo(new EssentialsUserDTO
                 {
                     user_id = Guid.Parse(row["user_id"]?.ToString() ?? ""),
                     username = row["username"]?.ToString() ?? string.Empty,
@@ -287,7 +288,7 @@ namespace dal.repo
         {
             try
             {
-                DataTable? res = await this.db_repo.reader(this._userQuery.get_user_by_email(), new Dictionary<string, object> {
+                DataTable? res = await this.db_repo.reader(userQuery.get_user_by_email(), new Dictionary<string, object> {
                 { "@email", email }
             });
 
@@ -298,7 +299,7 @@ namespace dal.repo
 
                 var row = res.Rows[0];
 
-                return this._mapper.MapTo(new UserDTO
+                return this.mapper.MapTo(new UserDTO
                 {
                     user_id = Guid.Parse(row["user_id"]?.ToString() ?? ""),
                     username = row["username"]?.ToString() ?? string.Empty,
@@ -328,7 +329,7 @@ namespace dal.repo
         {
             try
             {
-                DataTable? res = await this.db_repo.reader(this._userQuery.check_user_by_username(), new Dictionary<string, object> {
+                DataTable? res = await this.db_repo.reader(userQuery.check_user_by_username(), new Dictionary<string, object> {
                 { "@username", username }
             });
 
@@ -356,7 +357,7 @@ namespace dal.repo
             try
             {
 
-                DataTable? res = await this.db_repo.reader(this._userQuery.get_user_by_email(), new Dictionary<string, object> {
+                DataTable? res = await this.db_repo.reader(userQuery.get_user_by_email(), new Dictionary<string, object> {
                 { "@email", email }
             });
 
@@ -367,7 +368,7 @@ namespace dal.repo
 
                 var row = res.Rows[0];
 
-                return this._mapper.MapTo(new UserDTO
+                return this.mapper.MapTo(new UserDTO
                 {
                     user_id = Guid.Parse(row["user_id"]?.ToString() ?? ""),
                     username = row["username"]?.ToString() ?? string.Empty,
@@ -398,7 +399,7 @@ namespace dal.repo
             try
             {
 
-                DataTable? res = await this.db_repo.reader(this._userQuery.get_user_by_username(), new Dictionary<string, object> {
+                DataTable? res = await this.db_repo.reader(userQuery.get_user_by_username(), new Dictionary<string, object> {
                     { "@username", username }
                 });
 
@@ -409,7 +410,7 @@ namespace dal.repo
 
                 var row = res.Rows[0];
 
-                return this._mapper.MapTo(
+                return this.mapper.MapTo(
                     new UserDTO
                     {
                         user_id = Guid.Parse(row["user_id"]?.ToString() ?? ""),
@@ -439,7 +440,7 @@ namespace dal.repo
 
         public async Task<bool> ChangeRole(Guid user_id, string role)
         {
-            int result = await db_repo.nonQuery(this._userQuery.update_user_role(), new Dictionary<string, object> {
+            int result = await db_repo.nonQuery(userQuery.update_user_role(), new Dictionary<string, object> {
                 { "@user_id", Guid.Parse(user_id.ToString() ?? "") },
                 { "@role", role }
             });

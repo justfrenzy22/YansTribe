@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 import { ScanEye, Send, Upload, X } from "lucide-react";
 import { Button } from "../ui/button";
@@ -212,13 +211,11 @@ const CreatePost = () => {
 															post_id: "",
 														})),
 														like_count: 1,
-														is_liked_requester: false,
 														comment_count: 1,
 														created_at: new Date(),
 														edited: false,
 														edited_at: new Date(),
 													}}
-													setSelectedPost={() => {}}
 													isViewMode={true}
 												/>
 											</div>

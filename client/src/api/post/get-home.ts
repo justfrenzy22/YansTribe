@@ -1,4 +1,5 @@
-"use server";
+// post/home
+
 import { IPostResponse } from "@/types/IResponse";
 import { ApiService } from "../apiService";
 

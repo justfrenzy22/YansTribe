@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Home, MessageCircle, Settings, User, Users } from "lucide-react";
-// import { useState } from "react";
+import { useState } from "react";
 import { DrawerTitle, DrawerContent, DrawerFooter } from "../ui/drawer";
 import { useUser } from "@/hooks/contexts/useUser";
 import { Button } from "../ui/button";
@@ -15,9 +15,9 @@ type linksType = {
 };
 
 const MobileNav = () => {
-	// const [isSelected, setSelected] = useState<linksType["label"] | null>(null);
+	const [isSelected, setSelected] = useState<linksType["label"] | null>(null);
 
-	const { user } = useUser();
+	const user = useUser();
 	const context = useAppContext();
 
 	const btns: linksType[] = [
@@ -28,7 +28,7 @@ const MobileNav = () => {
 		},
 		{
 			label: "profile",
-			href: `/@${user?.username ?? ""}`,
+			href: `/@${user?.username}`,
 			icon: <User className="h-5 w-5" />,
 		},
 		{

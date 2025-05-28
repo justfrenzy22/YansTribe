@@ -1,7 +1,7 @@
 import {
 	ThemeProviderProps,
 	ThemeProvider as NextThemesProvider,
-//   useTheme,
+  useTheme,
 } from "next-themes";
 import { createContext, useContext, useEffect, useState } from "react";
 

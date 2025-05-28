@@ -17,7 +17,7 @@ const BottomNav = ({ selected }: { selected: btnType["label"] }) => {
 	const [isSelected, setSelected] = useState<btnType["label"] | null>(selected);
 	// const isAdmin = useUser();
 
-	const { user } = useUser();
+	const user = useUser();
 	const context = useAppContext();
 
 	const btns: btnType[] = [
@@ -43,7 +43,7 @@ const BottomNav = ({ selected }: { selected: btnType["label"] }) => {
 		},
 		{
 			label: "profile",
-			href: `/@${user?.username ?? ""}`,
+			href: `/@${user?.username}`,
 			icon: <User className="h-5 w-5" />,
 		},
 	];

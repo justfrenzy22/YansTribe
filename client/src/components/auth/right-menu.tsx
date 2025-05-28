@@ -6,15 +6,8 @@ import { useState } from "react";
 import { useTheme } from "next-themes";
 import Login from "./login";
 import changeColorTheme from "@/utils/changeColorTheme";
-// import { useColorTheme } from "@/utils/theme-provider";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+import { useColorTheme } from "@/utils/theme-provider";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Moon, Sun } from "lucide-react";
 import { Card } from "../ui/card";
 import Register from "./register";
@@ -31,7 +24,7 @@ const RightMenu = () => {
 	// 	changeColorTheme("dark-blue");
 	// 	// document.documentElement.style.backgroundColor = "oklch(0.1 0.05 240)";
 	// };
-	// outline dark:border-gray-800
+// outline dark:border-gray-800
 	return (
 		<Card
 			className={`w-full md:w-1/2 max-w-lg  rounded-xl shadow-lg 
@@ -85,7 +78,9 @@ const RightMenu = () => {
 					<button
 						onClick={() => setLogin(true)}
 						className={`flex-1 py-3 font-medium text-center relative cursor-pointer ${
-							isLogin ? "text-primary" : "text-foreground"
+							isLogin
+								? "text-primary"
+								: "text-foreground"
 						}`}
 					>
 						Login
@@ -99,7 +94,9 @@ const RightMenu = () => {
 					<button
 						onClick={() => setLogin(false)}
 						className={`flex-1 py-3 font-medium text-center relative cursor-pointer ${
-							!isLogin ? "text-primary" : "text-foreground"
+							!isLogin
+								? "text-primary"
+								: "text-foreground"
 						}`}
 					>
 						Register
@@ -132,6 +129,7 @@ const RightMenu = () => {
 							exit={{ opacity: 0, x: -20 }}
 							transition={{ duration: 0.3 }}
 						>
+						
 							<Register setLogin={setLogin} />
 						</motion.div>
 					)}

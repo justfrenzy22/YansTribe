@@ -1,4 +1,3 @@
-import { IComment } from "./comment/IComment";
 import IUserContext from "./context/IProfileContext";
 import { IPost } from "./post/IPost";
 
@@ -12,13 +11,9 @@ export interface IProfileResponse extends IResponse {
 }
 
 export interface IPostResponse extends IResponse {
-	posts: IPost[];
+	posts: IPost[] | null;
 }
 
 export interface IUserResponse extends IResponse {
 	user: IUserContext[`user`];
-}
-
-export interface IGetCommentsResponse extends IResponse {
-	comments: IComment[] | [];
 }

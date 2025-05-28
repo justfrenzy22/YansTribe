@@ -8,8 +8,8 @@ const createPost = async (
 ): Promise<{
 	message: string;
 	status: number;
-}> =>
-	await apiService.request<{ message: string; status: number }>({
+}> => {
+	return await apiService.request<{ message: string; status: number }>({
 		endpoint: `/post/create_post`,
 		method: `POST`,
 		options: {
@@ -19,5 +19,6 @@ const createPost = async (
 			cookie: cookie,
 		},
 	});
+};
 
 export default createPost;

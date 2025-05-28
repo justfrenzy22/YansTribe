@@ -6,10 +6,10 @@ import { IResponse } from "@/types/IResponse";
 const useAsyncHandler = () => {
 	const [isLoading, setIsLoading] = useState(false);
 
-	const handleAsync = async <T extends IResponse>(
-		callback: () => Promise<T>,
-		onSuccess?: (res: T) => void,
-		onError?: (res: T) => void
+	const handleAsync = async <T>(
+		callback: () => Promise<IResponse>,
+		onSuccess?: (res: IResponse) => void,
+		onError?: (res: IResponse) => void
 	) => {
 		setIsLoading(true);
 		try {

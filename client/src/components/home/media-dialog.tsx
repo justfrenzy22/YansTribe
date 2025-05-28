@@ -9,8 +9,6 @@ import {
 } from "../ui/dialog";
 import Image from "next/image";
 import ImageLoader from "../loader/ImageLoader";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { XIcon } from "lucide-react";
 
 interface MediaDialogProps {
 	src: string;
@@ -68,9 +66,6 @@ function MediaDialog({ src, alt, media_type, children }: MediaDialogProps) {
 						className={`object-contain max-w-[90vw] max-h-[90vh] transition-opacity duration-300 ease-in-out`}
 					/>
 				)}
-				<DialogPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-2 right-2 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">
-					<XIcon />
-				</DialogPrimitive.Close>
 			</DialogContent>
 		</Dialog>
 	);

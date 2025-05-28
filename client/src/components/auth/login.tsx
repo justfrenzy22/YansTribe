@@ -87,8 +87,8 @@ const Login = ({ isLogin }: { isLogin: boolean }) => {
 					},
 				});
 			}
-		} catch (err) {
-			setErrors({ form: err as string });
+		} catch (err: Error | any) {
+			setErrors({ form: err });
 		} finally {
 			setLoading(false);
 		}
