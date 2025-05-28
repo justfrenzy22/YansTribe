@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import {
 	MotionButton,
@@ -155,6 +156,7 @@ const FriendsCard = () => {
 									key={idx}
 								>
 									<div className="w-44 text-center flex flex-col justify-center items-center">
+										{/* // eslint-disable-next-line @next/next/no-img-element */}
 										<img
 											src={friend.pfp_src === "" ? "/pfp.png" : friend.pfp_src}
 											alt="User pic"

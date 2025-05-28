@@ -12,7 +12,9 @@ namespace pl.controllers
             this._cdnService = cdnService;
         }
 
-        [HttpGet("/cdn/{fileName}")]
+
+
+        [HttpGet("cdn/{fileName}")]
         public IActionResult GetFile(string fileName)
         {
             var fileBytes = _cdnService.GetFileBytes(fileName);

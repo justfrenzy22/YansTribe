@@ -12,7 +12,6 @@ import ReviewStep from "./review-step";
 import { useTheme } from "next-themes";
 import register from "@/api/auth/register";
 import { toast } from "sonner";
-import { Toaster } from "../ui/sonner";
 
 const Register = ({
 	setLogin,
@@ -133,8 +132,8 @@ const Register = ({
 					},
 				});
 			}
-		} catch (err: Error | any) {
-			setErrors({ form: err });
+		} catch (err) {
+			setErrors({ form: err as string });
 		} finally {
 			setLoading(false);
 		}
