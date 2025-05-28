@@ -12,3 +12,4 @@ namespace bll.interfaces
         Task<PostMedia> Upload(Guid entityId, IFormFile file, FileCategory category);
     }
 }
+// git commit
