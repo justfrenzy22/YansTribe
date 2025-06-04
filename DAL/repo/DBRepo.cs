@@ -7,16 +7,11 @@ namespace dal.repo
 {
     public class DBRepo : IDBRepo
     {
-
         private readonly string connString;
-
         public DBRepo(string connString)
         {
             this.connString = connString;
         }
-
-
-
         public async Task<int> nonQuery(string query, Dictionary<string, object>? parameters = null)
         {
             try

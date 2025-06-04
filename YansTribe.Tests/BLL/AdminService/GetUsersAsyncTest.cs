@@ -11,9 +11,9 @@ namespace YansTribe.Tests.BLL.AdminService
         [TestMethod]
         public async Task GetUsers_ReturnsUserList()
         {
-            var users = new List<FullUser>
+            var users = new List<UserCredentials>
             {
-                new FullUser
+                new UserCredentials
                 (
                     user_id: this.test_user_id,
                     username: this.test_username,
@@ -28,7 +28,7 @@ namespace YansTribe.Tests.BLL.AdminService
                     role: core.enums.Role.User,
                     password: this.test_hashed_password
                 ),
-                new FullUser
+                new UserCredentials
                 (
                     user_id: this.test_user_id,
                     username: this.test_username,

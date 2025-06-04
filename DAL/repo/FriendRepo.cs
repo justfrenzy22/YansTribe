@@ -13,18 +13,18 @@ namespace dal.repo
     public class FriendRepo : BaseUserRepo, IFriendRepo
     {
 
-        private readonly FriendQuery _query;
+        private readonly FriendQuery _friend_query;
 
-        public FriendRepo(IDBRepo db_repo, FriendQuery query) : base(db_repo)
+        public FriendRepo(IDBRepo db_repo, FriendQuery friend_query) : base(db_repo)
         {
-            this._query = query;
+            this._friend_query = friend_query;
         }
 
         public async Task AddFriend(Guid req_user_id, Guid user2_id)
         {
             try
             {
-                await this.db_repo.nonQuery(this._query.add_friend(), new Dictionary<string, object> {
+                await this._db_repo.nonQuery(this._friend_query.add_friend(), new Dictionary<string, object> {
                     { "@req_user_id", Guid.Parse(req_user_id.ToString() ?? "") },
                     { "@user2", Guid.Parse(user2_id.ToString() ?? "") }
                 });
@@ -43,7 +43,7 @@ namespace dal.repo
         {
             try
             {
-                await this.db_repo.nonQuery(this._query.remove_friend(), new Dictionary<string, object> {
+                await this._db_repo.nonQuery(this._friend_query.remove_friend(), new Dictionary<string, object> {
                     { "@req_user_id", Guid.Parse(req_user_id.ToString() ?? "") },
                     { "@user2", Guid.Parse(user2_id.ToString() ?? "") }
                 });
@@ -64,7 +64,7 @@ namespace dal.repo
         {
             try
             {
-                await this.db_repo.nonQuery(this._query.cancel_friend(), new Dictionary<string, object> {
+                await this._db_repo.nonQuery(this._friend_query.cancel_friend(), new Dictionary<string, object> {
                     { "@req_user_id", Guid.Parse(req_user_id.ToString() ?? "") },
                     { "@user2", Guid.Parse(user2_id.ToString() ?? "") }
                 });
@@ -85,7 +85,7 @@ namespace dal.repo
         {
             try
             {
-                DataTable? res = await this.db_repo.reader(this._query.get_friendship_status(), new Dictionary<string, object> {
+                DataTable? res = await this._db_repo.reader(this._friend_query.get_friendship_status(), new Dictionary<string, object> {
                     { "@req_user_id", Guid.Parse(req_user_id.ToString() ?? "") },
                     { "@friend_id", Guid.Parse(friend_id.ToString() ?? "") }
                 });
@@ -119,7 +119,7 @@ namespace dal.repo
         {
             try
             {
-                await this.db_repo.nonQuery(this._query.accept_friend(), new Dictionary<string, object> {
+                await this._db_repo.nonQuery(this._friend_query.accept_friend(), new Dictionary<string, object> {
                     { "@friendship_id", Guid.Parse(friendship_id.ToString() ?? "") }
                 });
             }
@@ -137,7 +137,7 @@ namespace dal.repo
         {
             try
             {
-                await this.db_repo.nonQuery(this._query.reject_friend(), new Dictionary<string, object> {
+                await this._db_repo.nonQuery(this._friend_query.reject_friend(), new Dictionary<string, object> {
                     { "@friendship_id", Guid.Parse(friendship_id.ToString() ?? "") }
                 });
             }

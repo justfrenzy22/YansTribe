@@ -14,7 +14,7 @@ type btnType = {
 };
 
 const BottomNav = ({ selected }: { selected: btnType["label"] }) => {
-	const [isSelected, setSelected] = useState<btnType["label"] | null>(selected);
+	const [, setSelected] = useState<btnType["label"] | null>(selected);
 	// const isAdmin = useUser();
 
 	const { user } = useUser();
@@ -59,6 +59,8 @@ const BottomNav = ({ selected }: { selected: btnType["label"] }) => {
 		}
 	};
 
+	console.log(`isSelected`, context);
+
 	return (
 		// dark:bg-gray-950
 		// border-gray-200 dark:border-gray-800
@@ -67,7 +69,6 @@ const BottomNav = ({ selected }: { selected: btnType["label"] }) => {
 				className="flex items-center justify-around w-full h-16"
 				onClick={handleClick}
 			>
-				{/* <div onClick={handleClick}> */}
 				{btns.map((btn) => (
 					<Button
 						key={btn.label}
@@ -86,7 +87,7 @@ const BottomNav = ({ selected }: { selected: btnType["label"] }) => {
 						{/* {btn.icon}
 						<span>{btn.label}</span> */}
 						{btn.icon}
-						{isSelected === btn.label && (
+						{context && context.page === btn.label && (
 							<span className="ml-1 text-sm">{btn.label}</span>
 						)}
 					</Button>

@@ -8,6 +8,5 @@ namespace core.entities
             this._user_id = user_id;
 
         public Guid user_id => this._user_id;
-
     }
 }

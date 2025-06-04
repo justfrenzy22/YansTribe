@@ -42,6 +42,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { useEffect, useState } from "react";
 import { IComment } from "@/types/comment/IComment";
+import CommentLoader from "../loader/CommentLoader";
 
 const PostModal = ({
 	post,
@@ -62,7 +63,7 @@ const PostModal = ({
 	const [comments, setComments] = useState<IComment[]>();
 
 	// handleShare
-	const { like, dislike, addComment, getComments } = usePostActions({
+	const { like, dislike, addComment, getComments, isLoading } = usePostActions({
 		post: post,
 		setPost: setPost,
 	});
@@ -84,8 +85,14 @@ const PostModal = ({
 		await addComment(
 			user?.user_id ?? "",
 			commentContent,
-			(newComment: IComment) =>
-				setComments((prev) => [...(prev as IComment[]), newComment])
+			(newComment: IComment) => {
+				setComments((prev) => [...(prev as IComment[]), newComment]);
+				setPost((prev) => ({
+					...prev,
+					comment_count: prev.comment_count + 1,
+				}));
+				setCommentContent(``);
+			}
 		);
 	};
 
@@ -144,7 +151,7 @@ const PostModal = ({
 											</div>
 											<div>
 												<DropdownMenu>
-													<DropdownMenuTrigger asChild disabled={false}>
+													<DropdownMenuTrigger asChild disabled={isLoading}>
 														<Button
 															variant="ghost"
 															size={`icon`}
@@ -269,7 +276,7 @@ const PostModal = ({
 												variant={`ghost`}
 												size={`icon`}
 												className="px-4 rounded-full cursor-pointer"
-												disabled={false}
+												disabled={isLoading}
 												onClick={() => {
 													if (post.user.user_id !== user?.user_id) {
 														if (post.is_liked_requester) {
@@ -308,7 +315,7 @@ const PostModal = ({
 												variant={`ghost`}
 												size={`icon`}
 												className="px-4 rounded-full cursor-pointer"
-												disabled={false}
+												disabled={isLoading}
 											>
 												<MessageCircle className="w-6 h-6 text-muted-foreground" />
 												{post.comment_count > 0 && (
@@ -346,15 +353,25 @@ const PostModal = ({
 										Comments ({post.comment_count})
 									</h1>
 
-									{comments &&
-										comments.length > 0 &&
-										comments.map((comment) => (
-											<Comment
-												key={comment.comment_id}
-												comment={comment}
-												currentUserId={user?.user_id ?? ""}
-											/>
-										))}
+									{isLoading ? (
+										<div className="w-full flex flex-col gap-2 py-4">
+											{Array.from({ length: 2 }).map((_, idx) => (
+												<CommentLoader key={idx} />
+											))}
+										</div>
+									) : (
+										<div>
+											{comments &&
+												comments.length > 0 &&
+												comments.map((comment, idx) => (
+													<Comment
+														key={idx}
+														comment={comment}
+														currentUserId={user?.user_id ?? ""}
+													/>
+												))}
+										</div>
+									)}
 								</div>
 							</div>
 						</div>
@@ -367,6 +384,8 @@ const PostModal = ({
 							type="text"
 							value={commentContent}
 							onChange={(e) => setCommentContent(e.target.value)}
+							disabled={isLoading}
+							autoComplete="off"
 							placeholder="Write a comment..."
 							className="w-full pl-0 sm:p-2 focus:outline-none rounded-4xl hover:outline-none focus:border-0 border-0 "
 						/>
@@ -375,13 +394,18 @@ const PostModal = ({
 								className="rounded-full cursor-pointer"
 								variant={`secondary`}
 								size={`icon`}
+								disabled={isLoading}
 							>
 								{/* AI */}
 								<Sparkles />
 							</Button>
 						</MotionButton>
 						<MotionButton>
-							<Button type="submit" className=" rounded-xl cursor-pointer">
+							<Button
+								type="submit"
+								disabled={isLoading}
+								className="rounded-xl cursor-pointer"
+							>
 								Post
 							</Button>
 						</MotionButton>

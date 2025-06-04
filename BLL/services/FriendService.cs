@@ -13,7 +13,6 @@ namespace bll.services
             this._friend_repo = friend_repo;
         }
 
-
         public async Task<string?> AcceptFriend(Guid req_user_id, Guid user2_id)
         {
 
@@ -23,12 +22,10 @@ namespace bll.services
             {
                 return null;
             }
-
-            if (friend.status == core.enums.FriendStatus.pending)
+            if (friend.status == core.enums.FriendShipStatus.pending)
             {
                 await this._friend_repo.AcceptFriend(friendship_id: friend.friendship_id);
             }
-
             return "Friendship accepted.";
         }
 
@@ -40,12 +37,10 @@ namespace bll.services
             {
                 return null;
             }
-
-            if (friend.status == core.enums.FriendStatus.pending)
+            if (friend.status == core.enums.FriendShipStatus.pending)
             {
                 await this._friend_repo.RejectFriend(friendship_id: friend.friendship_id);
             }
-
             return "Friendship declined.";
         }
 
@@ -59,12 +54,10 @@ namespace bll.services
             {
                 return null;
             }
-
-            if (friend.status == core.enums.FriendStatus.accepted)
+            if (friend.status == core.enums.FriendShipStatus.accepted)
             {
                 await this._friend_repo.RemoveFriend(req_user_id, user2_id);
             }
-
             return "Friend removed.";
         }
 
@@ -76,12 +69,10 @@ namespace bll.services
             {
                 return null;
             }
-
-            if (friend.status == core.enums.FriendStatus.accepted)
+            if (friend.status == core.enums.FriendShipStatus.accepted)
             {
                 await this._friend_repo.CancelFriend(req_user_id, user2_id);
             }
-
             return "Friend removed.";
         }
     }

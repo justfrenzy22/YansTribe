@@ -10,27 +10,24 @@ using dal.interfaces.repo;
 
 namespace bll.services
 {
-
-
-
     public class AdminService : IAdminService
     {
-        private readonly IUserRepo user_repo;
-        private readonly IAdminRepo repo;
-        private readonly IHashService hash_service;
-        private readonly IAuthService auth_service;
+        private readonly IUserRepo _user_repo;
+        private readonly IAdminRepo _admin_repo;
+        private readonly IHashService _hash_service;
+        private readonly IAuthService _auth_service;
 
-        public AdminService(IUserRepo user_repo, IAdminRepo repo, IHashService hash_service, IAuthService auth_service)
+        public AdminService(IUserRepo user_repo, IAdminRepo admin_repo, IHashService hash_service, IAuthService auth_service)
         {
-            this.user_repo = user_repo;
-            this.repo = repo;
-            this.hash_service = hash_service;
-            this.auth_service = auth_service;
+            this._user_repo = user_repo;
+            this._admin_repo = admin_repo;
+            this._hash_service = hash_service;
+            this._auth_service = auth_service;
         }
 
         public async Task<string?> ValidateLogin(string email, string password)
         {
-            FullUser? user = await this.user_repo.ValidateUserByEmail(email);
+            UserCredentials? user = await this._user_repo.ValidateUserByEmail(email);
 
             if (user == null)
             {
@@ -42,23 +39,23 @@ namespace bll.services
                 return null;
             }
 
-            string hash_password = this.hash_service.hash(password);
+            string hash_password = this._hash_service.hash(password);
 
             if (hash_password != user.password)
             {
                 throw new DataAccessException("User or password is incorrect.");
             }
 
-            string token = this.auth_service.GenerateJwtToken(user.user_id.ToString() ?? "", isAdmin: true);
+            string token = this._auth_service.GenerateJwtToken(user.user_id.ToString() ?? "", isAdmin: true);
 
             return token;
 
         }
-        public VerifyTokenRes AuthAdmin(string token) => this.auth_service.VerifyTokenAsync(token, isAdmin: true);
+        public VerifyTokenRes AuthAdmin(string token) => this._auth_service.VerifyTokenAsync(token, isAdmin: true);
 
         public async Task<VerifySuperAdminDTO> AuthSuperAdmin(string token)
         {
-            VerifyTokenRes res = this.auth_service.VerifyTokenAsync(token, isAdmin: true);
+            VerifyTokenRes res = this._auth_service.VerifyTokenAsync(token, isAdmin: true);
 
             if (!res.check)
             {
@@ -80,7 +77,7 @@ namespace bll.services
                 };
             }
 
-            SafeUser? admin = await this.user_repo.GetUserById(user_id);
+            UserDetails? admin = await this._user_repo.GetUserById(user_id);
 
             if (admin != null && admin.role == Role.Admin)
             {
@@ -106,23 +103,22 @@ namespace bll.services
         }
 
 
-        public async Task<List<FullUser>?> GetUsersAsync(string admin_id)
+        public async Task<List<UserCredentials>?> GetUsersAsync(string admin_id)
         {
-            List<FullUser>? users = await this.repo.GetAllUsersAsync(Guid.Parse(admin_id));
+            List<UserCredentials>? users = await this._admin_repo.GetAllUsersAsync(Guid.Parse(admin_id));
             return users;
         }
 
         public async Task<string> ChangeRole(string user_id, string role)
         {
-            SafeUser? admin = await this.user_repo.GetUserById(Guid.Parse(user_id));
+            UserDetails? admin = await this._user_repo.GetUserById(Guid.Parse(user_id));
 
             if (admin == null)
             {
                 throw new DataAccessException("User not found.");
             }
 
-            bool check = await this.user_repo.ChangeRole(Guid.Parse(user_id), role);
-
+            bool check = await this._user_repo.ChangeRole(Guid.Parse(user_id), role);
             return check ? "User role updated successfully." : "Failed to update user role.";
         }
     }

@@ -11,7 +11,7 @@ namespace YansTribe.Tests.BLL.AdminService
         [TestMethod]
         public async Task ChangeRole_ValidUser_UpdatesRole()
         {
-            var user = new SafeUser
+            var user = new UserDetails
             (
                 user_id: this.test_user_id,
                 username: this.test_username,
@@ -40,7 +40,7 @@ namespace YansTribe.Tests.BLL.AdminService
         [ExpectedException(typeof(DataAccessException))]
         public async Task ChangeRole_InvalidUser_ThrowsException()
         {
-            this.userRepoMock.Setup(repo => repo.GetUserById(this.test_user_id)).ReturnsAsync((SafeUser?)null);
+            this.userRepoMock.Setup(repo => repo.GetUserById(this.test_user_id)).ReturnsAsync((UserDetails?)null);
 
             string check = await this.service.ChangeRole(this.test_user_id.ToString(), core.enums.Role.Admin.ToString());
             Assert.AreEqual("User not found or invalid role", check);

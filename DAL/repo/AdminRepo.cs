@@ -12,29 +12,29 @@ namespace dal.repo
 {
     public class AdminRepo : BaseUserRepo, IAdminRepo
     {
-        private readonly AdminQuery adminQuery;
-        private readonly UserQuery userQuery;
-        private readonly UserMapper mapper;
+        private readonly AdminQuery _admin_query;
+        private readonly UserQuery _user_query;
+        private readonly UserMapper _mapper;
 
-        public AdminRepo(IDBRepo db_repo, AdminQuery adminQuery, UserQuery userQuery, UserMapper mapper) : base(db_repo)
+        public AdminRepo(IDBRepo db_repo, AdminQuery admin_query, UserQuery user_query, UserMapper mapper) : base(db_repo)
         {
-            this.adminQuery = adminQuery;
-            this.userQuery = userQuery;
-            this.mapper = mapper;
+            this._admin_query = admin_query;
+            this._user_query = user_query;
+            this._mapper = mapper;
         }
 
-        public async Task<List<FullUser>?> GetAllUsersAsync(Guid admin_id)
+        public async Task<List<UserCredentials>?> GetAllUsersAsync(Guid admin_id)
         {
             try
             {
-                DataTable? res = await this.db_repo.reader(
-                    this.adminQuery.get_all_users(),
+                DataTable? res = await this._db_repo.reader(
+                    this._admin_query.get_all_users(),
                     new Dictionary<string, object> {
                         {"@admin_id", admin_id}
                     }
                 );
                 return res.AsEnumerable()
-                    .Select(row => mapper.MapTo(new UserDTO
+                    .Select(row => this._mapper.MapTo(new UserDTO
                     {
                         user_id = Guid.Parse(row["user_id"]?.ToString() ?? string.Empty),
                         username = row["username"]?.ToString() ?? string.Empty,

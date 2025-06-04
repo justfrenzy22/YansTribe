@@ -22,7 +22,7 @@ namespace bll.services
         }
         public async Task<string> ValidateUser(string email, string password)
         {
-            FullUser? user = await this._user_repo.ValidateUserByEmail(email);
+            UserCredentials? user = await this._user_repo.ValidateUserByEmail(email);
 
             if (user == null)
             {
@@ -41,17 +41,17 @@ namespace bll.services
             return token;
         }
 
-        public async Task<Guid?> RegisterUser(FullUser user)
+        public async Task<Guid?> RegisterUser(UserCredentials user)
         {
 
-            FullUser? userEmail = await this._user_repo.GetUserByEmail(user.email);
+            UserCredentials? userEmail = await this._user_repo.GetUserByEmail(user.email);
 
             if (userEmail != null)
             {
                 throw new DataAccessException("User with this email already exists.");
             }
 
-            FullUser? userUsername = await this._user_repo.GetUserByUsername(user.username);
+            UserCredentials? userUsername = await this._user_repo.GetUserByUsername(user.username);
 
             if (userUsername != null)
             {
@@ -72,7 +72,7 @@ namespace bll.services
             return user_id;
         }
 
-        public async Task<ProfileUser?> FetchUserProfile(string username, Guid req_user_id)
+        public async Task<UserProfile?> FetchUserProfile(string username, Guid req_user_id)
         {
             Guid? profile_user_id = await this._user_repo.GetUserIdByUsername(username);
 
@@ -80,9 +80,7 @@ namespace bll.services
             {
                 return null;
             }
-
-            ProfileUser? user = await this._user_repo.GetUserProfileById(req_user_id: req_user_id, profile_user_id: profile_user_id.Value);
-
+            UserProfile? user = await this._user_repo.GetUserProfileById(req_user_id: req_user_id, profile_user_id: profile_user_id.Value);
             if (user == null)
             {
                 return null;
@@ -95,16 +93,14 @@ namespace bll.services
             else
             {
                 List<Post> posts = await this._post_repo.GetProfileInitPostsById(req_user_id, profile_user_id ?? Guid.Empty);
-
                 user.AddPosts(posts);
-
                 return user;
             }
         }
 
-        public async Task<SafeUser?> GetUserById(Guid user_id) => await this._user_repo.GetUserById(user_id);
+        public async Task<UserDetails?> GetUserById(Guid user_id) => await this._user_repo.GetUserById(user_id);
 
-        public async Task<BaseUser?> GetUserEssentials(Guid user_id) => await this._user_repo.GetUserEssentials(user_id);
+        public async Task<UserAccount?> GetUserEssentials(Guid user_id) => await this._user_repo.GetUserEssentials(user_id);
 
         public VerifyTokenRes AuthUser(string token) => this._auth_service.VerifyTokenAsync(token, isAdmin: false);
     }

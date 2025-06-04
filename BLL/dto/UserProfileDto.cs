@@ -6,6 +6,6 @@ namespace bll.dto
 {
     public class UserProfileDto
     {
-        public required SafeUser user { get; set; }
+        public required UserDetails user { get; set; }
     }
 }

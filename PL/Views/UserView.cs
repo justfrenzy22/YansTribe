@@ -57,7 +57,7 @@ namespace pl.views
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
-        public IActionResult get_public_profile_user(ProfileUser profileUser, BaseUser user, Notifications notifications)
+        public IActionResult get_public_profile_user(UserProfile profileUser, UserAccount user, Notifications notifications)
         {
             var data = new
             {
@@ -70,7 +70,7 @@ namespace pl.views
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
-        public ActionResult get_base_user(BaseUser? userDTO)
+        public ActionResult get_base_user(UserAccount? userDTO)
         {
             var data = new
             {
@@ -81,7 +81,7 @@ namespace pl.views
             return new ObjectResult(data) { StatusCode = 200 };
         }
 
-        public ActionResult get_users(List<FullUser> users)
+        public ActionResult get_users(List<UserCredentials> users)
         {
             var data = new { status = 200, message = "users retrieved successfully!", users };
             return new ObjectResult(data) { StatusCode = 200 };

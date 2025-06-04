@@ -10,18 +10,18 @@ namespace dal.repo
 {
     public class CommentRepo : BaseUserRepo, ICommentRepo
     {
-        private readonly CommentQuery _commentQuery;
+        private readonly CommentQuery _comment_query;
 
         public CommentRepo(IDBRepo db_repo, CommentQuery commentQuery) : base(db_repo)
         {
-            _commentQuery = commentQuery;
+            this._comment_query = commentQuery;
         }
 
         public async Task AddComment(Guid post_id, Guid user_id, string content, DateTime created_at)
         {
             try
             {
-                await this.db_repo.nonQuery(this._commentQuery.add_comment(), new Dictionary<string, object>
+                await this._db_repo.nonQuery(this._comment_query.add_comment(), new Dictionary<string, object>
                 {
                     { "@post_id", post_id },
                     { "@user_id", user_id },
@@ -43,7 +43,7 @@ namespace dal.repo
         {
             try
             {
-                DataTable rows = await this.db_repo.reader(this._commentQuery.get_init_comments(), new Dictionary<string, object>
+                DataTable rows = await this._db_repo.reader(this._comment_query.get_init_comments(), new Dictionary<string, object>
                 {
                     { "@post_id", post_id },
                     { "@user_id", user_id }
@@ -53,7 +53,7 @@ namespace dal.repo
 
                 foreach (DataRow row in rows.Rows)
                 {
-                    BaseUser user = new BaseUser(
+                    UserAccount user = new UserAccount(
                         user_id: Guid.Parse(row["user_id"].ToString()!),
                         username: row["username"].ToString()!,
                         pfp_src: row["pfp_src"].ToString()!,

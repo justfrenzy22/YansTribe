@@ -104,7 +104,7 @@ namespace pl.controllers
         {
             string user_id = HttpContext.Items["user_id"]?.ToString() ?? "";
 
-            List<FullUser>? users = await this.service.GetUsersAsync(user_id);
+            List<UserCredentials>? users = await this.service.GetUsersAsync(user_id);
 
             return View("Home", users);
         }

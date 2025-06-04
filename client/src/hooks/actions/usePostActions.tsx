@@ -64,6 +64,7 @@ const usePostActions = ({
 				() => addCommentAsync(post.post_id, user_id, content, token as string),
 				() => {
 					const newComment: IBaseComment = {
+						// comment_id: "",
 						post_id: post.post_id,
 						user: post.user,
 						content,

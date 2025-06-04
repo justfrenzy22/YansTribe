@@ -13,7 +13,7 @@ namespace YansTribe.Tests.BLL.AdminService
         [TestMethod]
         public async Task AuthAdmin_ReturnsToken()
         {
-            this.userRepoMock.Setup(x => x.GetUserByEmail(It.IsAny<string>())).ReturnsAsync(new FullUser
+            this.userRepoMock.Setup(x => x.GetUserByEmail(It.IsAny<string>())).ReturnsAsync(new UserCredentials
             (
                 user_id: this.test_user_id,
                 username: this.test_username,

@@ -27,7 +27,7 @@ namespace YansTribe.Tests.BLL.AdminService
             this.authServiceMock.Setup(authService => authService.VerifyTokenAsync(this.test_token, true))
                 .Returns(new VerifyTokenRes { check = true, user_id = this.test_user_id });
 
-            this.userRepoMock.Setup(repo => repo.GetUserById(this.test_user_id)).ReturnsAsync((SafeUser?)null);
+            this.userRepoMock.Setup(repo => repo.GetUserById(this.test_user_id)).ReturnsAsync((UserDetails?)null);
 
             VerifySuperAdminDTO result = await this.service.AuthSuperAdmin(this.test_token);
 
@@ -41,7 +41,7 @@ namespace YansTribe.Tests.BLL.AdminService
             this.authServiceMock.Setup(authService => authService.VerifyTokenAsync(this.test_token, true))
                 .Returns(new VerifyTokenRes { check = true, user_id = this.test_user_id });
 
-            var admin = new SafeUser
+            UserDetails admin = new UserDetails
             (
                 user_id: this.test_user_id,
                 username: this.test_username,
@@ -70,7 +70,7 @@ namespace YansTribe.Tests.BLL.AdminService
             this.authServiceMock.Setup(authService => authService.VerifyTokenAsync(this.test_token, true))
                 .Returns(new VerifyTokenRes { check = true, user_id = this.test_user_id });
 
-            var superAdmin = new SafeUser
+            UserDetails superAdmin = new UserDetails
             (
                 user_id: this.test_user_id,
                 username: this.test_username,

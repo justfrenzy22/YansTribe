@@ -1,6 +1,6 @@
 namespace core.enums
 {
-    public enum FriendStatus
+    public enum FriendShipStatus
     {
         pending,
         accepted,

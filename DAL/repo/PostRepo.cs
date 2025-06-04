@@ -16,14 +16,14 @@ namespace dal.repo
 {
     public class PostRepo : BaseRepo, IPostRepo
     {
-        private readonly PostQuery postQuery;
-        public PostRepo(IDBRepo db_repo, PostQuery postQuery) : base(db_repo) => this.postQuery = postQuery;
+        private readonly PostQuery _post_query;
+        public PostRepo(IDBRepo db_repo, PostQuery post_query) : base(db_repo) => this._post_query = post_query;
 
         public async Task<int> CreatePost(PostCreateEntity post)
         {
             try
             {
-                var result = await this.db_repo.scalar(this.postQuery.add_post(), new Dictionary<string, object> {
+                var result = await this._db_repo.scalar(this._post_query.add_post(), new Dictionary<string, object> {
                     { "@post_id", post.post_id },
                     { "@user_id", post.user_id },
                     { "@content", post.content },
@@ -47,7 +47,7 @@ namespace dal.repo
 
                 foreach (PostMedia media in post.media)
                 {
-                    await this.db_repo.nonQuery(postQuery.add_post_media(), new Dictionary<string, object> {
+                    await this._db_repo.nonQuery(this._post_query.add_post_media(), new Dictionary<string, object> {
                         { "@media_id", media.media_id },
                         { "@post_id", post_id },
                         { "@media_type", media.media_type.ToString() },
@@ -71,7 +71,7 @@ namespace dal.repo
         {
             try
             {
-                var result = await this.db_repo.reader(this.postQuery.get_home_init(), new Dictionary<string, object> {
+                var result = await this._db_repo.reader(this._post_query.get_home_init(), new Dictionary<string, object> {
                     { "@user_id", user_id }
                 });
 
@@ -93,7 +93,7 @@ namespace dal.repo
                         like_count: Convert.ToInt32(row["like_count"]),
                         comment_count: Convert.ToInt32(row["comment_count"]),
                         is_liked_requester: row["is_liked_requester"] != DBNull.Value && Convert.ToBoolean(row["is_liked_requester"]),
-                        user: new BaseUser(
+                        user: new UserAccount(
                             user_id: Guid.Parse(row["user_id"].ToString() ?? string.Empty),
                             username: row["username"]?.ToString() ?? string.Empty,
                             pfp_src: row["pfp_src"]?.ToString() ?? string.Empty,
@@ -144,7 +144,7 @@ namespace dal.repo
         {
             try
             {
-                var result = await this.db_repo.reader(this.postQuery.get_first_10_posts_by_user_id(), new Dictionary<string, object> {
+                var result = await this._db_repo.reader(this._post_query.get_first_10_posts_by_user_id(), new Dictionary<string, object> {
                     { "@user_id", user_id },
                     { "@req_user_id", req_user_id }
                 });
@@ -167,7 +167,7 @@ namespace dal.repo
                         like_count: Convert.ToInt32(row["like_count"]),
                         comment_count: Convert.ToInt32(row["comment_count"]),
                         is_liked_requester: row["is_liked_requester"] != DBNull.Value && Convert.ToBoolean(row["is_liked_requester"]),
-                        user: new BaseUser(
+                        user: new UserAccount(
                             user_id: Guid.Parse(row["user_id"].ToString() ?? string.Empty),
                             username: row["username"]?.ToString() ?? string.Empty,
                             pfp_src: row["pfp_src"]?.ToString() ?? string.Empty,
@@ -218,7 +218,7 @@ namespace dal.repo
         {
             try
             {
-                await this.db_repo.nonQuery(this.postQuery.like_post(), new Dictionary<string, object> {
+                await this._db_repo.nonQuery(this._post_query.like_post(), new Dictionary<string, object> {
                     { "@post_id", post_id },
                     { "@user_id", user_id },
                     { "@created_at", DateTime.UtcNow }
@@ -238,7 +238,7 @@ namespace dal.repo
         {
             try
             {
-                await this.db_repo.nonQuery(this.postQuery.dislike_post(), new Dictionary<string, object> {
+                await this._db_repo.nonQuery(this._post_query.dislike_post(), new Dictionary<string, object> {
                     { "@post_id", post_id },
                     { "@user_id", user_id }
                 });

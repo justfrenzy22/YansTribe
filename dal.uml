@@ -263,7 +263,6 @@ package "core" {
     BaseUser ..> Notifications
 
     Story ..> MediaType
-
 }
 
 package "DAL" {

@@ -2,7 +2,7 @@ using core.enums;
 
 namespace dal.dto
 {
-    public class SafeUserDTO
+    public class UserDetailsDTO
     {
         public required Guid user_id { get; set; }
         public required string username { get; set; }

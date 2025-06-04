@@ -182,6 +182,7 @@ namespace dal.queries
                 f.user_1_id AS sender_id,
                 u.username AS username,
                 u.pfp_src AS pfp_src,
+                u.is_private AS is_private,
                 f.created_at AS request_sent_at
             FROM friend f
             JOIN [user] u ON u.user_id = f.user_1_id
