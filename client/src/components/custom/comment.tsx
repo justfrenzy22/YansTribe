@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+// import Link from "next/link";
 import { Badge } from "../ui/badge";
 import {
 	CircleMinus,
@@ -25,6 +25,8 @@ import { IBaseUser } from "@/types/IBaseUser";
 import { MotionCard } from "../animations/motion-wrapper";
 import { formatDistanceToNow } from "date-fns";
 import { IComment } from "@/types/comment/IComment";
+import { useAppContext } from "@/hooks/contexts/useAppContext";
+import { useRouter } from "next/navigation";
 
 type CommentProps = {
 	comment: IComment;
@@ -37,6 +39,8 @@ const Comment: React.FC<CommentProps> = ({ comment, currentUserId }) => {
 	const [hidden, setHidden] = useState(false);
 
 	const isOwner = comment.user.user_id === currentUserId;
+	const context = useAppContext();
+	const router = useRouter();
 
 	const handleLike = () => {
 		setLiked(!liked);
@@ -68,12 +72,21 @@ const Comment: React.FC<CommentProps> = ({ comment, currentUserId }) => {
 			<div className="flex flex-col gap-2 w-full">
 				<div className="w-full flex px-3 py-2 flex-col gap-1 items-start justify-center rounded-xl">
 					<div className="flex flex-row gap-2 items-center justify-start">
-						<Link
-							href={`/user/${comment.user.username}`}
-							className="font-semibold hover:underline items-center cursor-pointer"
+						<Button
+							variant={`link`}
+							onClick={() => {
+								if (context?.page !== `profile`) {
+									context?.setCurrPage({
+										page: `profile`,
+										username: comment.user.username,
+									});
+									router.push(`/@${comment.user.username}`);
+								}
+							}}
+							className="font-semibold items-center cursor-pointer p-0"
 						>
-							{comment.user.username}
-						</Link>
+							{comment.user.username.trim()}
+						</Button>
 						<p>•</p>
 						<p className="text-muted-foreground text-sm">
 							{formatDistanceToNow(new Date(comment.created_at), {

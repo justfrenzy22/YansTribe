@@ -2,7 +2,7 @@ using core.enums;
 
 namespace core.entities
 {
-    public class SafeUser : BaseUser
+    public class UserDetails : UserAccount
     {
         private string _bio;
         private DateTime _created_at;
@@ -11,8 +11,7 @@ namespace core.entities
         private string _location;
         private Role _role;
         private string _website;
-
-        public SafeUser(
+        public UserDetails(
             Guid user_id,
             string username,
             string pfp_src,

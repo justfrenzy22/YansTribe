@@ -12,7 +12,7 @@ namespace YansTribe.Tests.BLL.UserService
         [ExpectedException(typeof(DataAccessException))]
         public async Task NonExistentUser_ReturnsException()
         {
-            this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(this.test_email)).ReturnsAsync((FullUser?)null);
+            this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(this.test_email)).ReturnsAsync((UserCredentials?)null);
 
 
             await this.service.ValidateUser(this.test_email, this.test_password);
@@ -22,7 +22,7 @@ namespace YansTribe.Tests.BLL.UserService
         [ExpectedException(typeof(DataAccessException))]
         public async Task InvalidPassword_ReturnsException()
         {
-            var user = new FullUser
+            UserCredentials user = new UserCredentials
             (
                 user_id: this.test_user_id,
                 username: this.test_username,
@@ -47,7 +47,7 @@ namespace YansTribe.Tests.BLL.UserService
         [TestMethod]
         public async Task ValidLogin_ReturnsToken()
         {
-            var user = new FullUser
+            UserCredentials user = new UserCredentials
             (
                 user_id: this.test_user_id,
                 username: this.test_username,

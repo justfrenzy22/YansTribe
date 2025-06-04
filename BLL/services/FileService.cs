@@ -27,7 +27,7 @@ namespace bll.services
             EnsureFoldersExist();
         }
 
-        public async Task<PostMedia> Upload(Guid entityId, IFormFile file, FileCategory category)
+        public async Task<PostMedia> UploadPost(Guid entityId, IFormFile file, FileCategory category)
         {
             if (!_categoryFolderPaths.TryGetValue(category, out var targetFolder))
                 throw new BaseException($"No path defined for category '{category}'.", 500);
@@ -50,7 +50,12 @@ namespace bll.services
             );
         }
 
-        private static async Task SaveFileAsync(IFormFile file, string path)
+        // public async Task UploadStory()
+        // {
+
+        // }
+
+        private async Task SaveFileAsync(IFormFile file, string path)
         {
             try
             {

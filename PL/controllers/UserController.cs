@@ -52,7 +52,7 @@ namespace pl.controllers
                 return this.view.bad_credentials();
             }
 
-            BaseUser? user = await this.service.GetUserEssentials(Guid.Parse(user_id));
+            UserAccount? user = await this.service.GetUserEssentials(Guid.Parse(user_id));
 
             if (user == null)
             {
@@ -77,14 +77,14 @@ namespace pl.controllers
                 return this.view.bad_credentials();
             }
 
-            BaseUser? baseUser = await this.service.GetUserEssentials(Guid.Parse(user_id));
+            UserAccount? baseUser = await this.service.GetUserEssentials(Guid.Parse(user_id));
 
             if (baseUser == null)
             {
                 return this.view.not_found();
             }
 
-            ProfileUser? profileUser = await this.service.FetchUserProfile(username, Guid.Parse(user_id));
+            UserProfile? profileUser = await this.service.FetchUserProfile(username, Guid.Parse(user_id));
 
             if (profileUser == null)
             {
@@ -101,7 +101,7 @@ namespace pl.controllers
                 return this.view.get_private_profile_user(new PrivateProfileViewModel
                 {
                     user = baseUser,
-                    profile = new BaseUser
+                    profile = new UserAccount
                 (
                         user_id: profileUser.user_id,
                         username: profileUser.username,
@@ -145,7 +145,7 @@ namespace pl.controllers
             {
                 return this.view.bad_credentials();
             }
-            FullUser user = new FullUser(
+            UserCredentials user = new UserCredentials(
                 user_id: Guid.NewGuid(),
                 username: model.username,
                 email: model.email,

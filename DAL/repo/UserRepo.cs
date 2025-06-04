@@ -15,20 +15,20 @@ namespace dal.repo
 
     public class UserRepo : BaseUserRepo, IUserRepo
     {
-        private readonly UserQuery _userQuery;
+        private readonly UserQuery _user_query;
         private readonly UserMapper _mapper;
 
-        public UserRepo(IDBRepo db_repo, UserQuery userQuery, UserMapper mapper) : base(db_repo)
+        public UserRepo(IDBRepo db_repo, UserQuery user_query, UserMapper mapper) : base(db_repo)
         {
-            this._userQuery = userQuery;
+            this._user_query = user_query;
             this._mapper = mapper;
         }
 
-        public async Task<Guid> RegisterUser(FullUser user)
+        public async Task<Guid> RegisterUser(UserCredentials user)
         {
             try
             {
-                object? result = await this.db_repo.scalar(this._userQuery.add_user(), new Dictionary<string, object> {
+                object? result = await this._db_repo.scalar(this._user_query.add_user(), new Dictionary<string, object> {
                     { "@username", user.username },
                     { "@email", user.email },
                     { "@password_hash", user.password },
@@ -85,11 +85,11 @@ namespace dal.repo
             }
         }
 
-        public async Task<SafeUser?> GetUserById(Guid user_id)
+        public async Task<UserDetails?> GetUserById(Guid user_id)
         {
             try
             {
-                DataTable? res = await this.db_repo.reader(this._userQuery.get_user_by_id(), new Dictionary<string, object> {
+                DataTable? res = await this._db_repo.reader(this._user_query.get_user_by_id(), new Dictionary<string, object> {
                 { "@user_id", Guid.Parse(user_id.ToString() ?? "") }
                 });
 
@@ -98,7 +98,7 @@ namespace dal.repo
                     return null;
                 }
                 var row = res.Rows[0];
-                return this._mapper.MapTo(new SafeUserDTO
+                return this._mapper.MapTo(new UserDetailsDTO
                 {
                     user_id = Guid.Parse(row["user_id"].ToString() ?? ""),
                     username = row["username"]?.ToString() ?? string.Empty,
@@ -124,11 +124,11 @@ namespace dal.repo
             }
         }
 
-        public async Task<ProfileUser?> GetUserProfileById(Guid req_user_id, Guid profile_user_id)
+        public async Task<UserProfile?> GetUserProfileById(Guid req_user_id, Guid profile_user_id)
         {
             try
             {
-                DataTable? res = await this.db_repo.reader(this._userQuery.get_user_profile_by_id(), new Dictionary<string, object> {
+                DataTable? res = await this._db_repo.reader(this._user_query.get_user_profile_by_id(), new Dictionary<string, object> {
                     { "@profile_user_id", Guid.Parse(profile_user_id.ToString() ?? "") },
                     { "@req_user_id", Guid.Parse(req_user_id.ToString() ?? "") }
                 });
@@ -143,7 +143,7 @@ namespace dal.repo
 
                 if (is_private)
                 {
-                    return (ProfileUser)this._mapper.MapTo(new EssentialsUserDTO
+                    return (UserProfile)this._mapper.MapTo(new EssentialsUserDTO
                     {
                         user_id = Guid.Parse(row["user_id"].ToString() ?? ""),
                         username = row["username"]?.ToString() ?? string.Empty,
@@ -153,7 +153,7 @@ namespace dal.repo
                 }
                 else
                 {
-                    ProfileUser user = this._mapper.MapTo(new ProfileUserDTO
+                    UserProfile user = this._mapper.MapTo(new ProfileUserDTO
                     {
                         user_id = Guid.Parse(row["user_id"].ToString() ?? ""),
                         username = row["username"]?.ToString() ?? string.Empty,
@@ -166,11 +166,13 @@ namespace dal.repo
                         is_private = Convert.ToBoolean(row["is_private"]),
                         created_at = Convert.ToDateTime(row["created_at"]),
                         role = ParseRole(row["role"].ToString() ?? ""),
-                        is_self = Convert.ToBoolean(row["is_self"]),
-                        is_friend = Convert.ToBoolean(row["is_friend"]),
                         friends_num = Convert.ToInt32(row["friends_num"]),
-                        friendship_status = row["friendship_status"] != DBNull.Value ? ParseFriendStatus(row["friendship_status"].ToString() ?? "") : null,
-                        request_direction = row["request_direction"]?.ToString() ?? string.Empty
+                        relationship_info = new RelationShipInfo(
+                            is_self: Convert.ToBoolean(row["is_self"]),
+                            is_friend: Convert.ToBoolean(row["is_friend"]),
+                            friendship_status: row["friendship_status"] != DBNull.Value ? ParseFriendStatus(row["friendship_status"].ToString() ?? "") : null,
+                            request_direction: row["request_direction"]?.ToString() ?? string.Empty
+                        )
                     });
 
                     if (row["friends_json"] != DBNull.Value)
@@ -181,9 +183,9 @@ namespace dal.repo
 
                         foreach (var friendDto in friendsJson)
                         {
-                            if (!Enum.TryParse(friendDto.status, true, out FriendStatus status))
+                            if (!Enum.TryParse(friendDto.status, true, out FriendShipStatus status))
                                 continue;
-                            FriendUser friendUser = new FriendUser(
+                            Friendship friendUser = new Friendship(
                                 status,
                                 friendDto.user_id,
                                 friendDto.username,
@@ -211,7 +213,7 @@ namespace dal.repo
         {
             try
             {
-                DataTable? res = await this.db_repo.reader(this._userQuery.get_friend_notifications(), new Dictionary<string, object>
+                DataTable? res = await this._db_repo.reader(this._user_query.get_friend_notifications(), new Dictionary<string, object>
                 {
                     { "@user_id", Guid.Parse(user_id.ToString() ?? "") }
                 });
@@ -225,16 +227,14 @@ namespace dal.repo
 
                 foreach (DataRow row in res.Rows)
                 {
-                    string sender_id = row["sender_id"].ToString() ?? string.Empty;
-                    string username = row["username"].ToString() ?? string.Empty;
-                    string pfp_src = row["pfp_src"].ToString() ?? string.Empty;
-                    DateTime request_sent_at = Convert.ToDateTime(row["request_sent_at"]);
-
                     frNot.Add(new FriendNotification(
-                        sender_id: Guid.Parse(sender_id),
-                        username: username,
-                        pfp_src: pfp_src,
-                        request_sent_at: request_sent_at
+                        sender: new UserAccount(
+                            user_id: Guid.Parse(row["sender_id"].ToString() ?? string.Empty),
+                            username: row["username"].ToString() ?? string.Empty,
+                            pfp_src: row["pfp_src"].ToString() ?? string.Empty,
+                            is_private: Convert.ToBoolean(row["is_private"])
+                        ),
+                        request_sent_at: Convert.ToDateTime(row["request_sent_at"])
                     ));
                 }
 
@@ -250,11 +250,11 @@ namespace dal.repo
             }
         }
 
-        public async Task<BaseUser?> GetUserEssentials(Guid user_id)
+        public async Task<UserAccount?> GetUserEssentials(Guid user_id)
         {
             try
             {
-                DataTable? res = await this.db_repo.reader(this._userQuery.get_user_essentials_by_id(), new Dictionary<string, object> {
+                DataTable? res = await this._db_repo.reader(this._user_query.get_user_essentials_by_id(), new Dictionary<string, object> {
                     { "@user_id", Guid.Parse(user_id.ToString() ?? "") }
                 });
 
@@ -283,11 +283,11 @@ namespace dal.repo
             }
         }
 
-        public async Task<FullUser?> GetUserByEmail(string email)
+        public async Task<UserCredentials?> GetUserByEmail(string email)
         {
             try
             {
-                DataTable? res = await this.db_repo.reader(this._userQuery.get_user_by_email(), new Dictionary<string, object> {
+                DataTable? res = await this._db_repo.reader(this._user_query.get_user_by_email(), new Dictionary<string, object> {
                 { "@email", email }
             });
 
@@ -328,7 +328,7 @@ namespace dal.repo
         {
             try
             {
-                DataTable? res = await this.db_repo.reader(this._userQuery.check_user_by_username(), new Dictionary<string, object> {
+                DataTable? res = await this._db_repo.reader(this._user_query.check_user_by_username(), new Dictionary<string, object> {
                 { "@username", username }
             });
 
@@ -351,12 +351,12 @@ namespace dal.repo
             }
         }
 
-        public async Task<FullUser?> ValidateUserByEmail(string email)
+        public async Task<UserCredentials?> ValidateUserByEmail(string email)
         {
             try
             {
 
-                DataTable? res = await this.db_repo.reader(this._userQuery.get_user_by_email(), new Dictionary<string, object> {
+                DataTable? res = await this._db_repo.reader(this._user_query.get_user_by_email(), new Dictionary<string, object> {
                 { "@email", email }
             });
 
@@ -393,12 +393,12 @@ namespace dal.repo
             }
         }
 
-        public async Task<FullUser?> GetUserByUsername(string username)
+        public async Task<UserCredentials?> GetUserByUsername(string username)
         {
             try
             {
 
-                DataTable? res = await this.db_repo.reader(this._userQuery.get_user_by_username(), new Dictionary<string, object> {
+                DataTable? res = await this._db_repo.reader(this._user_query.get_user_by_username(), new Dictionary<string, object> {
                     { "@username", username }
                 });
 
@@ -439,7 +439,7 @@ namespace dal.repo
 
         public async Task<bool> ChangeRole(Guid user_id, string role)
         {
-            int result = await db_repo.nonQuery(this._userQuery.update_user_role(), new Dictionary<string, object> {
+            int result = await this._db_repo.nonQuery(this._user_query.update_user_role(), new Dictionary<string, object> {
                 { "@user_id", Guid.Parse(user_id.ToString() ?? "") },
                 { "@role", role }
             });

@@ -10,11 +10,10 @@ export const AppContext = createContext<AppContextValue | null>(null);
 export const AppProvider = ({
 	userAgent,
 	children,
-	pathname,
 }: {
 	userAgent: string;
 	children: React.ReactNode;
-	pathname?: string;
+	// pathname?: string;
 }) => {
 	const { isMobile } = useIsMobile(userAgent);
 	const [currPage, setCurrPage] = useState<{
@@ -25,8 +24,7 @@ export const AppProvider = ({
 		username: ``,
 	});
 
-	const clientPath = usePathname();
-	const path = pathname ?? clientPath;
+	const path = usePathname();
 
 	useEffect(() => {
 		const segment = path.split(`/`)[1];
@@ -37,10 +35,17 @@ export const AppProvider = ({
 				username: segment.slice(1),
 			});
 		} else {
-			setCurrPage({
-				page: segment ?? `home`,
-				username: ``,
-			});
+			if (segment === ``) {
+				setCurrPage({
+					page: `home`,
+					username: ``,
+				});
+			} else {
+				setCurrPage({
+					page: segment ?? `home`,
+					username: ``,
+				});
+			}
 		}
 	}, [path]);
 

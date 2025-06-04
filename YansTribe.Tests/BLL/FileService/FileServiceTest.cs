@@ -16,7 +16,7 @@ namespace YansTribe.Tests.BLL.FileService
             fileMock.Setup(f => f.ContentType).Returns("image/jpeg");
 
             Guid post_id = Guid.NewGuid();
-            PostMedia result = await this.service.Upload(post_id, fileMock.Object, core.enums.FileCategory.PostImage);
+            PostMedia result = await this.service.UploadPost(post_id, fileMock.Object, core.enums.FileCategory.PostImage);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(post_id, result.post_id);

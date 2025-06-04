@@ -1,6 +1,6 @@
 namespace core.entities
 {
-    public class BaseUser
+    public class UserAccount
     {
         private Guid _user_id;
         private string _username;
@@ -8,7 +8,7 @@ namespace core.entities
         private bool _is_private;
         private Notifications _notifications;
 
-        public BaseUser(Guid user_id, string username, string pfp_src, bool is_private)
+        public UserAccount(Guid user_id, string username, string pfp_src, bool is_private)
         {
             this._user_id = user_id;
             this._username = username;

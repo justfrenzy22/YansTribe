@@ -13,6 +13,7 @@ export interface IComment extends IBaseComment {
 
 export interface IBaseComment {
 	post_id: string;
+	// comment_id: string;
 	user: IBaseUser;
 	content: string;
 	created_at: string;

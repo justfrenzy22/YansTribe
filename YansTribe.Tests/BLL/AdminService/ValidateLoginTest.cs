@@ -18,7 +18,7 @@ namespace YansTribe.Tests.BLL.AdminService
         [TestMethod]
         public async Task NonExistentUser_ReturnsNull()
         {
-            this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(this.test_email)).ReturnsAsync((FullUser?)null);
+            this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(this.test_email)).ReturnsAsync((UserCredentials?)null);
 
             string? result = await this.service.ValidateLogin(this.test_email, this.test_password);
 
@@ -28,7 +28,7 @@ namespace YansTribe.Tests.BLL.AdminService
         [TestMethod]
         public async Task InvalidRole_ReturnsNull()
         {
-            var user = new FullUser
+            var user = new UserCredentials
             (
                 user_id: this.test_user_id,
                 username: this.test_username,
@@ -55,7 +55,7 @@ namespace YansTribe.Tests.BLL.AdminService
         [ExpectedException(typeof(DataAccessException))]
         public async Task InvalidPassword_ThrowsException()
         {
-            var user = new FullUser
+            var user = new UserCredentials
             (
                 user_id: this.test_user_id,
                 username: this.test_username,
@@ -80,7 +80,7 @@ namespace YansTribe.Tests.BLL.AdminService
         [TestMethod]
         public async Task ValidLogin_ReturnsToken()
         {
-            var user = new FullUser
+            var user = new UserCredentials
             (
                 user_id: this.test_user_id,
                 username: this.test_username,

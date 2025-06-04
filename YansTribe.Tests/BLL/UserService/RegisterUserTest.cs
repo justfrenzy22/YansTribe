@@ -11,7 +11,7 @@ namespace YansTribe.Tests.BLL.UserService
         [ExpectedException(typeof(DataAccessException))]
         public async Task AlreadyExistingUserEmail_ReturnsException()
         {
-            FullUser user = new FullUser
+            UserCredentials user = new UserCredentials
             (
                 user_id: this.test_user_id,
                 username: this.test_username,
@@ -36,7 +36,7 @@ namespace YansTribe.Tests.BLL.UserService
         [ExpectedException(typeof(DataAccessException))]
         public async Task AlreadyExistingUserUsername_ReturnsException()
         {
-            FullUser user = new FullUser
+            UserCredentials user = new UserCredentials
             (
                 user_id: this.test_user_id,
                 username: this.test_username,
@@ -62,7 +62,7 @@ namespace YansTribe.Tests.BLL.UserService
         [TestMethod]
         public async Task ValidUser_ReturnsUserId()
         {
-            FullUser user = new FullUser
+            UserCredentials user = new UserCredentials
             (
                 user_id: this.test_user_id,
                 username: this.test_username,
@@ -78,8 +78,8 @@ namespace YansTribe.Tests.BLL.UserService
                 password: this.test_hashed_password
             );
 
-            this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(user.email)).ReturnsAsync((FullUser?)null);
-            this.userRepoMock.Setup(repo => repo.GetUserByUsername(user.username)).ReturnsAsync((FullUser?)null);
+            this.userRepoMock.Setup(repo => repo.ValidateUserByEmail(user.email)).ReturnsAsync((UserCredentials?)null);
+            this.userRepoMock.Setup(repo => repo.GetUserByUsername(user.username)).ReturnsAsync((UserCredentials?)null);
             this.userRepoMock.Setup(repo => repo.RegisterUser(user)).ReturnsAsync(user.user_id);
             this.hashServiceMock.Setup(service => service.hash(user.password)).Returns(user.password);
 

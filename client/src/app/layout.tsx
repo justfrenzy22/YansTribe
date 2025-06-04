@@ -17,14 +17,13 @@ export default async function RootLayout({
 	children: React.ReactNode;
 }>) {
 	const userAgent = (await headers()).get(`user-agent`) || `user-agent`;
-	const pathname = (await headers()).get(`x-invoke-path`) || `/`;
 
 	return (
 		<html lang="en" data-theme="default" suppressHydrationWarning>
 			<head />
 			<body className={`selection:bg-blue-400 bg-background `}>
 				<ThemeProvider defaultTheme="dark">
-					<AppProvider userAgent={userAgent} pathname={pathname}>
+					<AppProvider userAgent={userAgent}>
 						{children}
 						<Toaster position="top-right" />
 					</AppProvider>

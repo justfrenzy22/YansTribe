@@ -4,9 +4,9 @@ using dal.dto;
 
 namespace dal.mapper
 {
-    public class UserMapper : Mapper<UserDTO, FullUser>
+    public class UserMapper : Mapper<UserDTO, UserCredentials>
     {
-        public override FullUser MapTo(UserDTO entity) => new FullUser(
+        public override UserCredentials MapTo(UserDTO entity) => new UserCredentials(
             user_id: entity.user_id,
             username: entity.username,
             email: entity.email,
@@ -21,14 +21,15 @@ namespace dal.mapper
             role: entity.role
         );
 
-        public BaseUser MapTo(EssentialsUserDTO entity) => new BaseUser(
+        public UserAccount MapTo(EssentialsUserDTO entity) => new UserAccount(
             user_id: entity.user_id,
             username: entity.username,
             pfp_src: entity.pfp_src,
             is_private: entity.is_private
         );
 
-        public ProfileUser MapTo(ProfileUserDTO entity) => new ProfileUser(
+
+        public UserProfile MapTo(ProfileUserDTO entity) => new UserProfile(
             user_id: entity.user_id,
             username: entity.username,
             email: entity.email,
@@ -40,14 +41,11 @@ namespace dal.mapper
             is_private: entity.is_private,
             created_at: entity.created_at,
             role: entity.role,
-            is_self: entity.is_self,
-            is_friend: entity.is_friend,
             friends_num: entity.friends_num,
-            friendship_status: entity.friendship_status,
-            request_direction: entity.request_direction
+            relationship_info: entity.relationship_info
         );
 
-        public SafeUser MapTo(SafeUserDTO entity) => new SafeUser(
+        public UserDetails MapTo(UserDetailsDTO entity) => new UserDetails(
             user_id: entity.user_id,
             username: entity.username,
             pfp_src: entity.pfp_src,

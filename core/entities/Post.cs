@@ -6,10 +6,10 @@ namespace core.entities
         private DateTime _edited_at;
         private int _like_count;
         private int _comment_count;
-        private BaseUser _user;
+        private UserAccount _user;
         private bool _is_liked_requester;
 
-        public Post(Guid post_id, string content, bool edited, DateTime edited_at, DateTime created_at, int like_count, int comment_count, bool is_liked_requester, BaseUser user) : base(post_id, content, created_at)
+        public Post(Guid post_id, string content, bool edited, DateTime edited_at, DateTime created_at, int like_count, int comment_count, bool is_liked_requester, UserAccount user) : base(post_id, content, created_at)
         {
             this._edited = edited;
             this._edited_at = edited_at;
@@ -24,7 +24,7 @@ namespace core.entities
         public int like_count => this._like_count;
         public int comment_count => this._comment_count;
         public bool is_liked_requester => this._is_liked_requester;
-        public BaseUser user => this._user;
+        public UserAccount user => this._user;
 
     }
 }
